@@ -1,0 +1,92 @@
+fragment ProductListContents on ProductList {
+  total
+  hasMore
+  facets {
+    __typename
+    ... on RangedFacet {
+      facetName
+      facetHeader
+      options {
+        displayName
+        from
+        to
+        matchedProductCount
+      }
+    }
+    ... on SimpleFacet {
+      facetName
+      facetHeader
+      options {
+        optionName
+        displayName
+        matchedProductCount
+      }
+    }
+    ... on SliderFacet {
+      facetName
+      facetHeader
+      minValue
+      maxValue
+    }
+  }
+  products {
+    sku
+    url
+    title
+    cheapestVariantPrice(currency: GBP, shippingDestination: GB) {
+      price {
+        currency
+        amount
+        displayValue
+        scalarValue
+      }
+      rrp {
+        currency
+        amount
+        displayValue
+        scalarValue
+      }
+    }
+    content(keys: ["brand"]) {
+      key
+      value {
+        __typename
+        ... on ProductContentStringListValue {
+          stringListValue: value
+        }
+      }
+    }
+    options {
+      key
+      choices {
+        optionKey
+        key
+        colour
+        title
+      }
+    }
+    images(limit: 2) {
+      largeProduct
+      zoom
+      original
+    }
+    marketedSpecialOffer {
+      title {
+        content {
+          type
+          content
+        }
+      }
+      description {
+        content {
+          type
+          content
+        }
+      }
+      landingPageLink {
+        text
+        url
+      }
+    }
+  }
+}

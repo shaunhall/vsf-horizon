@@ -1,5 +1,5 @@
 {
-  "name": "@vue-storefront/__replace_me__",
+  "name": "@vue-storefront/horizon",
   "version": "0.0.1",
   "private": true,
   "sideEffects": false,
@@ -16,14 +16,13 @@
     "build:package": "node ../../scripts/build --file=src/index.ts",
     "build:types": "tsc --emitDeclarationOnly",
     "dev": "yarn build:package --watch",
-    "precommit": "lint-staged",
     "prepublish": "yarn build",
     "test": "jest",
     "update:check": "ncu",
     "update:update": "ncu -u"
   },
   "dependencies": {
-    "@vue-storefront/__replace_me__-api": "0.0.1",
+    "@vue-storefront/horizon-api": "0.0.1",
     "@vue-storefront/core": "~2.5.4"
   },
   "devDependencies": {

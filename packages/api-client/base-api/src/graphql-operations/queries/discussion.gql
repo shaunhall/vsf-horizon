@@ -1,0 +1,38 @@
+query GetMessage ($id: ID, $offset: Int = 0, $limit: Int = 1) {
+  customer {
+    discussions (filter: { id: $id }, limit: $limit, offset: $offset) {
+      discussions {
+        id
+        selection {
+          selectedOrder {
+            orderNumber
+          }
+          selectedProducts {
+            sku
+            productVariant {
+              images {
+                original
+              }
+              title
+            }
+          }
+        }
+        category
+        status
+        createdAt
+        updatedAt
+        read
+        messages {
+          messages {
+            id
+            type
+            createdAt
+            message
+          }
+          total
+          hasMore
+        }
+      }
+    }
+  }
+}

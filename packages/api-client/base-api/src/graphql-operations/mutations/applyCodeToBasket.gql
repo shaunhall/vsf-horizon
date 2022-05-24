@@ -1,0 +1,7 @@
+#import "../fragments/basketContents.gql"
+
+mutation applyCodeToBasket($basketId: ID, $code:String!, $shippingDestination:Country! = GB, $currency:Currency! = GBP) {
+  applyCodeToBasket(basketId:$basketId, code:$code, settings: { shippingDestination: $shippingDestination, currency: $currency }){
+    ...BasketContents
+  }
+}

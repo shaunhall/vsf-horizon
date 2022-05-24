@@ -1,0 +1,6 @@
+mutation MarkDiscussionAsRead($discussionId: ID!, $latestMessage: ID!) {
+  markDiscussionMessagesAsRead(input: {
+    discussionId: $discussionId
+    upToMessageId: $latestMessage
+  })
+}

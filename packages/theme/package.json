@@ -1,5 +1,5 @@
 {
-  "name": "@vue-storefront/__replace_me__-theme",
+  "name": "@vue-storefront/horizon-theme",
   "version": "0.0.1",
   "private": true,
   "engines": {
@@ -12,7 +12,6 @@
     "generate": "nuxt generate",
     "lint": "eslint . --ext .ts,.vue",
     "lint:fix": "eslint . --ext .ts,.vue --fix",
-    "precommit": "lint-staged",
     "start": "nuxt start",
     "test": "jest",
     "test:e2e": "cypress open --config-file tests/e2e/cypress.json",
@@ -23,7 +22,7 @@
   },
   "dependencies": {
     "@storefront-ui/vue": "0.11.4",
-    "@vue-storefront/__replace_me__": "0.0.1",
+    "@vue-storefront/horizon": "0.0.1",
     "@vue-storefront/middleware": "~2.5.4",
     "@vue-storefront/nuxt": "~2.5.4",
     "@vue-storefront/nuxt-theme": "~2.5.4",

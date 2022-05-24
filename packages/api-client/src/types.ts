@@ -1,6 +1,19 @@
+import {
+  Product as GqlProduct,
+  ProductVariant as GqlProductVariant,
+  ProductReviews as GqlProductReviews,
+  Review as GqlReview
+} from './graphql-types';
+
 export type TODO = unknown;
 
-export type Setttings = TODO;
+export type Api = {
+  url: string
+};
+
+export type Setttings = {
+  api: Api
+};
 
 export type Endpoints = TODO;
 
@@ -24,13 +37,21 @@ export type OrderItem = TODO;
 
 export type PasswordResetResult = TODO;
 
-export type Product = TODO;
+export type Product = GqlProduct;
+
+export type ProductVariant = GqlProductVariant;
+
+export type ProductVariantFilter = {
+  sku?: number
+  title?: string
+  inStock?: boolean
+};
 
 export type ProductFilter = TODO;
 
-export type Review = TODO;
+export type Review = GqlProductReviews;
 
-export type ReviewItem = TODO;
+export type ReviewItem = GqlReview;
 
 export type User = TODO;
 

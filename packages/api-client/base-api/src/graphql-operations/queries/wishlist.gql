@@ -1,0 +1,78 @@
+query Wishlist ($currency: Currency! = GBP, $shippingDestination: Country! = GB, $sort: WishlistSort! = DEFAULT) {
+  customer {
+    emailPreference:marketingPreferences(type: EMAIL)
+    wishlist (currency: $currency, shippingDestination: $shippingDestination, sort: $sort) {
+      items {
+        product {
+          sku
+          url
+          title
+          images (limit: 2) {
+            largeProduct
+            original
+            zoom
+          }
+          content (keys: ["brand"]) {
+            key
+            value {
+              __typename
+              ... on ProductContentStringListValue {
+                stringListValue: value
+              }
+            }
+          }
+          inWishlist
+          cheapestVariantPrice(currency: GBP, shippingDestination: GB) {
+            price {
+              currency
+              amount
+              displayValue
+              scalarValue
+            }
+            rrp {
+              currency
+              amount
+              displayValue
+              scalarValue
+            }
+          }
+        }
+        selectedVariant {
+          sku
+          title
+          images (limit: 2) {
+            largeProduct
+            original
+            zoom
+          }
+          content (keys: ["brand"]) {
+            key
+            value {
+              __typename
+              ... on ProductContentStringListValue {
+                stringListValue: value
+              }
+            }
+          }
+          inWishlist
+          inStock
+          price(currency: GBP, shippingDestination: GB) {
+            price {
+              currency
+              amount
+              displayValue
+              scalarValue
+            }
+            rrp {
+              currency
+              amount
+              displayValue
+              scalarValue
+            }
+          }
+        }
+      }
+      total
+    }
+  }
+}

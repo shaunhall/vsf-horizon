@@ -1,0 +1,17 @@
+mutation Registration($email: String!, $password: String!, $fullName: String!, $marketingConsent: String!) {
+  register(input: {
+    email: $email
+    password: $password
+    fullName: $fullName
+    marketingConsent: $marketingConsent
+  }) {
+    fieldErrors {
+      fieldName
+    }
+    error
+    customer {
+      fullName
+      email
+    }
+  }
+}

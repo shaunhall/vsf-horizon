@@ -2,75 +2,82 @@ import {
   AgnosticMediaGalleryItem,
   AgnosticAttribute,
   AgnosticPrice,
-  ProductGetters
+  ProductGetters,
+  AgnosticBreadcrumb
 } from '@vue-storefront/core';
-import type { Product, ProductFilter } from '@vue-storefront/__replace_me__-api';
+import type { Product, ProductFilter, ProductVariant } from '@vue-storefront/horizon-api';
+import { ProductContentRichContentListValue } from '@vue-storefront/horizon-api/lib/graphql-types';
+import { getContentItemValueAsString } from './_utils';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getName(product: Product): string {
-  return 'Name';
+  return product?.title || '';
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getSlug(product: Product): string {
-  return 'slug';
+  return product?.url?.match('[^/]+')[0] || '';
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getPrice(product: Product): AgnosticPrice {
   return {
-    regular: 0,
-    special: 0
+    regular: parseFloat(product?.cheapestVariantPrice?.rrp.amount),
+    special: parseFloat(product?.cheapestVariantPrice?.price.amount) < parseFloat(product?.cheapestVariantPrice?.rrp.amount)
+      ? parseFloat(product?.cheapestVariantPrice.price.amount)
+      : null
   };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getGallery(product: Product): AgnosticMediaGalleryItem[] {
-  return [
-    {
-      small: 'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/081223_1_large.jpg',
-      normal: 'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/081223_1_large.jpg',
-      big: 'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/081223_1_large.jpg'
-    }
-  ];
+  return product.images.map((image => {
+    return {
+      small: image.largeProduct,
+      normal: image.zoom,
+      big: image.original
+    };
+  }));
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getCoverImage(product: Product): string {
-  return 'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/081223_1_large.jpg';
+  return null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getFiltered(products: Product[], filters: ProductFilter): Product[] {
-  return [
-    {
-      _id: 1,
-      _description: 'Some description',
-      _categoriesRef: [
-        '1',
-        '2'
-      ],
-      name: 'Black jacket',
-      sku: 'black-jacket',
-      images: [
-        'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/081223_1_large.jpg'
-      ],
-      price: {
-        original: 12.34,
-        current: 10.00
-      }
-    }
-  ];
+  return products;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function getAttributes(products: Product[] | Product, filterByAttributeName?: string[]): Record<string, AgnosticAttribute | string> {
-  return {};
+function getAttributes(product: Product, filterByAttributeName?: string[]): Record<string, AgnosticAttribute | string> {
+  const options = product?.options;
+  const agnosticAttributes = {} as any;
+  options && options.forEach(option => {
+    if (filterByAttributeName && !filterByAttributeName.includes(option.key)) {
+      return;
+    }
+    const choices = option.choices.map(choice => {
+      return {
+        value: choice.optionKey === 'Colour' ? choice.colour : choice.key,
+        label: choice.title
+      };
+    });
+    agnosticAttributes[option.key] = choices;
+  });
+  return agnosticAttributes;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getDescription(product: Product): string {
-  return '';
+  const synopsisContent = product?.content.filter(content => content.key === 'synopsis');
+  if (synopsisContent?.length) {
+    const value: ProductContentRichContentListValue = synopsisContent[0].value as ProductContentRichContentListValue;
+    return value.richContentListValue[0].content[0].content;
+  } else {
+    return '';
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -80,23 +87,81 @@ function getCategoryIds(product: Product): string[] {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getId(product: Product): string {
-  return '1';
+  return product?.sku || '';
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getFormattedPrice(price: number): string {
-  return '';
+  return String(price);
+}
+
+function getDisplayPrice(product: Product, type: 'rrp' | 'actual' = 'actual'): string {
+  if (product?.cheapestVariantPrice) {
+    return type === 'rrp'
+      ? product?.cheapestVariantPrice.rrp.displayValue
+      : product?.cheapestVariantPrice.price.displayValue;
+  } else {
+    return null;
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getTotalReviews(product: Product): number {
-  return 0;
+  return product?.reviews?.total || 0;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getAverageRating(product: Product): number {
-  return 0;
+  return product?.reviews?.averageScore || 0;
 }
+
+const getBreadcrumbs = (product: Product): AgnosticBreadcrumb[] => {
+  const breadCrumbs = [
+    {
+      text: 'Home',
+      link: '/'
+    }
+  ];
+  if (product && product?.title) {
+    breadCrumbs.push({
+      text: getName(product),
+      link: '#'
+    });
+  }
+  return breadCrumbs;
+};
+
+const getAdditionalInformation = (product: Product, informationFilters: string[]): AgnosticAttribute[] => {
+  const contentList = product?.content;
+  const additionalInfo = [];
+  contentList?.forEach((content) => {
+    const key = content.key;
+    if (key === 'synopsis' || (informationFilters && !informationFilters.includes(key))) {
+      return;
+    }
+    const value = getContentItemValueAsString(content);
+    additionalInfo.push({
+      label: key,
+      value
+    });
+  });
+  return additionalInfo;
+};
+
+const getVariants = (product: Product): ProductVariant[] => {
+  return product?.variants || [];
+};
+
+const getVariant = (product: Product, filters: Record<string, unknown>): ProductVariant => {
+  if (product && filters && Object.keys(filters).length) {
+    const filteredVariants = product?.variants.filter((variant) => {
+      return Object.entries(filters).every(([key, value]) => variant.choices.filter(choice => choice.optionKey === key && choice.key === value).length);
+    });
+    return filteredVariants.length ? filteredVariants[0] : product?.defaultVariant;
+  } else {
+    return product?.defaultVariant;
+  }
+};
 
 export const productGetters: ProductGetters<Product, ProductFilter> = {
   getName,
@@ -111,5 +176,10 @@ export const productGetters: ProductGetters<Product, ProductFilter> = {
   getId,
   getFormattedPrice,
   getTotalReviews,
-  getAverageRating
+  getAverageRating,
+  getBreadcrumbs,
+  getAdditionalInformation,
+  getDisplayPrice,
+  getVariant,
+  getVariants
 };

@@ -1,0 +1,3 @@
+mutation RemoveFromWishlist ($sku: SKU!) {
+  removeProductFromWishlist(sku: $sku)
+}

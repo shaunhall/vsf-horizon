@@ -1,0 +1,107 @@
+query OrderDetails($id: OrderNumber!) {
+  customer {
+    orders(limit: 1, filter: { orderNumber: $id }) {
+      orders {
+        cancellable
+        orderNumber
+        createdAt
+        status
+        totalQuantity
+        paymentCard {
+          nameOnCard
+          obfuscatedCardNumber
+          validToMonth
+          validToYear
+          type
+        }
+        paymentType
+        products {
+          cancellable
+          sku
+          productVariant {
+            images {
+              original
+            }
+            product {
+              url
+              images {
+                original
+              }
+            }
+            title
+          }
+          quantity
+          costPerUnit {
+            displayValue
+          }
+          dispatchDate
+          deliveryDateRange {
+            from
+            to
+          }
+          deliveryMethod
+          trackingUrls
+          status
+          specialOfferGroup
+          cancelledQuantity
+          pendingCancelQuantity
+          cancellableQuantity
+          dispatchedQuantity
+          refundedQuantity
+          pendingRefundQuantity
+          replacementQuantity
+          pendingReplaceQuantity
+        }
+        deliveryCost {
+          currency
+          amount
+        }
+        totalCost {
+          displayValue
+        }
+        discounts {
+          amount {
+            currency
+            amount
+          }
+          message
+        }
+        deliveryAddress {
+          addresseeName
+          addressLine1
+          addressLine2
+          addressLine3
+          addressLine4
+          addressLine5
+          postalCode
+          country
+        }
+        discussions {
+          discussions {
+            id
+            selection {
+              selectedOrder {
+                orderNumber
+              }
+            }
+            category
+            status
+            createdAt
+            updatedAt
+            read
+            messages {
+              messages {
+                id
+                type
+                createdAt
+                message
+              }
+              total
+              hasMore
+            }
+          }
+        }
+      }
+    }
+  }
+}

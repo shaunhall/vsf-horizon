@@ -1,0 +1,84 @@
+query OrderHistory($offset: Int = 0) {
+  customer {
+    fullName
+    latest: orders(limit: 5) {
+      orders {
+        orderNumber
+        createdAt
+        status
+        products {
+          sku
+          productVariant {
+            images {
+              original
+            }
+            product {
+              url
+              images {
+                original
+              }
+            }
+            title
+          }
+          deliveryDateRange {
+            from
+            to
+          }
+        }
+        totalCost {
+          displayValue
+        }
+      }
+      hasMore
+      total
+    }
+    active: orders(filter: {status: OUTSTANDING}) {
+      orders {
+        orderNumber
+        createdAt
+        status
+        products {
+          sku
+          productVariant {
+            images {
+              original
+            }
+            title
+          }
+        }
+        totalCost {
+          displayValue
+        }
+      }
+      hasMore
+      total
+    }
+    completed: orders(limit: 5, filter: {status: COMPLETED}, offset: $offset) {
+      orders {
+        orderNumber
+        createdAt
+        status
+        products {
+          sku
+          productVariant {
+            images {
+              original
+            }
+            product{
+              url
+              images{
+                original
+              }
+            }
+            title
+          }
+        }
+        totalCost {
+          displayValue
+        }
+      }
+      hasMore
+      total
+    }
+  }
+}

@@ -1,0 +1,39 @@
+query Reviews($sku: SKU!, $offset: Int! = 0, $limit: Int = 3) {
+  product(sku: $sku, strict: false) {
+    reviews {
+      total
+      averageScore
+      maxScore
+      count1Score
+      count2Score
+      count3Score
+      count4Score
+      count5Score
+      reviews(offset: $offset, limit: $limit) {
+        total
+        hasMore
+        reviews {
+          id
+          title
+          authorName
+          verifiedPurchase
+          posted
+          elements {
+            key
+          	... on TextReviewElement {
+              key
+              value
+            }
+            ... on RatingReviewElement {
+              key
+              score
+              maxScore
+            }
+          }
+          positiveVotes
+          negativeVotes
+        }
+      }
+    }
+  }
+}

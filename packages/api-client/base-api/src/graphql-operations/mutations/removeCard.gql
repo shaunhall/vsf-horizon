@@ -1,0 +1,3 @@
+mutation DeletePaymentCard($cardId: ID!) {
+  deletePaymentCard(cardId: $cardId)
+}

@@ -1,0 +1,21 @@
+query SavedCards {
+  customer {
+    paymentCards {
+      cards {
+        id
+        card {
+          nameOnCard
+          obfuscatedCardNumber
+          validFromMonth
+          validFromYear
+          validToMonth
+          validToYear
+          issueNumber
+          type
+        }
+      }
+      total
+      hasMore
+    }
+  }
+}

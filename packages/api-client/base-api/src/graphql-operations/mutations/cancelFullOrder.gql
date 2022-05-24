@@ -1,0 +1,6 @@
+mutation CancelFullOrder($orderNumber: OrderNumber!, $reason: OrderCancellationReason!) {
+    cancelOrder(input: {
+        orderNumber: $orderNumber,
+        reason: $reason
+    })
+}

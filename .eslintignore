@@ -6,3 +6,4 @@ packages/theme/_theme
 packages/theme/.nuxt
 packages/theme/middleware.config.js
 packages/theme/nuxt.config.js
+packages/api-client/base-api

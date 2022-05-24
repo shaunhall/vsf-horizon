@@ -1,0 +1,11 @@
+mutation UpdateAccountSettings($fieldList: [SettingsFieldInput!]!) {
+  updateAccountSettings(input: $fieldList) {
+    error
+    fieldErrors {
+      fieldName
+      validators
+      requiredButNotProvided
+      invalidOption
+    }
+  }
+}

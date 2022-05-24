@@ -1,0 +1,3 @@
+mutation AddToWishlist ($sku: SKU!) {
+  addProductToWishlist(sku: $sku)
+}

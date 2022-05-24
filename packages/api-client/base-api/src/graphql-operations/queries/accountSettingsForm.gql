@@ -1,0 +1,53 @@
+query AccountSettingsForm {
+  customer {
+    fullName
+    email
+    emailPreference:marketingPreferences(type: EMAIL)
+    socialLinks {
+      socialLinkId
+      socialLoginProvider {
+        code
+        name
+        colour
+        iconUrl
+      }
+      username
+      status
+    }
+  }
+  accountSettingsForm {
+    identifier
+    fields {
+      name
+      type
+      validators {
+        name
+        argument
+      }
+      required
+      disabled
+      confirmable
+      answerOptions {
+        optionKey
+        translation
+      }
+      defaultValue
+    }
+  }
+  passwordField {
+    name
+    type
+    validators {
+      name
+      argument
+    }
+    required
+    disabled
+    confirmable
+    answerOptions {
+      optionKey
+      translation
+    }
+    defaultValue
+  }
+}

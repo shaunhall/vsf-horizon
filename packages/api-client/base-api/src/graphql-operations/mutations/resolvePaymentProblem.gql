@@ -1,0 +1,6 @@
+mutation ResolvePaymentProblem($orderNumber: OrderNumber!) {
+    resolveOrderPaymentProblem(orderNumber: $orderNumber) {
+        error
+        checkoutUrl
+    }
+}

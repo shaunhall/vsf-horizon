@@ -1,0 +1,6 @@
+query AttachmentConfig {
+  attachmentUploaderConfig {
+    uploadUrl
+    authToken
+  }
+}

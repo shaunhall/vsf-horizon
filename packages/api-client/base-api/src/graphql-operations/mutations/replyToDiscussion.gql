@@ -1,0 +1,3 @@
+mutation ReplyToDiscussion($discussionId: ID!, $input: AddDiscussionMessageInput!) {
+  replyToDiscussion(discussionId: $discussionId, input: $input)
+}

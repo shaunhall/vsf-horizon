@@ -1,0 +1,123 @@
+fragment BasketContents on Basket {
+    id
+    chargePrice {
+      displayValue
+      amount
+    }
+    standardPrice {
+      displayValue
+      amount
+    }
+    discount {
+      displayValue
+      amount
+    }
+    merged
+    items {
+      id
+      product {
+        product {
+          sku
+          title
+          images(limit: 1) {
+            thumbnail
+            largeProduct
+          }
+        }
+        title
+        sku
+        images(limit: 1) {
+          thumbnail
+          largeProduct
+        }
+        content {
+          key
+          value {
+            ... on ProductContentStringValue {
+              stringValue: value
+            }
+            ... on ProductContentStringListValue {
+              stringListValue: value
+            }
+            __typename
+          }
+        }
+        choices {
+          optionKey
+          key
+        }
+      }
+      chargePricePerUnit {
+        displayValue
+      }
+      totalStandardPrice {
+        displayValue
+      }
+      totalChargePrice {
+        displayValue
+        amount
+      }
+      totalDiscount {
+        displayValue
+      }
+      quantity
+      appliedOffers {
+        totalBasketDiscount {
+          currency
+          amount
+          displayValue
+        }
+        removeable
+        message
+        info
+      }
+      freeGift
+    }
+    appliedOffers {
+      totalBasketDiscount {
+        currency
+        amount
+        displayValue
+      }
+      removeable
+      message
+      info
+    }
+    messages {
+      type
+      message
+    }
+    selectYourSample {
+      id
+      title
+      message
+      currentAmountSpent {
+        currency
+        amount
+        displayValue
+      }
+      tiers {
+        id
+        thresholdAmountSpent {
+          currency
+          amount
+          displayValue
+        }
+        products {
+          sku
+          title
+          images {
+            thumbnail
+          }
+        }
+        selectedProducts {
+          sku
+        }
+        maxSelectedProducts
+      }
+    }
+    availablePaymentOptions {
+      option
+      subOption
+  }
+}

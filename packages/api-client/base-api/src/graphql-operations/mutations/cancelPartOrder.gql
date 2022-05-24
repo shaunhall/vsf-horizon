@@ -1,0 +1,6 @@
+mutation CancelPartOrder($orderNumber: OrderNumber!, $products: [CancelOrderProductInput!]!) {
+    cancelOrderProducts(input: {
+        orderNumber: $orderNumber,
+        products: $products
+    })
+}

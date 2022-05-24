@@ -1,0 +1,4 @@
+query SiteSettings {
+  supportedCurrencies,
+  supportedShippingDestinations
+}

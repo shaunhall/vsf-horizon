@@ -1,0 +1,478 @@
+fragment PageWidgetsServer on Page {
+    widgets {
+      __typename
+
+      ... on ProductListWidget {
+        id
+        title
+        descriptionHtml {
+          content {
+            type
+            content
+          }
+        }
+        productList(input: {
+          currency: GBP
+          shippingDestination: GB
+          limit: $limit
+          offset: $offset
+          sort: $sort
+          facets: []
+        }) {
+          total
+          facets {
+            __typename
+            ... on RangedFacet {
+              facetName
+              facetHeader
+            }
+            ... on SimpleFacet {
+              facetName
+              facetHeader
+            }
+            ... on SliderFacet {
+              facetName
+              facetHeader
+              minValue
+              maxValue
+            }
+          }
+        }
+      }
+      ... on GlobalFourButtonLink {
+        buttonTextOne
+        buttonTextThree
+        buttonTextTwo
+        buttonUrlTwo
+        buttonUrlOne
+        buttonUrlThree
+        buttonTextFour
+        buttonUrlFour
+      }
+      ... on simpletextwidget {
+        id
+        title
+        textAlign
+        text {
+          content {
+            content
+          }
+        }
+      }
+      ... on simpleTextWidgetSet {
+        id
+        banners {
+          ... on simpletextwidget {
+            id
+            title
+            text {
+              content {
+                content
+              }
+            }
+          }
+        }
+      }
+      ... on GlobalStripBanner {
+        id
+        stripBannerURL
+        stripBannerText
+      }
+      ... on TopProductCategorySet {
+        showMore
+        showDiscoverTag
+        DiscoverTitle
+        banners {
+          __typename
+          ... on TopProductCategory {
+            id
+            buttonStyle
+            topProductCategoryUrl
+            topProductCategoryName
+          }
+        }
+      }
+      ... on GlobalThreeItemEditorialSubtitleBG {
+        id
+        itemOneUrl
+        itemOneImage
+        itemOneTitle
+        itemOneAltText
+        itemOneCTAText
+        itemOneSubtitle
+        itemOneDescription
+        itemOneSubtitleBGColour
+        itemTwoUrl
+        itemTwoImage
+        itemTwoTitle
+        itemTwoAltText
+        itemTwoCTAText
+        itemTwoAltText
+        itemTwoSubtitle
+        itemTwoDescription
+        itemTwoSubtitleBGColour
+        itemThreeUrl
+        itemThreeImage
+      	itemThreeTitle
+        itemThreeCTAText
+        itemThreeAltText
+        itemThreeSubtitle
+        itemThreeDescription
+        itemThreeSubtitleBGColour
+      }
+      ... on GlobalSixItemCategories {
+        id
+        title
+        itemOneCTA
+        itemOneLink
+        itemOneImage
+        itemOneTitle
+        itemTwoCTA
+        itemTwoLink
+        itemTwoImage
+        itemTwoTitle
+        itemThreeCTA
+        itemThreeLink
+        itemThreeImage
+        itemThreeTitle
+        itemFourCTA
+        itemFourLink
+        itemFourImage
+        itemFourTitle
+        itemFiveCTA
+        itemFiveLink
+        itemFiveImage
+        itemFiveTitle
+        itemFiveTitle
+        itemSixCTA
+        itemSixLink
+        itemSixImage
+        itemSixTitle
+      }
+      ... on GlobalSimpleTextCTAWidget {
+        id
+        title
+        body: text
+        textAlign
+        itemOneURL
+        itemOneCTAText
+      }
+      ... on GlobalGeneralImageBanner {
+        id
+        smallImage
+        mediumImage
+        largeImage
+        imageAltText
+        linkUrl
+      }
+      ... on AccordionWidgetContainer {
+        id
+        heading
+        title
+        titlePosition
+        banners {
+          ... on AccordionWidget {
+            title
+            content {
+              ... on RichContent {
+                content {
+                  content
+                }
+              }
+            }
+          }
+        }
+      }
+      ... on GlobalTwoItemImageTextBlock {
+        itemImage
+        itemTitle
+        itemAlign
+        itemAlt
+        itemButton
+        itemURL
+  			itemText {
+          ... on RichContent {
+            content {
+              content
+            }
+          }
+        }
+      }
+      ... on EditorialWidget {
+        content {
+          content {
+            content
+          }
+        }
+      }
+      ... on BrandsPageWidget {
+        id
+      }
+      ... on GlobalPrimaryBanner {
+        id
+        altImageLarge
+        imageSmall
+        imageMedium
+        imageLarge
+        bannerURL
+        headline
+        subtitle
+        ctaOne
+        ctaOneURL
+        ctaOneAriaLabel
+        contentTheme
+        contentAlign
+        contentBoxPosition
+      }
+      ... on GlobalTwoItemEditorial {
+        id
+        widgetTitle
+        widgetSubtitle
+        itemOneURL
+        itemOneDescription
+        itemOneCTAText
+        itemOneTitle
+        itemOneImage
+        itemTwoURL
+        itemTwoDescription
+        itemTwoCTAText
+        itemTwoTitle
+        itemTwoImage
+        altItemOne
+        altItemTwo
+      }
+      ... on GlobalBrandLogos {
+        id
+        title
+        titleAlign
+        itemOneURL
+        itemOneImage
+        itemOneImageAlt
+        itemTwoURL
+        itemTwoImage
+        itemTwoImageAlt
+        itemThreeURL
+        itemThreeImage
+        itemThreeImageAlt
+        itemFourURL
+        itemFourImage
+        itemFourImageAlt
+        itemFiveURL
+        itemFiveImage
+        itemFiveImageAlt
+        itemSixURL
+        itemSixImage
+        itemSixImageAlt
+      }
+      ... on GlobalImageCardSet {
+        id
+        title
+        banners {
+          id
+          __typename
+
+          ... on GlobalImageCard {
+            image
+            url
+            title
+            altText
+            subtitle
+            buttonText
+          }
+        }
+      }
+      ... on ResponsiveSliderSet {
+        id
+        banners {
+          __typename
+          ... on GlobalPrimaryBanner {
+            headline
+           	id
+          	ctaTwoURL
+            ctaTwoAriaLabel
+            ctaTwo
+            ctaOne
+            ctaOneURL
+            ctaOneAriaLabel
+            imageSmall
+            imageMedium
+            imageLarge
+            contentTheme
+            contentAlign
+            bannerURL
+            altLogoPng
+            useH1
+            subtitle
+            contentBoxPosition
+            altImageLarge
+          }
+        }
+        isBulletNavigationHidden
+        isAutoSlideOn
+        slideDuration
+      }
+      ... on GlobalFourBestSellers {
+        Title
+        ProductOneButtonText
+        ProductTwoButtonText
+        ProductThreeButtonText
+        ProductFourButtonText
+        ProductOne {
+          title
+          images {
+            thumbnail
+            largeProduct
+            zoom
+            original
+          }
+          price(currency: GBP, shippingDestination: GB) {
+            rrp {
+              displayValue
+              currency
+              amount
+              scalarValue
+            }
+            price {
+              displayValue
+              currency
+              amount
+              scalarValue
+            }
+          }
+        }
+        ProductTwo {
+          title
+          images {
+            thumbnail
+            largeProduct
+            zoom
+            original
+          }
+          price(currency: GBP, shippingDestination: GB) {
+            rrp {
+              displayValue
+              currency
+              amount
+              scalarValue
+            }
+            price {
+              displayValue
+              currency
+              amount
+              scalarValue
+            }
+          }
+        }
+        ProductThree {
+          title
+          images {
+            thumbnail
+            largeProduct
+            zoom
+            original
+          }
+          price(currency: GBP, shippingDestination: GB) {
+            rrp {
+              displayValue
+              currency
+              amount
+              scalarValue
+            }
+            price {
+              displayValue
+              currency
+              amount
+              scalarValue
+            }
+          }
+        }
+        ProductFour {
+          title
+          images {
+            thumbnail
+            largeProduct
+            zoom
+            original
+          }
+          price(currency: GBP, shippingDestination: GB) {
+            rrp {
+              displayValue
+              currency
+              amount
+              scalarValue
+            }
+            price {
+              displayValue
+              currency
+              amount
+              scalarValue
+            }
+          }
+        }
+      } 
+      ... on GlobalThreeItemEditorial {
+        id
+        widgetTitle
+        widgetSubtitle
+        itemOneUrl
+        itemOneDescription
+        itemOneCTAText
+        itemOneTitle
+        itemOneImage
+        itemTwoUrl
+        itemTwoDescription
+        itemTwoCTAText
+        itemTwoTitle
+        itemTwoImage
+        itemThreeUrl
+        itemThreeDescription
+        itemThreeCTAText
+        itemThreeTitle
+        itemThreeImage
+        altItemOne
+        altItemTwo
+        altItemThree
+      }
+      ... on GlobalAccreditationIconCollection {
+        id
+        banners {
+          ... on GlobalAccreditationIcon {
+            id
+            imageAltText
+            altText
+            imagePath
+            url
+          }
+        }
+     
+      }
+     ... on GlobalFourItemEditorial {
+        widgetTitle
+        widgetSubtitle
+        itemOneUrl
+        itemOneDescription
+        itemOneCTA
+        itemOneTitle
+        itemOneImage
+        itemTwoUrl
+        itemTwoDescription
+        itemTwoCTA
+        itemTwoTitle
+        itemTwoImage
+        itemThreeUrl
+        itemThreeDescription
+        itemThreeCTA
+        itemThreeTitle
+        itemThreeImage
+        itemFourUrl
+        itemFourDescription
+        itemFourCTA
+        itemFourTitle
+        itemFourImage
+        altItemOne
+        altItemTwo
+        altItemThree
+        altItemFour
+      }
+  }
+}

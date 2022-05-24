@@ -1,0 +1,15 @@
+mutation AddAddress($addresseeName: String!, $addressLine1: String!, $addressLine2: String, $addressLine3: String, $addressLine4: String, $addressLine5: String, $postalCode: String!, $country: Country! = GB, $state: State, $phoneNumber: String, $companyName: String) {
+  addAddress(input: {
+    addresseeName: $addresseeName
+    addressLine1: $addressLine1
+    addressLine2: $addressLine2
+    addressLine3: $addressLine3
+    addressLine4: $addressLine4
+    addressLine5: $addressLine5
+    postalCode: $postalCode
+    country: $country
+    state: $state
+    phoneNumber: $phoneNumber
+    companyName: $companyName
+  })
+}

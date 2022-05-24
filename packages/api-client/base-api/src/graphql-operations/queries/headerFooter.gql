@@ -1,0 +1,87 @@
+query HeaderFooter {
+  header {
+    widgets {
+      __typename
+      ...on GlobalStripBanner {
+      	__typename
+        stripBannerText
+        stripBannerURL
+    	}
+      ...on ResponsiveUSPBar {
+      	__typename
+    	}
+    }
+    navigation {
+      topLevel {
+        displayName
+        link {
+          url
+          openExternally
+          noFollow
+          noIndex
+        }
+        type
+        image {
+          url
+        }
+        subNavigation {
+          displayName
+          type
+          link {
+            text
+            url
+            openExternally
+            noFollow
+          }
+          image {
+            url
+            alt
+          }
+          subNavigation {
+            displayName
+            type
+            link {
+              text
+              url
+              openExternally
+              noFollow
+            }
+            image {
+              url
+              alt
+            }
+          }
+        }
+      }
+    }
+  }
+  footer {
+    navigation {
+      topLevel {
+        displayName
+        link {
+          url
+          openExternally
+          noFollow
+          noIndex
+        }
+        type
+        image {
+          url
+        }
+        subNavigation {
+          displayName
+          link {
+            url
+            openExternally
+            noFollow
+          }
+          type
+          image {
+            url
+          }
+        }
+      }
+    }
+  }
+}

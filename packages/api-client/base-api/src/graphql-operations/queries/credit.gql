@@ -1,0 +1,44 @@
+query CreditAccounts( $currency: Currency! = GBP ) {
+    customer {
+        creditAccounts(filter: {
+            currency: $currency
+        }) {
+            currency
+            balance {
+                currency
+                amount
+            }
+            expiringIn(days: 7) {
+                currency
+                amount
+            }
+            actions (offset: 0, limit: 10) {
+                actions {
+                    id
+                    type
+                    status
+                    amount {
+                        currency
+                        amount
+                    }
+                    amountUsed {
+                        currency
+                        amount
+                    }
+                    amountAvailable {
+                        currency
+                        amount
+                    }
+                    message
+                    order {
+                        orderNumber
+                    }
+                    addedAt
+                    expiresAt
+                }
+                total
+                hasMore
+            }
+        }
+    }
+}

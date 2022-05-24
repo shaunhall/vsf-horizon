@@ -1,0 +1,24 @@
+query Addresses{
+  customer {
+    addresses {
+      addresses {
+        id
+        address {
+          addresseeName
+          addressLine1
+          addressLine2
+          addressLine3
+          addressLine4
+          addressLine5
+          companyName
+          postalCode
+          phoneNumber
+          country
+          state
+        }
+      }
+      total
+      hasMore
+    }
+  }
+}

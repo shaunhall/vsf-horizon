@@ -1,3 +1,5 @@
 lib
 node_modules
 server
+src/graphql-types.ts
+base-api

@@ -1,0 +1,18 @@
+query EmailField {
+  emailField {
+    name
+    type
+    validators {
+      name
+      argument
+    }
+    required
+    confirmable
+    disabled
+    answerOptions {
+      optionKey
+      translation
+    }
+    defaultValue
+  }
+}

@@ -1,0 +1,194 @@
+fragment Product on Product {
+    title
+    sku
+    sizeGuide {
+        content {
+            type
+            content
+        }
+    }
+    marketedSpecialOffer {
+        title {
+            content {
+                type
+                content
+            }
+        }
+        description {
+            content {
+                type
+                content
+            }
+        }
+        landingPageLink {
+            text
+            url
+        }
+    }
+    inWishlist
+    cheapestVariantPrice(currency: GBP, shippingDestination: GB){
+        price {
+            currency
+            amount
+            displayValue
+            scalarValue
+        }
+        rrp {
+            currency
+            amount
+            displayValue
+            scalarValue
+        }
+    }
+    images {
+        original
+        thumbnail
+        largeProduct
+        zoom
+    }
+    url
+    options {
+        key
+        choices {
+            optionKey
+            key
+            colour
+            title
+        }
+    }
+    content(keys:["synopsis", "keyBenefits", "brand", "whyChoose", "CareInstructions", "material"]) {
+        key
+        value {
+            __typename
+            ... on ProductContentStringValue {
+                stringValue: value
+            }
+            ... on ProductContentStringListValue {
+                stringListValue: value
+            }
+            ... on ProductContentIntValue {
+                intValue: value
+            }
+            ... on ProductContentIntListValue {
+                intListValue: value
+            }
+            ... on ProductContentRichContentValue {
+                richContentValue: value {
+                    content {
+                        type
+
+                        content
+                    }
+                }
+            }
+            ... on ProductContentRichContentListValue {
+                richContentListValue: value {
+                    content {
+                        type
+                        content
+                    }
+                }
+            }
+        }
+    }
+    reviews {
+        total
+        averageScore
+    }
+    variants {
+        sku
+        title
+        inStock
+        inWishlist
+        images(limit:1) {
+            original
+            thumbnail
+            largeProduct
+            zoom
+        }
+        choices {
+            optionKey
+            key
+            colour
+            title
+        }
+        product {
+            url
+        }
+        price(currency: GBP, shippingDestination: GB) {
+            price {
+                currency
+                amount
+                displayValue
+            }
+            rrp {
+                currency
+                amount
+                displayValue
+            }
+        }
+    }
+    sizeGuide {
+        content {
+            type
+            content
+        }
+    }
+    defaultVariant(options: { currency: GBP, shippingDestination: GB }) {
+        sku
+        choices {
+            optionKey
+            key
+            colour
+            title
+        }
+        title
+        inStock
+        availabilityMessage
+        price(currency: GBP, shippingDestination: GB) {
+            price {
+                currency
+                amount
+                displayValue
+            }
+            rrp {
+                currency
+                amount
+                displayValue
+            }
+        }
+        content {
+            key
+            value {
+                ... on ProductContentStringValue {
+                    stringValue: value
+                }
+                ... on ProductContentStringListValue {
+                    stringListValue: value
+                }
+                ... on ProductContentIntValue {
+                    intValue: value
+                }
+                ... on ProductContentIntListValue {
+                    intListValue: value
+                }
+                ... on ProductContentRichContentValue {
+                    richContentValue: value {
+                        content {
+                            type
+                            content
+                        }
+                    }
+                }
+                ... on ProductContentRichContentListValue {
+                    richContentListValue: value {
+                        content {
+                            type
+                            content
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,18 @@
+mutation Login($username: String!, $password: String!) {
+  login(input: {
+    username: $username,
+    password: $password
+  }) {
+    newCustomer
+    error
+    fieldErrors {
+      fieldName
+      validators
+      requiredButNotProvided
+      invalidOption
+    }
+    customer {
+      fullName
+    }
+  }
+}

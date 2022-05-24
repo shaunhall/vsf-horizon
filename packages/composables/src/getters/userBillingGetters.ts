@@ -3,7 +3,7 @@ import type {
   UserBillingAddress as Address,
   UserBillingAddressItem as AddressItem,
   UserBillingAddressSearchCriteria
-} from '@vue-storefront/__replace_me__-api';
+} from '@vue-storefront/horizon-api';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getAddresses(billing: Address, criteria?: UserBillingAddressSearchCriteria): AddressItem[] {

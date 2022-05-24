@@ -154,5 +154,12 @@ export default {
   'show more': 'show more',
   'hide': 'hide',
   'Change to grid view': 'Change to grid view',
-  'Change to list view': 'Change to list view'
+  'Change to list view': 'Change to list view',
+  productAttributes: {
+    'CareInstructions': 'Care Instructions',
+    'material': 'Material',
+    'brand': 'Brand',
+    'keyBenefits': 'Key Benefits',
+    'synopsis': 'Synopsis'
+  }
 };

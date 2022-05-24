@@ -1,0 +1,12 @@
+mutation UpdateEmail($password: String!, $newEmail: String!) {
+  updateEmailAddress(changes: {
+    currentPassword: $password
+    newEmailAddress: $newEmail
+  }) {
+    error
+    fieldErrors {
+      fieldName
+      validators
+    }
+  }
+}

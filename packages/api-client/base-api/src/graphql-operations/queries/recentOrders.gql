@@ -1,0 +1,29 @@
+query RecentOrderHistory($offset: Int = 0, $limit: Int = 10) {
+  customer {
+    orders(limit: $limit, offset: $offset) {
+      orders {
+        orderNumber
+        createdAt
+        status
+        products {
+          sku
+          productVariant {
+            images {
+              original
+            }
+            title
+          }
+          deliveryDateRange {
+            from
+            to
+          }
+        }
+        totalCost {
+          displayValue
+        }
+      }
+      hasMore
+      total
+    }
+  }
+}

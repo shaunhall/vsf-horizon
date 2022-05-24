@@ -1,0 +1,6 @@
+mutation CancelOrderSpecialOfferGroups($orderNumber: OrderNumber!, $groups: [CancelOrderSpecialOfferGroupInput!]!) {
+    cancelOrderSpecialOfferGroups(input: {
+        orderNumber: $orderNumber,
+        groups: $groups
+    })
+}

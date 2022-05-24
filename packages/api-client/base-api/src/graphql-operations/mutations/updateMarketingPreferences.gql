@@ -1,0 +1,13 @@
+mutation UpdateMarketingPreferences ($newValue: Boolean!, $messageShown: String!, $formIdentifier: String!, $formLocation: String!) {
+  updateMarketingPreferences(input: {
+    type: EMAIL
+    newValue: $newValue
+    auditData: {
+      messageShown: $messageShown
+      formIdentifier: $formIdentifier
+      formLocation: $formLocation
+    }
+  }) {
+    error
+  }
+}

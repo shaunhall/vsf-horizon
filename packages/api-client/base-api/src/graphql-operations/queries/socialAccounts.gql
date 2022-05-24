@@ -1,0 +1,9 @@
+query SocialProviders {
+  socialLoginProviders {
+    name
+    code
+    loginUrl
+    iconUrl
+    colour
+  }
+}
