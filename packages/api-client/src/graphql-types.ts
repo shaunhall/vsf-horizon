@@ -460,44 +460,6 @@ export interface Brand {
   page?: Maybe<BrandPage>;
 }
 
-export interface BrandEntity {
-  __typename?: 'BrandEntity';
-  description?: Maybe<Scalars['String']>;
-  id: Scalars['Int'];
-  images: Array<EntityImage>;
-  name: Scalars['String'];
-  origin?: Maybe<Scalars['String']>;
-  outfits: Array<Outfit>;
-  productList: ProductList;
-  /** @deprecated Use productList.products instead */
-  products: Array<Product>;
-  publishedAt: Scalars['Timestamp'];
-  slug: Scalars['String'];
-}
-
-
-export interface BrandEntityImagesArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
-}
-
-
-export interface BrandEntityOutfitsArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
-}
-
-
-export interface BrandEntityProductListArgs {
-  options: ProductListInput;
-}
-
-
-export interface BrandEntityProductsArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
-}
-
 export interface BrandPage {
   __typename?: 'BrandPage';
   path: Scalars['PagePath'];
@@ -1032,7 +994,6 @@ export interface Customer {
   __typename?: 'Customer';
   addresses?: Maybe<Addresses>;
   creditAccounts?: Maybe<Array<CreditAccount>>;
-  dateOfBirth?: Maybe<Scalars['Date']>;
   /**
    * Returns all discussions for this customer.
    * If status is provided, the result will be filtered to just discussions with the given status.
@@ -1044,12 +1005,16 @@ export interface Customer {
   orders?: Maybe<Orders>;
   paymentCards?: Maybe<PaymentCards>;
   phoneNumber?: Maybe<Scalars['String']>;
+  referralCode: Scalars['String'];
+  referralCount: Scalars['Int'];
+  referralLink: Scalars['String'];
   /**
    * All social links for the customer with the given status.
    *
    * If status is null or not supplied, all social links are returned
    */
   socialLinks?: Maybe<Array<SocialLink>>;
+  socialReferralMethods: Array<SocialReferralMethod>;
   wishlist?: Maybe<WishlistItems>;
 }
 
@@ -1150,36 +1115,6 @@ export interface DeliveryInformationWidget extends Widget {
   query: Query;
   sectionDetails?: Maybe<RichContent>;
   sectionTitle?: Maybe<Scalars['String']>;
-}
-
-export interface Designer {
-  __typename?: 'Designer';
-  description?: Maybe<Scalars['String']>;
-  id: Scalars['Int'];
-  images: Array<EntityImage>;
-  name: Scalars['String'];
-  outfits: Array<Outfit>;
-  publishedAt: Scalars['Timestamp'];
-  slug: Scalars['String'];
-  stories: Array<Story>;
-}
-
-
-export interface DesignerImagesArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
-}
-
-
-export interface DesignerOutfitsArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
-}
-
-
-export interface DesignerStoriesArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
 }
 
 export interface Discussion {
@@ -1324,13 +1259,6 @@ export interface EmailReEngagementModal extends Widget {
   imageMedium?: Maybe<Scalars['URL']>;
   imageSmall?: Maybe<Scalars['URL']>;
   query: Query;
-}
-
-export interface EntityImage {
-  __typename?: 'EntityImage';
-  alternativeText?: Maybe<Scalars['String']>;
-  name: Scalars['String'];
-  url: Scalars['URL'];
 }
 
 export interface Facet {
@@ -3004,7 +2932,7 @@ export interface Mutation {
    * The PasswordResetToken from the email can be used with the resetPassword mutation.
    */
   forgottenPassword?: Maybe<ForgottenPasswordResponse>;
-  guestCheckout?: Maybe<CheckoutStartResponse>;
+  guestCheckoutWithoutEmail?: Maybe<CheckoutStartResponse>;
   login?: Maybe<AuthenticationResponse>;
   loginAndApproveSocialLink?: Maybe<AuthenticationResponse>;
   logout?: Maybe<Scalars['Void']>;
@@ -3060,6 +2988,7 @@ export interface Mutation {
   requestSocialLinkVerificationEmail?: Maybe<RequestSocialLinkVerificationEmailResponse>;
   resetPassword?: Maybe<AuthenticationResponse>;
   resolveOrderPaymentProblem?: Maybe<CheckoutStartResponse>;
+  sendReferralEmail?: Maybe<Scalars['Void']>;
   signUpForEmailMarketingCampaign?: Maybe<Scalars['Void']>;
   /** Sign up for email or SMS marketing without the requirement to be logged in */
   signUpForMarketing?: Maybe<Scalars['Void']>;
@@ -3199,8 +3128,8 @@ export interface MutationForgottenPasswordArgs {
 }
 
 
-export interface MutationGuestCheckoutArgs {
-  input: GuestCheckoutStartInput;
+export interface MutationGuestCheckoutWithoutEmailArgs {
+  input: CheckoutStartInput;
 }
 
 
@@ -3289,6 +3218,11 @@ export interface MutationResetPasswordArgs {
 
 export interface MutationResolveOrderPaymentProblemArgs {
   orderNumber: Scalars['OrderNumber'];
+}
+
+
+export interface MutationSendReferralEmailArgs {
+  emailAddresses: Array<Scalars['String']>;
 }
 
 
@@ -3509,8 +3443,6 @@ export interface Order {
   /** If the order has been dispatched, this is the dispatched time */
   dispatchedAt?: Maybe<Scalars['Timestamp']>;
   eligibleForSelfServiceDenialOfReceipt?: Maybe<Scalars['Boolean']>;
-  /**  TODO: Need to discuss how this should work for guest orders */
-  isReturnable?: Maybe<ReturnsEligibilityResult>;
   orderNumber: Scalars['OrderNumber'];
   paymentCard?: Maybe<PaymentCard>;
   paymentType?: Maybe<Scalars['String']>;
@@ -3524,11 +3456,6 @@ export interface Order {
 export interface OrderDiscussionsArgs {
   limit?: Scalars['Int'];
   offset?: Scalars['Int'];
-}
-
-
-export interface OrderIsReturnableArgs {
-  input: ReturnsEligibilityInput;
 }
 
 export type OrderCancellationReason =
@@ -3607,49 +3534,6 @@ export interface Orders {
 export interface OrdersFilterInput {
   orderNumber?: InputMaybe<Scalars['OrderNumber']>;
   status?: InputMaybe<OrderQueryStatusFilter>;
-}
-
-export interface Outfit {
-  __typename?: 'Outfit';
-  brands: Array<BrandEntity>;
-  description?: Maybe<Scalars['String']>;
-  designers: Array<Designer>;
-  id: Scalars['Int'];
-  images: Array<EntityImage>;
-  name: Scalars['String'];
-  products: Array<Product>;
-  publishedAt: Scalars['Timestamp'];
-  stories: Array<Story>;
-}
-
-
-export interface OutfitBrandsArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
-}
-
-
-export interface OutfitDesignersArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
-}
-
-
-export interface OutfitImagesArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
-}
-
-
-export interface OutfitProductsArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
-}
-
-
-export interface OutfitStoriesArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
 }
 
 export interface Page {
@@ -3788,7 +3672,6 @@ export interface Product {
   alternateLinks: Array<AlternateLink>;
   associatedProducts?: Maybe<Array<Product>>;
   brand?: Maybe<Brand>;
-  brandEntity?: Maybe<BrandEntity>;
   breadcrumbs?: Maybe<Array<Breadcrumb>>;
   cheapestVariantPrice?: Maybe<ProductPrice>;
   content: Array<ProductContentItem>;
@@ -3802,7 +3685,6 @@ export interface Product {
   /** A marketed special offer to display on search results and product lists. */
   marketedSpecialOffer?: Maybe<ProductMarketedSpecialOffer>;
   options: Array<VariantOption>;
-  outfits: Array<Outfit>;
   /** (e.g. "DVD" or "Blu-Ray") */
   platform?: Maybe<Scalars['DisplayString']>;
   preorder: Scalars['Boolean'];
@@ -3812,7 +3694,6 @@ export interface Product {
   /** As a dynamic content */
   sizeGuide?: Maybe<RichContent>;
   sku: Scalars['SKU'];
-  stories: Array<Story>;
   title: Scalars['String'];
   /** In the format '/sports-nutrition/impact-whey-protein/10530943.html' */
   url: Scalars['URL'];
@@ -3848,12 +3729,12 @@ export interface ProductRecommendationsArgs {
 
 export interface ProductContentIntListValue {
   __typename?: 'ProductContentIntListValue';
-  intListValue: Array<Scalars['Int']>;
+  value: Array<Scalars['Int']>;
 }
 
 export interface ProductContentIntValue {
   __typename?: 'ProductContentIntValue';
-  intValue: Scalars['Int'];
+  value: Scalars['Int'];
 }
 
 export interface ProductContentItem {
@@ -3864,22 +3745,22 @@ export interface ProductContentItem {
 
 export interface ProductContentRichContentListValue {
   __typename?: 'ProductContentRichContentListValue';
-  richContentListValue: Array<RichContent>;
+  value: Array<RichContent>;
 }
 
 export interface ProductContentRichContentValue {
   __typename?: 'ProductContentRichContentValue';
-  richContentValue: RichContent;
+  value: RichContent;
 }
 
 export interface ProductContentStringListValue {
   __typename?: 'ProductContentStringListValue';
-  stringListValue: Array<Scalars['String']>;
+  value: Array<Scalars['String']>;
 }
 
 export interface ProductContentStringValue {
   __typename?: 'ProductContentStringValue';
-  stringValue: Scalars['String'];
+  value: Scalars['String'];
 }
 
 export type ProductContentValue = ProductContentIntListValue | ProductContentIntValue | ProductContentRichContentListValue | ProductContentRichContentValue | ProductContentStringListValue | ProductContentStringValue;
@@ -4015,7 +3896,6 @@ export interface ProductVariant {
   buyNowPayLaterProviders?: Maybe<Array<BuyNowPayLaterProvider>>;
   choices: Array<OptionChoice>;
   content: Array<ProductContentItem>;
-  eligibleForNextDayDelivery: Scalars['Boolean'];
   images: Array<ProductImage>;
   inStock: Scalars['Boolean'];
   inWishlist?: Maybe<Scalars['Boolean']>;
@@ -4089,8 +3969,6 @@ export interface Query {
    * This may return a different basket ID than provided, if the basket moved, merged, or didn't exist.
    */
   basket?: Maybe<Basket>;
-  brandEntities: Array<BrandEntity>;
-  brandEntity?: Maybe<BrandEntity>;
   brands: Array<Brand>;
   /** @deprecated Included in extensions if applicable. */
   captchaConfiguration: Array<CaptchaConfiguration>;
@@ -4104,8 +3982,6 @@ export interface Query {
   /** Returns the current customer if the customer is logged in, or null otherwise */
   customer?: Maybe<Customer>;
   deliveryInfo?: Maybe<DeliveryInfo>;
-  designer?: Maybe<Designer>;
-  designers: Array<Designer>;
   eGiftSummary?: Maybe<EGiftSummary>;
   emailField?: Maybe<FormField>;
   /**
@@ -4126,8 +4002,6 @@ export interface Query {
   instantSearch?: Maybe<InstantSearchResult>;
   /** @deprecated Use accountCreationMarketingPreferences instead */
   marketingPreferences?: Maybe<MarketingPreferences>;
-  outfit?: Maybe<Outfit>;
-  outfits: Array<Outfit>;
   page?: Maybe<Page>;
   passwordField?: Maybe<FormField>;
   /** Returns information about a password reset token without consuming it. */
@@ -4155,8 +4029,6 @@ export interface Query {
   sitemap: Sitemap;
   socialAccounts: Array<SocialAccount>;
   socialLoginProviders?: Maybe<Array<SocialLoginProvider>>;
-  stories: Array<Story>;
-  story?: Maybe<Story>;
   supportedComponentWidgetNames: Array<Scalars['String']>;
   supportedCurrencies: Array<Currency>;
   supportedShippingDestinations: Array<Country>;
@@ -4176,30 +4048,8 @@ export interface QueryBasketArgs {
 }
 
 
-export interface QueryBrandEntitiesArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
-}
-
-
-export interface QueryBrandEntityArgs {
-  id: Scalars['Int'];
-}
-
-
 export interface QueryComponentWidgetsArgs {
   name: Scalars['String'];
-}
-
-
-export interface QueryDesignerArgs {
-  id: Scalars['Int'];
-}
-
-
-export interface QueryDesignersArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
 }
 
 
@@ -4235,17 +4085,6 @@ export interface QueryInstantSearchArgs {
 
 export interface QueryMarketingPreferencesArgs {
   input: MarketingPreferencesInput;
-}
-
-
-export interface QueryOutfitArgs {
-  id: Scalars['Int'];
-}
-
-
-export interface QueryOutfitsArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
 }
 
 
@@ -4290,17 +4129,6 @@ export interface QuerySitePropertiesArgs {
 export interface QuerySitemapArgs {
   limit?: Scalars['Int'];
   offset?: Scalars['Int'];
-}
-
-
-export interface QueryStoriesArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
-}
-
-
-export interface QueryStoryArgs {
-  id: Scalars['Int'];
 }
 
 
@@ -4354,13 +4182,13 @@ export interface ReferralCount {
 
 /**  Any additions to this should also be added to SocialLoginMissingInformation and maybe to the customer object */
 export interface RegistrationInput {
-  dateOfBirth?: InputMaybe<Scalars['Date']>;
   email: Scalars['String'];
   fullName: Scalars['String'];
   marketingConsent: Scalars['String'];
   marketingConsentAuditData: MarketingConsentAuditData;
   password: Scalars['String'];
   phoneNumber?: InputMaybe<Scalars['String']>;
+  referralCode?: InputMaybe<Scalars['String']>;
 }
 
 export type Relationship =
@@ -4644,51 +4472,6 @@ export interface ResponsiveUspBar extends Widget {
   trustPilotText?: Maybe<Scalars['String']>;
   tuesdayCutoff?: Maybe<Scalars['String']>;
   wednesdayCutoff?: Maybe<Scalars['String']>;
-}
-
-export interface ReturnsEligibilityInput {
-  skus: Array<Scalars['SKU']>;
-}
-
-export type ReturnsEligibilityOrderError =
-  /** The provided address is not valid */
-  | 'INVALID_ADDRESS'
-  /** The selected products are invalid for return */
-  | 'ORDER_PRODUCTS_INVALID'
-  /** Unrecognised error found */
-  | 'UNKNOWN_ERROR'
-  /** The value of the selected products is too high */
-  | 'VALUE_TOO_HIGH';
-
-export type ReturnsEligibilityProductError =
-  /** The product is a dropship */
-  | 'DROPSHIP_ORDER_PRODUCT'
-  /** The product's delivery date is unknown */
-  | 'ITEM_DELIVERY_DATE_UNKNOWN'
-  /** The product's return date has expired */
-  | 'ITEM_EXPIRED'
-  /** The product has not been dispatched yet */
-  | 'ITEM_NOT_DISPATCHED'
-  /** The product is not available for return */
-  | 'ORDER_PRODUCT_UNAVAILABLE'
-  /** The product is not in the order */
-  | 'PRODUCT_NOT_IN_ORDER'
-  /** The product type is not valid */
-  | 'PRODUCT_TYPE_INVALID'
-  /** Unrecognised error found */
-  | 'UNKNOWN_ERROR';
-
-export interface ReturnsEligibilityResult {
-  __typename?: 'ReturnsEligibilityResult';
-  orderError?: Maybe<ReturnsEligibilityOrderError>;
-  productErrors?: Maybe<Array<ReturnsEligibilitySkuAndProductError>>;
-  success: Scalars['Boolean'];
-}
-
-export interface ReturnsEligibilitySkuAndProductError {
-  __typename?: 'ReturnsEligibilitySkuAndProductError';
-  error?: Maybe<ReturnsEligibilityProductError>;
-  sku: Scalars['SKU'];
 }
 
 export interface Review {
@@ -4978,12 +4761,12 @@ export interface SocialLoginInput {
  * The required fields can be determined using the Form from the SocialAuthenticationResponse type.
  */
 export interface SocialLoginMissingInformation {
-  dateOfBirth?: InputMaybe<Scalars['Date']>;
   email?: InputMaybe<Scalars['String']>;
   fullName?: InputMaybe<Scalars['String']>;
   marketingConsent?: InputMaybe<Scalars['String']>;
   marketingConsentAuditData?: InputMaybe<MarketingConsentAuditData>;
   phoneNumber?: InputMaybe<Scalars['String']>;
+  referralCode?: InputMaybe<Scalars['String']>;
 }
 
 export interface SocialLoginProvider {
@@ -5028,6 +4811,22 @@ export type SocialNetwork =
   | 'WEIBO'
   | 'WHATSAPP'
   | 'YOUTUBE';
+
+export interface SocialReferralMethod {
+  __typename?: 'SocialReferralMethod';
+  type: SocialReferralMethodType;
+  url?: Maybe<Scalars['String']>;
+}
+
+export type SocialReferralMethodType =
+  | 'EMAIL'
+  | 'FACEBOOK'
+  | 'MESSENGER'
+  | 'SMS'
+  | 'TWITTER'
+  | 'VK'
+  | 'WEIBO'
+  | 'WHATSAPP';
 
 /**
  * [ISO_3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) state code.
@@ -5092,27 +4891,6 @@ export type State =
   | 'US_WI'
   | 'US_WV'
   | 'US_WY';
-
-export interface Story {
-  __typename?: 'Story';
-  id: Scalars['Int'];
-  outfits: Array<Outfit>;
-  products: Array<Product>;
-  publishedAt: Scalars['String'];
-  title: Scalars['String'];
-}
-
-
-export interface StoryOutfitsArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
-}
-
-
-export interface StoryProductsArgs {
-  limit?: Scalars['Int'];
-  offset?: Scalars['Int'];
-}
 
 export interface Supersize {
   __typename?: 'Supersize';
@@ -5846,3 +5624,472 @@ export interface VideoEditorial extends Widget {
   thumbnail?: Maybe<Scalars['URL']>;
   title?: Maybe<Scalars['String']>;
 }
+
+export type AddAddressMutationVariables = Exact<{
+  addresseeName: Scalars['String'];
+  addressLine1: Scalars['String'];
+  addressLine2?: InputMaybe<Scalars['String']>;
+  addressLine3?: InputMaybe<Scalars['String']>;
+  addressLine4?: InputMaybe<Scalars['String']>;
+  addressLine5?: InputMaybe<Scalars['String']>;
+  postalCode: Scalars['String'];
+  country?: Country;
+  state?: InputMaybe<State>;
+  phoneNumber?: InputMaybe<Scalars['String']>;
+  companyName?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type AddAddressMutation = { __typename?: 'Mutation', addAddress: string };
+
+export type ReplaceAddressMutationVariables = Exact<{
+  addresseeName: Scalars['String'];
+  addressLine1: Scalars['String'];
+  addressLine2?: InputMaybe<Scalars['String']>;
+  addressLine3?: InputMaybe<Scalars['String']>;
+  addressLine4?: InputMaybe<Scalars['String']>;
+  addressLine5?: InputMaybe<Scalars['String']>;
+  postalCode: Scalars['String'];
+  country: Country;
+  state?: InputMaybe<State>;
+  phoneNumber?: InputMaybe<Scalars['String']>;
+  companyName?: InputMaybe<Scalars['String']>;
+  id: Scalars['ID'];
+}>;
+
+
+export type ReplaceAddressMutation = { __typename?: 'Mutation', replaceAddress: string };
+
+export type UpdateAccountSettingsMutationVariables = Exact<{
+  fieldList: Array<SettingsFieldInput> | SettingsFieldInput;
+}>;
+
+
+export type UpdateAccountSettingsMutation = { __typename?: 'Mutation', updateAccountSettings: { __typename?: 'AccountUpdateStatus', error?: AuthenticationError | null, fieldErrors?: Array<{ __typename?: 'FormFieldValidationError', fieldName: string, validators: Array<ValidatorName>, requiredButNotProvided: boolean, invalidOption: boolean } | null> | null } };
+
+export type UpdateEmailMutationVariables = Exact<{
+  password: Scalars['String'];
+  newEmail: Scalars['String'];
+}>;
+
+
+export type UpdateEmailMutation = { __typename?: 'Mutation', updateEmailAddress: { __typename?: 'AccountUpdateStatus', error?: AuthenticationError | null, fieldErrors?: Array<{ __typename?: 'FormFieldValidationError', fieldName: string, validators: Array<ValidatorName> } | null> | null } };
+
+export type UpdatePasswordMutationVariables = Exact<{
+  currentPassword: Scalars['String'];
+  newPassword: Scalars['String'];
+}>;
+
+
+export type UpdatePasswordMutation = { __typename?: 'Mutation', updatePassword: { __typename?: 'PasswordUpdateStatus', error?: AuthenticationError | null, fieldErrors?: Array<{ __typename?: 'FormFieldValidationError', fieldName: string, validators: Array<ValidatorName> } | null> | null } };
+
+export type AddSelectYourSampleMutationVariables = Exact<{
+  sku: Scalars['SKU'];
+  basketId: Scalars['ID'];
+  selectYourSampleId: Scalars['ID'];
+  tierId: Scalars['ID'];
+  shippingDestination?: Country;
+  currency?: Currency;
+}>;
+
+
+export type AddSelectYourSampleMutation = { __typename?: 'Mutation', addSelectYourSampleProductToBasket: { __typename?: 'Basket', id: string, merged: boolean, chargePrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, standardPrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, discount: { __typename?: 'MoneyValue', displayValue: string, amount: string }, items: Array<{ __typename?: 'BasketItem', id: string, quantity: number, freeGift: boolean, product: { __typename?: 'ProductVariant', title: string, sku: any, product?: { __typename?: 'Product', sku: any, title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null }> } | null, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null }>, content: Array<{ __typename?: 'ProductContentItem', key: string, value: { __typename: 'ProductContentIntListValue' } | { __typename: 'ProductContentIntValue' } | { __typename: 'ProductContentRichContentListValue' } | { __typename: 'ProductContentRichContentValue' } | { __typename: 'ProductContentStringListValue', stringListValue: Array<string> } | { __typename: 'ProductContentStringValue', stringValue: string } }>, choices: Array<{ __typename?: 'OptionChoice', optionKey: string, key: string }> }, chargePricePerUnit: { __typename?: 'MoneyValue', displayValue: string }, totalStandardPrice: { __typename?: 'MoneyValue', displayValue: string }, totalChargePrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, totalDiscount: { __typename?: 'MoneyValue', displayValue: string }, appliedOffers: Array<{ __typename?: 'AppliedOffer', removeable: boolean, message: any, info?: any | null, totalBasketDiscount?: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string } | null }> }>, appliedOffers: Array<{ __typename?: 'AppliedOffer', removeable: boolean, message: any, info?: any | null, totalBasketDiscount?: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string } | null }>, messages: Array<{ __typename?: 'BasketMessage', type: BasketMessageType, message?: any | null }>, selectYourSample: Array<{ __typename?: 'SelectYourSample', id: string, title?: any | null, message?: any | null, currentAmountSpent: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string }, tiers: Array<{ __typename?: 'SelectYourSampleTier', id: string, maxSelectedProducts: number, thresholdAmountSpent: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string }, products: Array<{ __typename?: 'ProductVariant', sku: any, title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null }> }>, selectedProducts: Array<{ __typename?: 'ProductVariant', sku: any }> }> }>, availablePaymentOptions: Array<{ __typename?: 'AvailablePaymentOption', option: string, subOption?: string | null }> } };
+
+export type AddToWishlistMutationVariables = Exact<{
+  sku: Scalars['SKU'];
+}>;
+
+
+export type AddToWishlistMutation = { __typename?: 'Mutation', addProductToWishlist?: boolean | null };
+
+export type ApplyCodeToBasketMutationVariables = Exact<{
+  basketId?: InputMaybe<Scalars['ID']>;
+  code: Scalars['String'];
+  shippingDestination?: Country;
+  currency?: Currency;
+}>;
+
+
+export type ApplyCodeToBasketMutation = { __typename?: 'Mutation', applyCodeToBasket: { __typename?: 'Basket', id: string, merged: boolean, chargePrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, standardPrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, discount: { __typename?: 'MoneyValue', displayValue: string, amount: string }, items: Array<{ __typename?: 'BasketItem', id: string, quantity: number, freeGift: boolean, product: { __typename?: 'ProductVariant', title: string, sku: any, product?: { __typename?: 'Product', sku: any, title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null }> } | null, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null }>, content: Array<{ __typename?: 'ProductContentItem', key: string, value: { __typename: 'ProductContentIntListValue' } | { __typename: 'ProductContentIntValue' } | { __typename: 'ProductContentRichContentListValue' } | { __typename: 'ProductContentRichContentValue' } | { __typename: 'ProductContentStringListValue', stringListValue: Array<string> } | { __typename: 'ProductContentStringValue', stringValue: string } }>, choices: Array<{ __typename?: 'OptionChoice', optionKey: string, key: string }> }, chargePricePerUnit: { __typename?: 'MoneyValue', displayValue: string }, totalStandardPrice: { __typename?: 'MoneyValue', displayValue: string }, totalChargePrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, totalDiscount: { __typename?: 'MoneyValue', displayValue: string }, appliedOffers: Array<{ __typename?: 'AppliedOffer', removeable: boolean, message: any, info?: any | null, totalBasketDiscount?: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string } | null }> }>, appliedOffers: Array<{ __typename?: 'AppliedOffer', removeable: boolean, message: any, info?: any | null, totalBasketDiscount?: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string } | null }>, messages: Array<{ __typename?: 'BasketMessage', type: BasketMessageType, message?: any | null }>, selectYourSample: Array<{ __typename?: 'SelectYourSample', id: string, title?: any | null, message?: any | null, currentAmountSpent: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string }, tiers: Array<{ __typename?: 'SelectYourSampleTier', id: string, maxSelectedProducts: number, thresholdAmountSpent: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string }, products: Array<{ __typename?: 'ProductVariant', sku: any, title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null }> }>, selectedProducts: Array<{ __typename?: 'ProductVariant', sku: any }> }> }>, availablePaymentOptions: Array<{ __typename?: 'AvailablePaymentOption', option: string, subOption?: string | null }> } };
+
+export type AddToBasketMutationVariables = Exact<{
+  sku: Scalars['SKU'];
+  qty: Scalars['Int'];
+  id?: InputMaybe<Scalars['ID']>;
+  currency?: Currency;
+  shippingDestination?: Country;
+}>;
+
+
+export type AddToBasketMutation = { __typename?: 'Mutation', addProductToBasket: { __typename?: 'Basket', id: string, merged: boolean, chargePrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, standardPrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, discount: { __typename?: 'MoneyValue', displayValue: string, amount: string }, items: Array<{ __typename?: 'BasketItem', id: string, quantity: number, freeGift: boolean, product: { __typename?: 'ProductVariant', title: string, sku: any, product?: { __typename?: 'Product', sku: any, title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null }> } | null, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null }>, content: Array<{ __typename?: 'ProductContentItem', key: string, value: { __typename: 'ProductContentIntListValue' } | { __typename: 'ProductContentIntValue' } | { __typename: 'ProductContentRichContentListValue' } | { __typename: 'ProductContentRichContentValue' } | { __typename: 'ProductContentStringListValue', stringListValue: Array<string> } | { __typename: 'ProductContentStringValue', stringValue: string } }>, choices: Array<{ __typename?: 'OptionChoice', optionKey: string, key: string }> }, chargePricePerUnit: { __typename?: 'MoneyValue', displayValue: string }, totalStandardPrice: { __typename?: 'MoneyValue', displayValue: string }, totalChargePrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, totalDiscount: { __typename?: 'MoneyValue', displayValue: string }, appliedOffers: Array<{ __typename?: 'AppliedOffer', removeable: boolean, message: any, info?: any | null, totalBasketDiscount?: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string } | null }> }>, appliedOffers: Array<{ __typename?: 'AppliedOffer', removeable: boolean, message: any, info?: any | null, totalBasketDiscount?: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string } | null }>, messages: Array<{ __typename?: 'BasketMessage', type: BasketMessageType, message?: any | null }>, selectYourSample: Array<{ __typename?: 'SelectYourSample', id: string, title?: any | null, message?: any | null, currentAmountSpent: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string }, tiers: Array<{ __typename?: 'SelectYourSampleTier', id: string, maxSelectedProducts: number, thresholdAmountSpent: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string }, products: Array<{ __typename?: 'ProductVariant', sku: any, title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null }> }>, selectedProducts: Array<{ __typename?: 'ProductVariant', sku: any }> }> }>, availablePaymentOptions: Array<{ __typename?: 'AvailablePaymentOption', option: string, subOption?: string | null }> } };
+
+export type RemoveProductFromBasketMutationVariables = Exact<{
+  basketId: Scalars['ID'];
+  itemId: Scalars['ID'];
+  currency?: Currency;
+  shippingDestination?: Country;
+}>;
+
+
+export type RemoveProductFromBasketMutation = { __typename?: 'Mutation', removeProductFromBasket: { __typename?: 'Basket', id: string, merged: boolean, chargePrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, standardPrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, discount: { __typename?: 'MoneyValue', displayValue: string, amount: string }, items: Array<{ __typename?: 'BasketItem', id: string, quantity: number, freeGift: boolean, product: { __typename?: 'ProductVariant', title: string, sku: any, product?: { __typename?: 'Product', sku: any, title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null }> } | null, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null }>, content: Array<{ __typename?: 'ProductContentItem', key: string, value: { __typename: 'ProductContentIntListValue' } | { __typename: 'ProductContentIntValue' } | { __typename: 'ProductContentRichContentListValue' } | { __typename: 'ProductContentRichContentValue' } | { __typename: 'ProductContentStringListValue', stringListValue: Array<string> } | { __typename: 'ProductContentStringValue', stringValue: string } }>, choices: Array<{ __typename?: 'OptionChoice', optionKey: string, key: string }> }, chargePricePerUnit: { __typename?: 'MoneyValue', displayValue: string }, totalStandardPrice: { __typename?: 'MoneyValue', displayValue: string }, totalChargePrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, totalDiscount: { __typename?: 'MoneyValue', displayValue: string }, appliedOffers: Array<{ __typename?: 'AppliedOffer', removeable: boolean, message: any, info?: any | null, totalBasketDiscount?: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string } | null }> }>, appliedOffers: Array<{ __typename?: 'AppliedOffer', removeable: boolean, message: any, info?: any | null, totalBasketDiscount?: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string } | null }>, messages: Array<{ __typename?: 'BasketMessage', type: BasketMessageType, message?: any | null }>, selectYourSample: Array<{ __typename?: 'SelectYourSample', id: string, title?: any | null, message?: any | null, currentAmountSpent: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string }, tiers: Array<{ __typename?: 'SelectYourSampleTier', id: string, maxSelectedProducts: number, thresholdAmountSpent: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string }, products: Array<{ __typename?: 'ProductVariant', sku: any, title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null }> }>, selectedProducts: Array<{ __typename?: 'ProductVariant', sku: any }> }> }>, availablePaymentOptions: Array<{ __typename?: 'AvailablePaymentOption', option: string, subOption?: string | null }> } };
+
+export type CancelFullOrderMutationVariables = Exact<{
+  orderNumber: Scalars['OrderNumber'];
+  reason: OrderCancellationReason;
+}>;
+
+
+export type CancelFullOrderMutation = { __typename?: 'Mutation', cancelOrder?: any | null };
+
+export type CancelPartOrderMutationVariables = Exact<{
+  orderNumber: Scalars['OrderNumber'];
+  products: Array<CancelOrderProductInput> | CancelOrderProductInput;
+}>;
+
+
+export type CancelPartOrderMutation = { __typename?: 'Mutation', cancelOrderProducts?: any | null };
+
+export type CancelOrderSpecialOfferGroupsMutationVariables = Exact<{
+  orderNumber: Scalars['OrderNumber'];
+  groups: Array<CancelOrderSpecialOfferGroupInput> | CancelOrderSpecialOfferGroupInput;
+}>;
+
+
+export type CancelOrderSpecialOfferGroupsMutation = { __typename?: 'Mutation', cancelOrderSpecialOfferGroups?: any | null };
+
+export type CheckoutMutationVariables = Exact<{
+  basketId: Scalars['ID'];
+  currency?: Currency;
+  shippingDestination?: Country;
+}>;
+
+
+export type CheckoutMutation = { __typename?: 'Mutation', checkout?: { __typename?: 'CheckoutStartResponse', error?: CheckoutStartError | null, checkoutUrl?: any | null } | null };
+
+export type CheckoutWithShippingDestinationMutationVariables = Exact<{
+  basketId: Scalars['ID'];
+  paymentMethod: Scalars['String'];
+  currency?: Currency;
+  shippingDestination?: Country;
+}>;
+
+
+export type CheckoutWithShippingDestinationMutation = { __typename?: 'Mutation', checkout?: { __typename?: 'CheckoutStartResponse', error?: CheckoutStartError | null, checkoutUrl?: any | null } | null };
+
+export type CreateDiscussionMutationVariables = Exact<{
+  input: CreateDiscussionInput;
+}>;
+
+
+export type CreateDiscussionMutation = { __typename?: 'Mutation', createDiscussion: string };
+
+export type ForgottenPasswordMutationVariables = Exact<{
+  username: Scalars['String'];
+}>;
+
+
+export type ForgottenPasswordMutation = { __typename?: 'Mutation', forgottenPassword?: { __typename?: 'ForgottenPasswordResponse', error?: ForgottenPasswordError | null } | null };
+
+export type LoginMutationVariables = Exact<{
+  username: Scalars['String'];
+  password: Scalars['String'];
+}>;
+
+
+export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'AuthenticationResponse', newCustomer?: boolean | null, error?: AuthenticationError | null, fieldErrors?: Array<{ __typename?: 'FormFieldValidationError', fieldName: string, validators: Array<ValidatorName>, requiredButNotProvided: boolean, invalidOption: boolean } | null> | null, customer?: { __typename?: 'Customer', fullName: string } | null } | null };
+
+export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LogoutMutation = { __typename?: 'Mutation', logout?: any | null };
+
+export type MarkDiscussionAsReadMutationVariables = Exact<{
+  discussionId: Scalars['ID'];
+  latestMessage: Scalars['ID'];
+}>;
+
+
+export type MarkDiscussionAsReadMutation = { __typename?: 'Mutation', markDiscussionMessagesAsRead?: any | null };
+
+export type RegistrationMutationVariables = Exact<{
+  email: Scalars['String'];
+  password: Scalars['String'];
+  fullName: Scalars['String'];
+  marketingConsent: Scalars['String'];
+  marketingConsentAuditData: MarketingConsentAuditData;
+  phoneNumber?: InputMaybe<Scalars['String']>;
+  referralCode?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type RegistrationMutation = { __typename?: 'Mutation', register: { __typename?: 'AuthenticationResponse', error?: AuthenticationError | null, fieldErrors?: Array<{ __typename?: 'FormFieldValidationError', fieldName: string } | null> | null, customer?: { __typename?: 'Customer', fullName: string, email: string } | null } };
+
+export type DeleteAddressMutationVariables = Exact<{
+  AddressId: Scalars['ID'];
+}>;
+
+
+export type DeleteAddressMutation = { __typename?: 'Mutation', deleteAddress?: any | null };
+
+export type DeletePaymentCardMutationVariables = Exact<{
+  cardId: Scalars['ID'];
+}>;
+
+
+export type DeletePaymentCardMutation = { __typename?: 'Mutation', deletePaymentCard?: any | null };
+
+export type RemoveCodeFromBasketMutationVariables = Exact<{
+  basketId?: InputMaybe<Scalars['ID']>;
+  shippingDestination?: Country;
+  currency?: Currency;
+}>;
+
+
+export type RemoveCodeFromBasketMutation = { __typename?: 'Mutation', removeCodeFromBasket: { __typename?: 'Basket', id: string, merged: boolean, chargePrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, standardPrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, discount: { __typename?: 'MoneyValue', displayValue: string, amount: string }, items: Array<{ __typename?: 'BasketItem', id: string, quantity: number, freeGift: boolean, product: { __typename?: 'ProductVariant', title: string, sku: any, product?: { __typename?: 'Product', sku: any, title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null }> } | null, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null }>, content: Array<{ __typename?: 'ProductContentItem', key: string, value: { __typename: 'ProductContentIntListValue' } | { __typename: 'ProductContentIntValue' } | { __typename: 'ProductContentRichContentListValue' } | { __typename: 'ProductContentRichContentValue' } | { __typename: 'ProductContentStringListValue', stringListValue: Array<string> } | { __typename: 'ProductContentStringValue', stringValue: string } }>, choices: Array<{ __typename?: 'OptionChoice', optionKey: string, key: string }> }, chargePricePerUnit: { __typename?: 'MoneyValue', displayValue: string }, totalStandardPrice: { __typename?: 'MoneyValue', displayValue: string }, totalChargePrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, totalDiscount: { __typename?: 'MoneyValue', displayValue: string }, appliedOffers: Array<{ __typename?: 'AppliedOffer', removeable: boolean, message: any, info?: any | null, totalBasketDiscount?: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string } | null }> }>, appliedOffers: Array<{ __typename?: 'AppliedOffer', removeable: boolean, message: any, info?: any | null, totalBasketDiscount?: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string } | null }>, messages: Array<{ __typename?: 'BasketMessage', type: BasketMessageType, message?: any | null }>, selectYourSample: Array<{ __typename?: 'SelectYourSample', id: string, title?: any | null, message?: any | null, currentAmountSpent: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string }, tiers: Array<{ __typename?: 'SelectYourSampleTier', id: string, maxSelectedProducts: number, thresholdAmountSpent: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string }, products: Array<{ __typename?: 'ProductVariant', sku: any, title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null }> }>, selectedProducts: Array<{ __typename?: 'ProductVariant', sku: any }> }> }>, availablePaymentOptions: Array<{ __typename?: 'AvailablePaymentOption', option: string, subOption?: string | null }> } };
+
+export type RemoveFromWishlistMutationVariables = Exact<{
+  sku: Scalars['SKU'];
+}>;
+
+
+export type RemoveFromWishlistMutation = { __typename?: 'Mutation', removeProductFromWishlist?: boolean | null };
+
+export type RemoveSelectYourSampleFromBasketMutationVariables = Exact<{
+  sku: Scalars['SKU'];
+  basketId: Scalars['ID'];
+  selectYourSampleId: Scalars['ID'];
+  tierId: Scalars['ID'];
+  shippingDestination?: Country;
+  currency?: Currency;
+}>;
+
+
+export type RemoveSelectYourSampleFromBasketMutation = { __typename?: 'Mutation', removeSelectYourSampleProductFromBasket: { __typename?: 'Basket', id: string, merged: boolean, chargePrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, standardPrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, discount: { __typename?: 'MoneyValue', displayValue: string, amount: string }, items: Array<{ __typename?: 'BasketItem', id: string, quantity: number, freeGift: boolean, product: { __typename?: 'ProductVariant', title: string, sku: any, product?: { __typename?: 'Product', sku: any, title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null }> } | null, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null }>, content: Array<{ __typename?: 'ProductContentItem', key: string, value: { __typename: 'ProductContentIntListValue' } | { __typename: 'ProductContentIntValue' } | { __typename: 'ProductContentRichContentListValue' } | { __typename: 'ProductContentRichContentValue' } | { __typename: 'ProductContentStringListValue', stringListValue: Array<string> } | { __typename: 'ProductContentStringValue', stringValue: string } }>, choices: Array<{ __typename?: 'OptionChoice', optionKey: string, key: string }> }, chargePricePerUnit: { __typename?: 'MoneyValue', displayValue: string }, totalStandardPrice: { __typename?: 'MoneyValue', displayValue: string }, totalChargePrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, totalDiscount: { __typename?: 'MoneyValue', displayValue: string }, appliedOffers: Array<{ __typename?: 'AppliedOffer', removeable: boolean, message: any, info?: any | null, totalBasketDiscount?: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string } | null }> }>, appliedOffers: Array<{ __typename?: 'AppliedOffer', removeable: boolean, message: any, info?: any | null, totalBasketDiscount?: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string } | null }>, messages: Array<{ __typename?: 'BasketMessage', type: BasketMessageType, message?: any | null }>, selectYourSample: Array<{ __typename?: 'SelectYourSample', id: string, title?: any | null, message?: any | null, currentAmountSpent: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string }, tiers: Array<{ __typename?: 'SelectYourSampleTier', id: string, maxSelectedProducts: number, thresholdAmountSpent: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string }, products: Array<{ __typename?: 'ProductVariant', sku: any, title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null }> }>, selectedProducts: Array<{ __typename?: 'ProductVariant', sku: any }> }> }>, availablePaymentOptions: Array<{ __typename?: 'AvailablePaymentOption', option: string, subOption?: string | null }> } };
+
+export type RemoveSocialLinkMutationVariables = Exact<{
+  socialLinkId: Scalars['SocialLinkID'];
+}>;
+
+
+export type RemoveSocialLinkMutation = { __typename?: 'Mutation', removeSocialLink?: boolean | null };
+
+export type ReplyToDiscussionMutationVariables = Exact<{
+  discussionId: Scalars['ID'];
+  input: AddDiscussionMessageInput;
+}>;
+
+
+export type ReplyToDiscussionMutation = { __typename?: 'Mutation', replyToDiscussion: string };
+
+export type ResetPasswordMutationVariables = Exact<{
+  username: Scalars['String'];
+  token: Scalars['PasswordResetToken'];
+  password: Scalars['String'];
+}>;
+
+
+export type ResetPasswordMutation = { __typename?: 'Mutation', resetPassword?: { __typename?: 'AuthenticationResponse', error?: AuthenticationError | null, fieldErrors?: Array<{ __typename?: 'FormFieldValidationError', fieldName: string } | null> | null, customer?: { __typename?: 'Customer', fullName: string, email: string } | null } | null };
+
+export type ResolvePaymentProblemMutationVariables = Exact<{
+  orderNumber: Scalars['OrderNumber'];
+}>;
+
+
+export type ResolvePaymentProblemMutation = { __typename?: 'Mutation', resolveOrderPaymentProblem?: { __typename?: 'CheckoutStartResponse', error?: CheckoutStartError | null, checkoutUrl?: any | null } | null };
+
+export type UpdateMarketingPreferencesMutationVariables = Exact<{
+  newValue: Scalars['Boolean'];
+  messageShown: Scalars['String'];
+  formIdentifier: Scalars['String'];
+  formLocation: Scalars['String'];
+}>;
+
+
+export type UpdateMarketingPreferencesMutation = { __typename?: 'Mutation', updateMarketingPreferences?: { __typename?: 'UpdateMarketingPreferencesResponse', error?: UpdateMarketingPreferencesError | null } | null };
+
+export type AccountSettingsFormQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AccountSettingsFormQuery = { __typename?: 'Query', customer?: { __typename?: 'Customer', fullName: string, email: string, emailPreference?: boolean | null, socialLinks?: Array<{ __typename?: 'SocialLink', socialLinkId: any, username?: string | null, status: SocialLinkStatus, socialLoginProvider?: { __typename?: 'SocialLoginProvider', code: string, name: any, colour: string, iconUrl: string } | null }> | null } | null, accountSettingsForm: { __typename?: 'Form', identifier: string, fields: Array<{ __typename?: 'FormField', name: string, type?: FormFieldType | null, required: boolean, disabled: boolean, confirmable: boolean, defaultValue?: string | null, validators: Array<{ __typename?: 'Validator', name: ValidatorName, argument?: string | null }>, answerOptions?: Array<{ __typename?: 'AnswerOption', optionKey: string, translation?: any | null } | null> | null }> }, passwordField?: { __typename?: 'FormField', name: string, type?: FormFieldType | null, required: boolean, disabled: boolean, confirmable: boolean, defaultValue?: string | null, validators: Array<{ __typename?: 'Validator', name: ValidatorName, argument?: string | null }>, answerOptions?: Array<{ __typename?: 'AnswerOption', optionKey: string, translation?: any | null } | null> | null } | null };
+
+export type AddressesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AddressesQuery = { __typename?: 'Query', customer?: { __typename?: 'Customer', addresses?: { __typename?: 'Addresses', total: number, hasMore: boolean, addresses: Array<{ __typename?: 'AddressRecord', id: string, address: { __typename?: 'Address', addresseeName: string, addressLine1: string, addressLine2?: string | null, addressLine3?: string | null, addressLine4?: string | null, addressLine5?: string | null, companyName?: string | null, postalCode: string, phoneNumber?: string | null, country: Country, state?: State | null } }> } | null } | null };
+
+export type AttachmentConfigQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AttachmentConfigQuery = { __typename?: 'Query', attachmentUploaderConfig?: { __typename?: 'AttachmentUploaderConfig', uploadUrl: string, authToken: string } | null };
+
+export type BasketQueryVariables = Exact<{
+  id?: InputMaybe<Scalars['ID']>;
+  currency?: Currency;
+  shippingDestination?: Country;
+}>;
+
+
+export type BasketQuery = { __typename?: 'Query', basket?: { __typename?: 'Basket', id: string, merged: boolean, chargePrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, standardPrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, discount: { __typename?: 'MoneyValue', displayValue: string, amount: string }, items: Array<{ __typename?: 'BasketItem', id: string, quantity: number, freeGift: boolean, product: { __typename?: 'ProductVariant', title: string, sku: any, product?: { __typename?: 'Product', sku: any, title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null }> } | null, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null }>, content: Array<{ __typename?: 'ProductContentItem', key: string, value: { __typename: 'ProductContentIntListValue' } | { __typename: 'ProductContentIntValue' } | { __typename: 'ProductContentRichContentListValue' } | { __typename: 'ProductContentRichContentValue' } | { __typename: 'ProductContentStringListValue', stringListValue: Array<string> } | { __typename: 'ProductContentStringValue', stringValue: string } }>, choices: Array<{ __typename?: 'OptionChoice', optionKey: string, key: string }> }, chargePricePerUnit: { __typename?: 'MoneyValue', displayValue: string }, totalStandardPrice: { __typename?: 'MoneyValue', displayValue: string }, totalChargePrice: { __typename?: 'MoneyValue', displayValue: string, amount: string }, totalDiscount: { __typename?: 'MoneyValue', displayValue: string }, appliedOffers: Array<{ __typename?: 'AppliedOffer', removeable: boolean, message: any, info?: any | null, totalBasketDiscount?: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string } | null }> }>, appliedOffers: Array<{ __typename?: 'AppliedOffer', removeable: boolean, message: any, info?: any | null, totalBasketDiscount?: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string } | null }>, messages: Array<{ __typename?: 'BasketMessage', type: BasketMessageType, message?: any | null }>, selectYourSample: Array<{ __typename?: 'SelectYourSample', id: string, title?: any | null, message?: any | null, currentAmountSpent: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string }, tiers: Array<{ __typename?: 'SelectYourSampleTier', id: string, maxSelectedProducts: number, thresholdAmountSpent: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string }, products: Array<{ __typename?: 'ProductVariant', sku: any, title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null }> }>, selectedProducts: Array<{ __typename?: 'ProductVariant', sku: any }> }> }>, availablePaymentOptions: Array<{ __typename?: 'AvailablePaymentOption', option: string, subOption?: string | null }> } | null };
+
+export type CheckQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CheckQuery = { __typename?: 'Query', check?: string | null };
+
+export type PageClientQueryVariables = Exact<{
+  handle: Scalars['PagePath'];
+  offset?: InputMaybe<Scalars['Int']>;
+  limit?: InputMaybe<Scalars['Int']>;
+  sort: ProductSort;
+  facets?: Array<FacetInput> | FacetInput;
+}>;
+
+
+export type PageClientQuery = { __typename?: 'Query', page?: { __typename?: 'Page', title: any, metaDescription?: string | null, metaSearchKeywords: Array<string>, breadcrumbs: Array<{ __typename?: 'Breadcrumb', displayName: any, pagePath: any }>, widgets?: Array<{ __typename: 'AccordionWidget' } | { __typename: 'AccordionWidgetContainer' } | { __typename: 'BMICalculator' } | { __typename: 'BMICalculatorV2' } | { __typename: 'BrandsPageWidget' } | { __typename: 'BuildYourOwnBundleProductList' } | { __typename: 'CriteoSponsoredBannerAds' } | { __typename: 'DeliveryInfoWidget' } | { __typename: 'DeliveryInformationWidget' } | { __typename: 'DynamicReferralWidget' } | { __typename: 'Easiware' } | { __typename: 'EditorialWidget' } | { __typename: 'EmailReEngagementModal' } | { __typename: 'FastTrackBanner' } | { __typename: 'FoundationFinderLandingPageWidget' } | { __typename: 'GlobalAboutUsVideo' } | { __typename: 'GlobalAccreditationIcon' } | { __typename: 'GlobalAccreditationIconCollection' } | { __typename: 'GlobalBrandLogos' } | { __typename: 'GlobalBuyingRightNow' } | { __typename: 'GlobalBuyingRightNowManualProductURL' } | { __typename: 'GlobalCardScrollerCard' } | { __typename: 'GlobalCardScrollerSet' } | { __typename: 'GlobalDispatchAndDateCountdownWidget' } | { __typename: 'GlobalEditorialWithFeature' } | { __typename: 'GlobalFooterAccreditationIcons' } | { __typename: 'GlobalFooterContactUs' } | { __typename: 'GlobalFourBestSellers' } | { __typename: 'GlobalFourButtonLink' } | { __typename: 'GlobalFourItemEditorial' } | { __typename: 'GlobalGeneralImageBanner' } | { __typename: 'GlobalHelpCentreAccordion' } | { __typename: 'GlobalHelpCentreAccordion2' } | { __typename: 'GlobalHelpCentreAccordionCollection' } | { __typename: 'GlobalHelpCentreCollection' } | { __typename: 'GlobalHeroCTABanner' } | { __typename: 'GlobalImageCard' } | { __typename: 'GlobalImageCardSet' } | { __typename: 'GlobalMultiButton' } | { __typename: 'GlobalPrimaryBanner' } | { __typename: 'GlobalPrimaryBannerWithList' } | { __typename: 'GlobalPrimaryBannerWithTextOverlay' } | { __typename: 'GlobalProductCardScroller' } | { __typename: 'GlobalScalableLogos' } | { __typename: 'GlobalSectionPeek' } | { __typename: 'GlobalSetAndromeda' } | { __typename: 'GlobalSimpleTextCTAWidget' } | { __typename: 'GlobalSixItemCategories' } | { __typename: 'GlobalSocialIcon' } | { __typename: 'GlobalSocialIconCollection' } | { __typename: 'GlobalSocialIconCollectionv2' } | { __typename: 'GlobalSocialIconv2' } | { __typename: 'GlobalStripBanner' } | { __typename: 'GlobalSubscriptionOptions' } | { __typename: 'GlobalTabbedWidgetSet' } | { __typename: 'GlobalThreeItemEditorial' } | { __typename: 'GlobalThreeItemEditorialSubtitleBG' } | { __typename: 'GlobalTransformationSlider' } | { __typename: 'GlobalTrendingHashtagBlock' } | { __typename: 'GlobalTrendingHashtagCollection' } | { __typename: 'GlobalTwoBestSellers' } | { __typename: 'GlobalTwoItemEditorial' } | { __typename: 'GlobalTwoItemImageTextBlock' } | { __typename: 'GlobalTwoItemImageTextCTA' } | { __typename: 'GlobalTwoItemImageTextCTA3070' } | { __typename: 'GlobalUGCCarousel' } | { __typename: 'GlobalVideoGallery' } | { __typename: 'GlobalVideoHeroBannerWidget' } | { __typename: 'GlobalVideoTextImageCTA' } | { __typename: 'GlobalWaitListSignUpFormResponses' } | { __typename: 'GlobalWaitListSignUpWidget' } | { __typename: 'GlobalWidgetSirius' } | { __typename: 'GlobalWidgetVega' } | { __typename: 'GlobalYoutubeGalleryItem' } | { __typename: 'GlobalYoutubeGallerySet' } | { __typename: 'LoyaltyHubBirthdayGift' } | { __typename: 'LoyaltyHubTier' } | { __typename: 'LoyaltyRewardTier' } | { __typename: 'LoyaltyRewardTiers' } | { __typename: 'MailingList' } | { __typename: 'MultipleCTABanner' } | { __typename: 'ProductListWidget', id: string, title?: string | null, descriptionHtml?: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> } | null, productList?: { __typename?: 'ProductList', total: number, hasMore: boolean, facets: Array<{ __typename: 'RangedFacet', facetName: string, facetHeader: any, options: Array<{ __typename?: 'RangedFacetOption', displayName: any, from?: number | null, to?: number | null, matchedProductCount: number }> } | { __typename: 'SimpleFacet', facetName: string, facetHeader: any, options: Array<{ __typename?: 'SimpleFacetOption', optionName: string, displayName: any, matchedProductCount: number }> } | { __typename: 'SliderFacet', facetName: string, facetHeader: any, minValue: number, maxValue: number }>, products: Array<{ __typename?: 'Product', sku: any, url: any, title: string, cheapestVariantPrice?: { __typename?: 'ProductPrice', price: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string, scalarValue: any }, rrp: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string, scalarValue: any } } | null, content: Array<{ __typename?: 'ProductContentItem', key: string, value: { __typename: 'ProductContentIntListValue' } | { __typename: 'ProductContentIntValue' } | { __typename: 'ProductContentRichContentListValue' } | { __typename: 'ProductContentRichContentValue' } | { __typename: 'ProductContentStringListValue', stringListValue: Array<string> } | { __typename: 'ProductContentStringValue' } }>, options: Array<{ __typename?: 'VariantOption', key: string, choices: Array<{ __typename?: 'OptionChoice', optionKey: string, key: string, colour?: any | null, title: string }> }>, images: Array<{ __typename?: 'ProductImage', largeProduct?: any | null, zoom?: any | null, original?: any | null }>, marketedSpecialOffer?: { __typename?: 'ProductMarketedSpecialOffer', title?: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> } | null, description?: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> } | null, landingPageLink?: { __typename?: 'Hyperlink', text: any, url: any } | null } | null }> } | null } | { __typename: 'ResponsiveBuildYourOwnBundle' } | { __typename: 'ResponsiveBuildYourOwnBundleProducts' } | { __typename: 'ResponsiveComparisonTable' } | { __typename: 'ResponsiveComparisonTableContainer' } | { __typename: 'ResponsiveProductBlockCarousel' } | { __typename: 'ResponsiveProductTabs' } | { __typename: 'ResponsiveSetSalon' } | { __typename: 'ResponsiveSetSalonWithSlides' } | { __typename: 'ResponsiveSliderSet' } | { __typename: 'ResponsiveSuccessStoriesWidgetContainer' } | { __typename: 'ResponsiveSuccessStoryWidget' } | { __typename: 'ResponsiveTwoItemComparisonContainer' } | { __typename: 'ResponsiveTwoItemComparisonRow' } | { __typename: 'ResponsiveUSPBar' } | { __typename: 'SeoProductCategory' } | { __typename: 'SeoProductCategorySet' } | { __typename: 'ShopTheLookHotSpot' } | { __typename: 'TopBrandsWidget' } | { __typename: 'TopProductCategory' } | { __typename: 'TopProductCategorySet' } | { __typename: 'TrustPilotCarouselWidget' } | { __typename: 'TrustPilotWidget' } | { __typename: 'VoucherCodesWidget' } | { __typename: 'asymmetricGrid' } | { __typename: 'buildyourownbundle' } | { __typename: 'categoryItemCard' } | { __typename: 'coverageCalculator' } | { __typename: 'eightLinkButtonWidget' } | { __typename: 'imageSelectCard' } | { __typename: 'imageSelectSlider' } | { __typename: 'improvedSearchBestSellers' } | { __typename: 'kitBuilder' } | { __typename: 'loyaltyRewardsList' } | { __typename: 'loyaltyWelcomeMessage' } | { __typename: 'multiCategoryCardSet' } | { __typename: 'parcelLabWidget' } | { __typename: 'promoproductslider' } | { __typename: 'provenanceBrandHeader' } | { __typename: 'revieveWidget' } | { __typename: 'shadeFinder' } | { __typename: 'shopTheLook' } | { __typename: 'simpleCTA' } | { __typename: 'simpleTextWidgetSet' } | { __typename: 'simpleTitleWidget' } | { __typename: 'simpletextwidget' } | { __typename: 'simpletextwidgetwithh1' } | { __typename: 'sponsoredProducts' } | { __typename: 'sponsoredProductsNew' } | { __typename: 'storyStreamWidget' } | { __typename: 'subscribeAndSaveInformationModal' } | { __typename: 'swatchSelectSlider' } | { __typename: 'swatchSelectSliderSet' } | { __typename: 'trustReinforcementContainer' } | { __typename: 'trustReinforcementSection' } | { __typename: 'videoEditorial' }> | null } | null };
+
+export type PageServerQueryVariables = Exact<{
+  handle: Scalars['PagePath'];
+  offset?: InputMaybe<Scalars['Int']>;
+  limit?: InputMaybe<Scalars['Int']>;
+  sort: ProductSort;
+}>;
+
+
+export type PageServerQuery = { __typename?: 'Query', page?: { __typename?: 'Page', title: any, metaDescription?: string | null, metaSearchKeywords: Array<string>, breadcrumbs: Array<{ __typename?: 'Breadcrumb', displayName: any, pagePath: any }>, widgets?: Array<{ __typename: 'AccordionWidget' } | { __typename: 'AccordionWidgetContainer', id: string, heading?: string | null, title?: string | null, titlePosition?: string | null, banners?: Array<{ __typename?: 'AccordionWidget', title?: string | null, content?: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', content: any }> } | null } | { __typename?: 'AccordionWidgetContainer' } | { __typename?: 'BMICalculator' } | { __typename?: 'BMICalculatorV2' } | { __typename?: 'BrandsPageWidget' } | { __typename?: 'BuildYourOwnBundleProductList' } | { __typename?: 'CriteoSponsoredBannerAds' } | { __typename?: 'DeliveryInfoWidget' } | { __typename?: 'DeliveryInformationWidget' } | { __typename?: 'DynamicReferralWidget' } | { __typename?: 'Easiware' } | { __typename?: 'EditorialWidget' } | { __typename?: 'EmailReEngagementModal' } | { __typename?: 'FastTrackBanner' } | { __typename?: 'FoundationFinderLandingPageWidget' } | { __typename?: 'GlobalAboutUsVideo' } | { __typename?: 'GlobalAccreditationIcon' } | { __typename?: 'GlobalAccreditationIconCollection' } | { __typename?: 'GlobalBrandLogos' } | { __typename?: 'GlobalBuyingRightNow' } | { __typename?: 'GlobalBuyingRightNowManualProductURL' } | { __typename?: 'GlobalCardScrollerCard' } | { __typename?: 'GlobalCardScrollerSet' } | { __typename?: 'GlobalDispatchAndDateCountdownWidget' } | { __typename?: 'GlobalEditorialWithFeature' } | { __typename?: 'GlobalFooterAccreditationIcons' } | { __typename?: 'GlobalFooterContactUs' } | { __typename?: 'GlobalFourBestSellers' } | { __typename?: 'GlobalFourButtonLink' } | { __typename?: 'GlobalFourItemEditorial' } | { __typename?: 'GlobalGeneralImageBanner' } | { __typename?: 'GlobalHelpCentreAccordion' } | { __typename?: 'GlobalHelpCentreAccordion2' } | { __typename?: 'GlobalHelpCentreAccordionCollection' } | { __typename?: 'GlobalHelpCentreCollection' } | { __typename?: 'GlobalHeroCTABanner' } | { __typename?: 'GlobalImageCard' } | { __typename?: 'GlobalImageCardSet' } | { __typename?: 'GlobalMultiButton' } | { __typename?: 'GlobalPrimaryBanner' } | { __typename?: 'GlobalPrimaryBannerWithList' } | { __typename?: 'GlobalPrimaryBannerWithTextOverlay' } | { __typename?: 'GlobalProductCardScroller' } | { __typename?: 'GlobalScalableLogos' } | { __typename?: 'GlobalSectionPeek' } | { __typename?: 'GlobalSetAndromeda' } | { __typename?: 'GlobalSimpleTextCTAWidget' } | { __typename?: 'GlobalSixItemCategories' } | { __typename?: 'GlobalSocialIcon' } | { __typename?: 'GlobalSocialIconCollection' } | { __typename?: 'GlobalSocialIconCollectionv2' } | { __typename?: 'GlobalSocialIconv2' } | { __typename?: 'GlobalStripBanner' } | { __typename?: 'GlobalSubscriptionOptions' } | { __typename?: 'GlobalTabbedWidgetSet' } | { __typename?: 'GlobalThreeItemEditorial' } | { __typename?: 'GlobalThreeItemEditorialSubtitleBG' } | { __typename?: 'GlobalTransformationSlider' } | { __typename?: 'GlobalTrendingHashtagBlock' } | { __typename?: 'GlobalTrendingHashtagCollection' } | { __typename?: 'GlobalTwoBestSellers' } | { __typename?: 'GlobalTwoItemEditorial' } | { __typename?: 'GlobalTwoItemImageTextBlock' } | { __typename?: 'GlobalTwoItemImageTextCTA' } | { __typename?: 'GlobalTwoItemImageTextCTA3070' } | { __typename?: 'GlobalUGCCarousel' } | { __typename?: 'GlobalVideoGallery' } | { __typename?: 'GlobalVideoHeroBannerWidget' } | { __typename?: 'GlobalVideoTextImageCTA' } | { __typename?: 'GlobalWaitListSignUpFormResponses' } | { __typename?: 'GlobalWaitListSignUpWidget' } | { __typename?: 'GlobalWidgetSirius' } | { __typename?: 'GlobalWidgetVega' } | { __typename?: 'GlobalYoutubeGalleryItem' } | { __typename?: 'GlobalYoutubeGallerySet' } | { __typename?: 'LoyaltyHubBirthdayGift' } | { __typename?: 'LoyaltyHubTier' } | { __typename?: 'LoyaltyRewardTier' } | { __typename?: 'LoyaltyRewardTiers' } | { __typename?: 'MailingList' } | { __typename?: 'MultipleCTABanner' } | { __typename?: 'ProductListWidget' } | { __typename?: 'ResponsiveBuildYourOwnBundle' } | { __typename?: 'ResponsiveBuildYourOwnBundleProducts' } | { __typename?: 'ResponsiveComparisonTable' } | { __typename?: 'ResponsiveComparisonTableContainer' } | { __typename?: 'ResponsiveProductBlockCarousel' } | { __typename?: 'ResponsiveProductTabs' } | { __typename?: 'ResponsiveSetSalon' } | { __typename?: 'ResponsiveSetSalonWithSlides' } | { __typename?: 'ResponsiveSliderSet' } | { __typename?: 'ResponsiveSuccessStoriesWidgetContainer' } | { __typename?: 'ResponsiveSuccessStoryWidget' } | { __typename?: 'ResponsiveTwoItemComparisonContainer' } | { __typename?: 'ResponsiveTwoItemComparisonRow' } | { __typename?: 'ResponsiveUSPBar' } | { __typename?: 'SeoProductCategory' } | { __typename?: 'SeoProductCategorySet' } | { __typename?: 'ShopTheLookHotSpot' } | { __typename?: 'TopBrandsWidget' } | { __typename?: 'TopProductCategory' } | { __typename?: 'TopProductCategorySet' } | { __typename?: 'TrustPilotCarouselWidget' } | { __typename?: 'TrustPilotWidget' } | { __typename?: 'VoucherCodesWidget' } | { __typename?: 'asymmetricGrid' } | { __typename?: 'buildyourownbundle' } | { __typename?: 'categoryItemCard' } | { __typename?: 'coverageCalculator' } | { __typename?: 'eightLinkButtonWidget' } | { __typename?: 'imageSelectCard' } | { __typename?: 'imageSelectSlider' } | { __typename?: 'improvedSearchBestSellers' } | { __typename?: 'kitBuilder' } | { __typename?: 'loyaltyRewardsList' } | { __typename?: 'loyaltyWelcomeMessage' } | { __typename?: 'multiCategoryCardSet' } | { __typename?: 'parcelLabWidget' } | { __typename?: 'promoproductslider' } | { __typename?: 'provenanceBrandHeader' } | { __typename?: 'revieveWidget' } | { __typename?: 'shadeFinder' } | { __typename?: 'shopTheLook' } | { __typename?: 'simpleCTA' } | { __typename?: 'simpleTextWidgetSet' } | { __typename?: 'simpleTitleWidget' } | { __typename?: 'simpletextwidget' } | { __typename?: 'simpletextwidgetwithh1' } | { __typename?: 'sponsoredProducts' } | { __typename?: 'sponsoredProductsNew' } | { __typename?: 'storyStreamWidget' } | { __typename?: 'subscribeAndSaveInformationModal' } | { __typename?: 'swatchSelectSlider' } | { __typename?: 'swatchSelectSliderSet' } | { __typename?: 'trustReinforcementContainer' } | { __typename?: 'trustReinforcementSection' } | { __typename?: 'videoEditorial' } | null> | null } | { __typename: 'BMICalculator' } | { __typename: 'BMICalculatorV2' } | { __typename: 'BrandsPageWidget', id: string } | { __typename: 'BuildYourOwnBundleProductList' } | { __typename: 'CriteoSponsoredBannerAds' } | { __typename: 'DeliveryInfoWidget' } | { __typename: 'DeliveryInformationWidget' } | { __typename: 'DynamicReferralWidget' } | { __typename: 'Easiware' } | { __typename: 'EditorialWidget', content?: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', content: any }> } | null } | { __typename: 'EmailReEngagementModal' } | { __typename: 'FastTrackBanner' } | { __typename: 'FoundationFinderLandingPageWidget' } | { __typename: 'GlobalAboutUsVideo' } | { __typename: 'GlobalAccreditationIcon' } | { __typename: 'GlobalAccreditationIconCollection', id: string, banners?: Array<{ __typename?: 'AccordionWidget' } | { __typename?: 'AccordionWidgetContainer' } | { __typename?: 'BMICalculator' } | { __typename?: 'BMICalculatorV2' } | { __typename?: 'BrandsPageWidget' } | { __typename?: 'BuildYourOwnBundleProductList' } | { __typename?: 'CriteoSponsoredBannerAds' } | { __typename?: 'DeliveryInfoWidget' } | { __typename?: 'DeliveryInformationWidget' } | { __typename?: 'DynamicReferralWidget' } | { __typename?: 'Easiware' } | { __typename?: 'EditorialWidget' } | { __typename?: 'EmailReEngagementModal' } | { __typename?: 'FastTrackBanner' } | { __typename?: 'FoundationFinderLandingPageWidget' } | { __typename?: 'GlobalAboutUsVideo' } | { __typename?: 'GlobalAccreditationIcon', id: string, imageAltText?: string | null, altText?: string | null, imagePath?: any | null, url?: string | null } | { __typename?: 'GlobalAccreditationIconCollection' } | { __typename?: 'GlobalBrandLogos' } | { __typename?: 'GlobalBuyingRightNow' } | { __typename?: 'GlobalBuyingRightNowManualProductURL' } | { __typename?: 'GlobalCardScrollerCard' } | { __typename?: 'GlobalCardScrollerSet' } | { __typename?: 'GlobalDispatchAndDateCountdownWidget' } | { __typename?: 'GlobalEditorialWithFeature' } | { __typename?: 'GlobalFooterAccreditationIcons' } | { __typename?: 'GlobalFooterContactUs' } | { __typename?: 'GlobalFourBestSellers' } | { __typename?: 'GlobalFourButtonLink' } | { __typename?: 'GlobalFourItemEditorial' } | { __typename?: 'GlobalGeneralImageBanner' } | { __typename?: 'GlobalHelpCentreAccordion' } | { __typename?: 'GlobalHelpCentreAccordion2' } | { __typename?: 'GlobalHelpCentreAccordionCollection' } | { __typename?: 'GlobalHelpCentreCollection' } | { __typename?: 'GlobalHeroCTABanner' } | { __typename?: 'GlobalImageCard' } | { __typename?: 'GlobalImageCardSet' } | { __typename?: 'GlobalMultiButton' } | { __typename?: 'GlobalPrimaryBanner' } | { __typename?: 'GlobalPrimaryBannerWithList' } | { __typename?: 'GlobalPrimaryBannerWithTextOverlay' } | { __typename?: 'GlobalProductCardScroller' } | { __typename?: 'GlobalScalableLogos' } | { __typename?: 'GlobalSectionPeek' } | { __typename?: 'GlobalSetAndromeda' } | { __typename?: 'GlobalSimpleTextCTAWidget' } | { __typename?: 'GlobalSixItemCategories' } | { __typename?: 'GlobalSocialIcon' } | { __typename?: 'GlobalSocialIconCollection' } | { __typename?: 'GlobalSocialIconCollectionv2' } | { __typename?: 'GlobalSocialIconv2' } | { __typename?: 'GlobalStripBanner' } | { __typename?: 'GlobalSubscriptionOptions' } | { __typename?: 'GlobalTabbedWidgetSet' } | { __typename?: 'GlobalThreeItemEditorial' } | { __typename?: 'GlobalThreeItemEditorialSubtitleBG' } | { __typename?: 'GlobalTransformationSlider' } | { __typename?: 'GlobalTrendingHashtagBlock' } | { __typename?: 'GlobalTrendingHashtagCollection' } | { __typename?: 'GlobalTwoBestSellers' } | { __typename?: 'GlobalTwoItemEditorial' } | { __typename?: 'GlobalTwoItemImageTextBlock' } | { __typename?: 'GlobalTwoItemImageTextCTA' } | { __typename?: 'GlobalTwoItemImageTextCTA3070' } | { __typename?: 'GlobalUGCCarousel' } | { __typename?: 'GlobalVideoGallery' } | { __typename?: 'GlobalVideoHeroBannerWidget' } | { __typename?: 'GlobalVideoTextImageCTA' } | { __typename?: 'GlobalWaitListSignUpFormResponses' } | { __typename?: 'GlobalWaitListSignUpWidget' } | { __typename?: 'GlobalWidgetSirius' } | { __typename?: 'GlobalWidgetVega' } | { __typename?: 'GlobalYoutubeGalleryItem' } | { __typename?: 'GlobalYoutubeGallerySet' } | { __typename?: 'LoyaltyHubBirthdayGift' } | { __typename?: 'LoyaltyHubTier' } | { __typename?: 'LoyaltyRewardTier' } | { __typename?: 'LoyaltyRewardTiers' } | { __typename?: 'MailingList' } | { __typename?: 'MultipleCTABanner' } | { __typename?: 'ProductListWidget' } | { __typename?: 'ResponsiveBuildYourOwnBundle' } | { __typename?: 'ResponsiveBuildYourOwnBundleProducts' } | { __typename?: 'ResponsiveComparisonTable' } | { __typename?: 'ResponsiveComparisonTableContainer' } | { __typename?: 'ResponsiveProductBlockCarousel' } | { __typename?: 'ResponsiveProductTabs' } | { __typename?: 'ResponsiveSetSalon' } | { __typename?: 'ResponsiveSetSalonWithSlides' } | { __typename?: 'ResponsiveSliderSet' } | { __typename?: 'ResponsiveSuccessStoriesWidgetContainer' } | { __typename?: 'ResponsiveSuccessStoryWidget' } | { __typename?: 'ResponsiveTwoItemComparisonContainer' } | { __typename?: 'ResponsiveTwoItemComparisonRow' } | { __typename?: 'ResponsiveUSPBar' } | { __typename?: 'SeoProductCategory' } | { __typename?: 'SeoProductCategorySet' } | { __typename?: 'ShopTheLookHotSpot' } | { __typename?: 'TopBrandsWidget' } | { __typename?: 'TopProductCategory' } | { __typename?: 'TopProductCategorySet' } | { __typename?: 'TrustPilotCarouselWidget' } | { __typename?: 'TrustPilotWidget' } | { __typename?: 'VoucherCodesWidget' } | { __typename?: 'asymmetricGrid' } | { __typename?: 'buildyourownbundle' } | { __typename?: 'categoryItemCard' } | { __typename?: 'coverageCalculator' } | { __typename?: 'eightLinkButtonWidget' } | { __typename?: 'imageSelectCard' } | { __typename?: 'imageSelectSlider' } | { __typename?: 'improvedSearchBestSellers' } | { __typename?: 'kitBuilder' } | { __typename?: 'loyaltyRewardsList' } | { __typename?: 'loyaltyWelcomeMessage' } | { __typename?: 'multiCategoryCardSet' } | { __typename?: 'parcelLabWidget' } | { __typename?: 'promoproductslider' } | { __typename?: 'provenanceBrandHeader' } | { __typename?: 'revieveWidget' } | { __typename?: 'shadeFinder' } | { __typename?: 'shopTheLook' } | { __typename?: 'simpleCTA' } | { __typename?: 'simpleTextWidgetSet' } | { __typename?: 'simpleTitleWidget' } | { __typename?: 'simpletextwidget' } | { __typename?: 'simpletextwidgetwithh1' } | { __typename?: 'sponsoredProducts' } | { __typename?: 'sponsoredProductsNew' } | { __typename?: 'storyStreamWidget' } | { __typename?: 'subscribeAndSaveInformationModal' } | { __typename?: 'swatchSelectSlider' } | { __typename?: 'swatchSelectSliderSet' } | { __typename?: 'trustReinforcementContainer' } | { __typename?: 'trustReinforcementSection' } | { __typename?: 'videoEditorial' } | null> | null } | { __typename: 'GlobalBrandLogos', id: string, title?: string | null, titleAlign?: string | null, itemOneURL?: string | null, itemOneImage?: any | null, itemOneImageAlt?: string | null, itemTwoURL?: string | null, itemTwoImage?: any | null, itemTwoImageAlt?: string | null, itemThreeURL?: string | null, itemThreeImage?: any | null, itemThreeImageAlt?: string | null, itemFourURL?: string | null, itemFourImage?: any | null, itemFourImageAlt?: string | null, itemFiveURL?: string | null, itemFiveImage?: any | null, itemFiveImageAlt?: string | null, itemSixURL?: string | null, itemSixImage?: any | null, itemSixImageAlt?: string | null } | { __typename: 'GlobalBuyingRightNow' } | { __typename: 'GlobalBuyingRightNowManualProductURL' } | { __typename: 'GlobalCardScrollerCard' } | { __typename: 'GlobalCardScrollerSet' } | { __typename: 'GlobalDispatchAndDateCountdownWidget' } | { __typename: 'GlobalEditorialWithFeature' } | { __typename: 'GlobalFooterAccreditationIcons' } | { __typename: 'GlobalFooterContactUs' } | { __typename: 'GlobalFourBestSellers', Title?: string | null, ProductOneButtonText?: string | null, ProductTwoButtonText?: string | null, ProductThreeButtonText?: string | null, ProductFourButtonText?: string | null, ProductOne?: { __typename?: 'ProductVariant', title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null, zoom?: any | null, original?: any | null }>, price?: { __typename?: 'ProductPrice', rrp: { __typename?: 'MoneyValue', displayValue: string, currency: Currency, amount: string, scalarValue: any }, price: { __typename?: 'MoneyValue', displayValue: string, currency: Currency, amount: string, scalarValue: any } } | null } | null, ProductTwo?: { __typename?: 'ProductVariant', title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null, zoom?: any | null, original?: any | null }>, price?: { __typename?: 'ProductPrice', rrp: { __typename?: 'MoneyValue', displayValue: string, currency: Currency, amount: string, scalarValue: any }, price: { __typename?: 'MoneyValue', displayValue: string, currency: Currency, amount: string, scalarValue: any } } | null } | null, ProductThree?: { __typename?: 'ProductVariant', title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null, zoom?: any | null, original?: any | null }>, price?: { __typename?: 'ProductPrice', rrp: { __typename?: 'MoneyValue', displayValue: string, currency: Currency, amount: string, scalarValue: any }, price: { __typename?: 'MoneyValue', displayValue: string, currency: Currency, amount: string, scalarValue: any } } | null } | null, ProductFour?: { __typename?: 'ProductVariant', title: string, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null, zoom?: any | null, original?: any | null }>, price?: { __typename?: 'ProductPrice', rrp: { __typename?: 'MoneyValue', displayValue: string, currency: Currency, amount: string, scalarValue: any }, price: { __typename?: 'MoneyValue', displayValue: string, currency: Currency, amount: string, scalarValue: any } } | null } | null } | { __typename: 'GlobalFourButtonLink', buttonTextOne?: string | null, buttonTextThree?: string | null, buttonTextTwo?: string | null, buttonUrlTwo?: string | null, buttonUrlOne?: string | null, buttonUrlThree?: string | null, buttonTextFour?: string | null, buttonUrlFour?: string | null } | { __typename: 'GlobalFourItemEditorial', widgetTitle?: string | null, widgetSubtitle?: string | null, itemOneUrl?: string | null, itemOneDescription?: string | null, itemOneCTA?: string | null, itemOneTitle?: string | null, itemOneImage?: any | null, itemTwoUrl?: string | null, itemTwoDescription?: string | null, itemTwoCTA?: string | null, itemTwoTitle?: string | null, itemTwoImage?: any | null, itemThreeUrl?: string | null, itemThreeDescription?: string | null, itemThreeCTA?: string | null, itemThreeTitle?: string | null, itemThreeImage?: any | null, itemFourUrl?: string | null, itemFourDescription?: string | null, itemFourCTA?: string | null, itemFourTitle?: string | null, itemFourImage?: any | null, altItemOne?: string | null, altItemTwo?: string | null, altItemThree?: string | null, altItemFour?: string | null } | { __typename: 'GlobalGeneralImageBanner', id: string, smallImage?: any | null, mediumImage?: any | null, largeImage?: any | null, imageAltText?: string | null, linkUrl?: string | null } | { __typename: 'GlobalHelpCentreAccordion' } | { __typename: 'GlobalHelpCentreAccordion2' } | { __typename: 'GlobalHelpCentreAccordionCollection' } | { __typename: 'GlobalHelpCentreCollection' } | { __typename: 'GlobalHeroCTABanner' } | { __typename: 'GlobalImageCard' } | { __typename: 'GlobalImageCardSet', id: string, title?: string | null, banners?: Array<{ __typename: 'AccordionWidget', id: string } | { __typename: 'AccordionWidgetContainer', id: string } | { __typename: 'BMICalculator', id: string } | { __typename: 'BMICalculatorV2', id: string } | { __typename: 'BrandsPageWidget', id: string } | { __typename: 'BuildYourOwnBundleProductList', id: string } | { __typename: 'CriteoSponsoredBannerAds', id: string } | { __typename: 'DeliveryInfoWidget', id: string } | { __typename: 'DeliveryInformationWidget', id: string } | { __typename: 'DynamicReferralWidget', id: string } | { __typename: 'Easiware', id: string } | { __typename: 'EditorialWidget', id: string } | { __typename: 'EmailReEngagementModal', id: string } | { __typename: 'FastTrackBanner', id: string } | { __typename: 'FoundationFinderLandingPageWidget', id: string } | { __typename: 'GlobalAboutUsVideo', id: string } | { __typename: 'GlobalAccreditationIcon', id: string } | { __typename: 'GlobalAccreditationIconCollection', id: string } | { __typename: 'GlobalBrandLogos', id: string } | { __typename: 'GlobalBuyingRightNow', id: string } | { __typename: 'GlobalBuyingRightNowManualProductURL', id: string } | { __typename: 'GlobalCardScrollerCard', id: string } | { __typename: 'GlobalCardScrollerSet', id: string } | { __typename: 'GlobalDispatchAndDateCountdownWidget', id: string } | { __typename: 'GlobalEditorialWithFeature', id: string } | { __typename: 'GlobalFooterAccreditationIcons', id: string } | { __typename: 'GlobalFooterContactUs', id: string } | { __typename: 'GlobalFourBestSellers', id: string } | { __typename: 'GlobalFourButtonLink', id: string } | { __typename: 'GlobalFourItemEditorial', id: string } | { __typename: 'GlobalGeneralImageBanner', id: string } | { __typename: 'GlobalHelpCentreAccordion', id: string } | { __typename: 'GlobalHelpCentreAccordion2', id: string } | { __typename: 'GlobalHelpCentreAccordionCollection', id: string } | { __typename: 'GlobalHelpCentreCollection', id: string } | { __typename: 'GlobalHeroCTABanner', id: string } | { __typename: 'GlobalImageCard', image?: any | null, url?: string | null, title?: string | null, altText?: string | null, subtitle?: string | null, buttonText?: string | null, id: string } | { __typename: 'GlobalImageCardSet', id: string } | { __typename: 'GlobalMultiButton', id: string } | { __typename: 'GlobalPrimaryBanner', id: string } | { __typename: 'GlobalPrimaryBannerWithList', id: string } | { __typename: 'GlobalPrimaryBannerWithTextOverlay', id: string } | { __typename: 'GlobalProductCardScroller', id: string } | { __typename: 'GlobalScalableLogos', id: string } | { __typename: 'GlobalSectionPeek', id: string } | { __typename: 'GlobalSetAndromeda', id: string } | { __typename: 'GlobalSimpleTextCTAWidget', id: string } | { __typename: 'GlobalSixItemCategories', id: string } | { __typename: 'GlobalSocialIcon', id: string } | { __typename: 'GlobalSocialIconCollection', id: string } | { __typename: 'GlobalSocialIconCollectionv2', id: string } | { __typename: 'GlobalSocialIconv2', id: string } | { __typename: 'GlobalStripBanner', id: string } | { __typename: 'GlobalSubscriptionOptions', id: string } | { __typename: 'GlobalTabbedWidgetSet', id: string } | { __typename: 'GlobalThreeItemEditorial', id: string } | { __typename: 'GlobalThreeItemEditorialSubtitleBG', id: string } | { __typename: 'GlobalTransformationSlider', id: string } | { __typename: 'GlobalTrendingHashtagBlock', id: string } | { __typename: 'GlobalTrendingHashtagCollection', id: string } | { __typename: 'GlobalTwoBestSellers', id: string } | { __typename: 'GlobalTwoItemEditorial', id: string } | { __typename: 'GlobalTwoItemImageTextBlock', id: string } | { __typename: 'GlobalTwoItemImageTextCTA', id: string } | { __typename: 'GlobalTwoItemImageTextCTA3070', id: string } | { __typename: 'GlobalUGCCarousel', id: string } | { __typename: 'GlobalVideoGallery', id: string } | { __typename: 'GlobalVideoHeroBannerWidget', id: string } | { __typename: 'GlobalVideoTextImageCTA', id: string } | { __typename: 'GlobalWaitListSignUpFormResponses', id: string } | { __typename: 'GlobalWaitListSignUpWidget', id: string } | { __typename: 'GlobalWidgetSirius', id: string } | { __typename: 'GlobalWidgetVega', id: string } | { __typename: 'GlobalYoutubeGalleryItem', id: string } | { __typename: 'GlobalYoutubeGallerySet', id: string } | { __typename: 'LoyaltyHubBirthdayGift', id: string } | { __typename: 'LoyaltyHubTier', id: string } | { __typename: 'LoyaltyRewardTier', id: string } | { __typename: 'LoyaltyRewardTiers', id: string } | { __typename: 'MailingList', id: string } | { __typename: 'MultipleCTABanner', id: string } | { __typename: 'ProductListWidget', id: string } | { __typename: 'ResponsiveBuildYourOwnBundle', id: string } | { __typename: 'ResponsiveBuildYourOwnBundleProducts', id: string } | { __typename: 'ResponsiveComparisonTable', id: string } | { __typename: 'ResponsiveComparisonTableContainer', id: string } | { __typename: 'ResponsiveProductBlockCarousel', id: string } | { __typename: 'ResponsiveProductTabs', id: string } | { __typename: 'ResponsiveSetSalon', id: string } | { __typename: 'ResponsiveSetSalonWithSlides', id: string } | { __typename: 'ResponsiveSliderSet', id: string } | { __typename: 'ResponsiveSuccessStoriesWidgetContainer', id: string } | { __typename: 'ResponsiveSuccessStoryWidget', id: string } | { __typename: 'ResponsiveTwoItemComparisonContainer', id: string } | { __typename: 'ResponsiveTwoItemComparisonRow', id: string } | { __typename: 'ResponsiveUSPBar', id: string } | { __typename: 'SeoProductCategory', id: string } | { __typename: 'SeoProductCategorySet', id: string } | { __typename: 'ShopTheLookHotSpot', id: string } | { __typename: 'TopBrandsWidget', id: string } | { __typename: 'TopProductCategory', id: string } | { __typename: 'TopProductCategorySet', id: string } | { __typename: 'TrustPilotCarouselWidget', id: string } | { __typename: 'TrustPilotWidget', id: string } | { __typename: 'VoucherCodesWidget', id: string } | { __typename: 'asymmetricGrid', id: string } | { __typename: 'buildyourownbundle', id: string } | { __typename: 'categoryItemCard', id: string } | { __typename: 'coverageCalculator', id: string } | { __typename: 'eightLinkButtonWidget', id: string } | { __typename: 'imageSelectCard', id: string } | { __typename: 'imageSelectSlider', id: string } | { __typename: 'improvedSearchBestSellers', id: string } | { __typename: 'kitBuilder', id: string } | { __typename: 'loyaltyRewardsList', id: string } | { __typename: 'loyaltyWelcomeMessage', id: string } | { __typename: 'multiCategoryCardSet', id: string } | { __typename: 'parcelLabWidget', id: string } | { __typename: 'promoproductslider', id: string } | { __typename: 'provenanceBrandHeader', id: string } | { __typename: 'revieveWidget', id: string } | { __typename: 'shadeFinder', id: string } | { __typename: 'shopTheLook', id: string } | { __typename: 'simpleCTA', id: string } | { __typename: 'simpleTextWidgetSet', id: string } | { __typename: 'simpleTitleWidget', id: string } | { __typename: 'simpletextwidget', id: string } | { __typename: 'simpletextwidgetwithh1', id: string } | { __typename: 'sponsoredProducts', id: string } | { __typename: 'sponsoredProductsNew', id: string } | { __typename: 'storyStreamWidget', id: string } | { __typename: 'subscribeAndSaveInformationModal', id: string } | { __typename: 'swatchSelectSlider', id: string } | { __typename: 'swatchSelectSliderSet', id: string } | { __typename: 'trustReinforcementContainer', id: string } | { __typename: 'trustReinforcementSection', id: string } | { __typename: 'videoEditorial', id: string } | null> | null } | { __typename: 'GlobalMultiButton' } | { __typename: 'GlobalPrimaryBanner', id: string, altImageLarge?: string | null, imageSmall?: any | null, imageMedium?: any | null, imageLarge?: any | null, bannerURL?: string | null, headline?: string | null, subtitle?: string | null, ctaOne?: string | null, ctaOneURL?: string | null, ctaOneAriaLabel?: string | null, contentTheme?: string | null, contentAlign?: string | null, contentBoxPosition?: string | null } | { __typename: 'GlobalPrimaryBannerWithList' } | { __typename: 'GlobalPrimaryBannerWithTextOverlay' } | { __typename: 'GlobalProductCardScroller' } | { __typename: 'GlobalScalableLogos' } | { __typename: 'GlobalSectionPeek' } | { __typename: 'GlobalSetAndromeda' } | { __typename: 'GlobalSimpleTextCTAWidget', id: string, title?: string | null, textAlign?: string | null, itemOneURL?: string | null, itemOneCTAText?: string | null, body?: string | null } | { __typename: 'GlobalSixItemCategories', id: string, title?: string | null, itemOneCTA?: string | null, itemOneLink?: string | null, itemOneImage?: any | null, itemOneTitle?: string | null, itemTwoCTA?: string | null, itemTwoLink?: string | null, itemTwoImage?: any | null, itemTwoTitle?: string | null, itemThreeCTA?: string | null, itemThreeLink?: string | null, itemThreeImage?: any | null, itemThreeTitle?: string | null, itemFourCTA?: string | null, itemFourLink?: string | null, itemFourImage?: any | null, itemFourTitle?: string | null, itemFiveCTA?: string | null, itemFiveLink?: string | null, itemFiveImage?: any | null, itemFiveTitle?: string | null, itemSixCTA?: string | null, itemSixLink?: string | null, itemSixImage?: any | null, itemSixTitle?: string | null } | { __typename: 'GlobalSocialIcon' } | { __typename: 'GlobalSocialIconCollection' } | { __typename: 'GlobalSocialIconCollectionv2' } | { __typename: 'GlobalSocialIconv2' } | { __typename: 'GlobalStripBanner', id: string, stripBannerURL?: string | null, stripBannerText?: string | null } | { __typename: 'GlobalSubscriptionOptions' } | { __typename: 'GlobalTabbedWidgetSet' } | { __typename: 'GlobalThreeItemEditorial', id: string, widgetTitle?: string | null, widgetSubtitle?: string | null, itemOneUrl?: string | null, itemOneDescription?: string | null, itemOneCTAText?: string | null, itemOneTitle?: string | null, itemOneImage?: any | null, itemTwoUrl?: string | null, itemTwoDescription?: string | null, itemTwoCTAText?: string | null, itemTwoTitle?: string | null, itemTwoImage?: any | null, itemThreeUrl?: string | null, itemThreeDescription?: string | null, itemThreeCTAText?: string | null, itemThreeTitle?: string | null, itemThreeImage?: any | null, altItemOne?: string | null, altItemTwo?: string | null, altItemThree?: string | null } | { __typename: 'GlobalThreeItemEditorialSubtitleBG', id: string, itemOneUrl?: string | null, itemOneImage?: any | null, itemOneTitle?: string | null, itemOneAltText?: string | null, itemOneCTAText?: string | null, itemOneSubtitle?: string | null, itemOneDescription?: string | null, itemOneSubtitleBGColour?: string | null, itemTwoUrl?: string | null, itemTwoImage?: any | null, itemTwoTitle?: string | null, itemTwoAltText?: string | null, itemTwoCTAText?: string | null, itemTwoSubtitle?: string | null, itemTwoDescription?: string | null, itemTwoSubtitleBGColour?: string | null, itemThreeUrl?: string | null, itemThreeImage?: any | null, itemThreeTitle?: string | null, itemThreeCTAText?: string | null, itemThreeAltText?: string | null, itemThreeSubtitle?: string | null, itemThreeDescription?: string | null, itemThreeSubtitleBGColour?: string | null } | { __typename: 'GlobalTransformationSlider' } | { __typename: 'GlobalTrendingHashtagBlock' } | { __typename: 'GlobalTrendingHashtagCollection' } | { __typename: 'GlobalTwoBestSellers' } | { __typename: 'GlobalTwoItemEditorial', id: string, widgetTitle?: string | null, widgetSubtitle?: string | null, itemOneURL?: string | null, itemOneDescription?: string | null, itemOneCTAText?: string | null, itemOneTitle?: string | null, itemOneImage?: any | null, itemTwoURL?: string | null, itemTwoDescription?: string | null, itemTwoCTAText?: string | null, itemTwoTitle?: string | null, itemTwoImage?: any | null, altItemOne?: string | null, altItemTwo?: string | null } | { __typename: 'GlobalTwoItemImageTextBlock', itemImage?: any | null, itemTitle?: string | null, itemAlign?: string | null, itemAlt?: string | null, itemButton?: string | null, itemURL?: string | null, itemText?: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', content: any }> } | null } | { __typename: 'GlobalTwoItemImageTextCTA' } | { __typename: 'GlobalTwoItemImageTextCTA3070' } | { __typename: 'GlobalUGCCarousel' } | { __typename: 'GlobalVideoGallery' } | { __typename: 'GlobalVideoHeroBannerWidget' } | { __typename: 'GlobalVideoTextImageCTA' } | { __typename: 'GlobalWaitListSignUpFormResponses' } | { __typename: 'GlobalWaitListSignUpWidget' } | { __typename: 'GlobalWidgetSirius' } | { __typename: 'GlobalWidgetVega' } | { __typename: 'GlobalYoutubeGalleryItem' } | { __typename: 'GlobalYoutubeGallerySet' } | { __typename: 'LoyaltyHubBirthdayGift' } | { __typename: 'LoyaltyHubTier' } | { __typename: 'LoyaltyRewardTier' } | { __typename: 'LoyaltyRewardTiers' } | { __typename: 'MailingList' } | { __typename: 'MultipleCTABanner' } | { __typename: 'ProductListWidget', id: string, title?: string | null, descriptionHtml?: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> } | null, productList?: { __typename?: 'ProductList', total: number, facets: Array<{ __typename: 'RangedFacet', facetName: string, facetHeader: any } | { __typename: 'SimpleFacet', facetName: string, facetHeader: any } | { __typename: 'SliderFacet', facetName: string, facetHeader: any, minValue: number, maxValue: number }> } | null } | { __typename: 'ResponsiveBuildYourOwnBundle' } | { __typename: 'ResponsiveBuildYourOwnBundleProducts' } | { __typename: 'ResponsiveComparisonTable' } | { __typename: 'ResponsiveComparisonTableContainer' } | { __typename: 'ResponsiveProductBlockCarousel' } | { __typename: 'ResponsiveProductTabs' } | { __typename: 'ResponsiveSetSalon' } | { __typename: 'ResponsiveSetSalonWithSlides' } | { __typename: 'ResponsiveSliderSet', id: string, isBulletNavigationHidden?: string | null, isAutoSlideOn?: string | null, slideDuration?: number | null, banners?: Array<{ __typename: 'AccordionWidget' } | { __typename: 'AccordionWidgetContainer' } | { __typename: 'BMICalculator' } | { __typename: 'BMICalculatorV2' } | { __typename: 'BrandsPageWidget' } | { __typename: 'BuildYourOwnBundleProductList' } | { __typename: 'CriteoSponsoredBannerAds' } | { __typename: 'DeliveryInfoWidget' } | { __typename: 'DeliveryInformationWidget' } | { __typename: 'DynamicReferralWidget' } | { __typename: 'Easiware' } | { __typename: 'EditorialWidget' } | { __typename: 'EmailReEngagementModal' } | { __typename: 'FastTrackBanner' } | { __typename: 'FoundationFinderLandingPageWidget' } | { __typename: 'GlobalAboutUsVideo' } | { __typename: 'GlobalAccreditationIcon' } | { __typename: 'GlobalAccreditationIconCollection' } | { __typename: 'GlobalBrandLogos' } | { __typename: 'GlobalBuyingRightNow' } | { __typename: 'GlobalBuyingRightNowManualProductURL' } | { __typename: 'GlobalCardScrollerCard' } | { __typename: 'GlobalCardScrollerSet' } | { __typename: 'GlobalDispatchAndDateCountdownWidget' } | { __typename: 'GlobalEditorialWithFeature' } | { __typename: 'GlobalFooterAccreditationIcons' } | { __typename: 'GlobalFooterContactUs' } | { __typename: 'GlobalFourBestSellers' } | { __typename: 'GlobalFourButtonLink' } | { __typename: 'GlobalFourItemEditorial' } | { __typename: 'GlobalGeneralImageBanner' } | { __typename: 'GlobalHelpCentreAccordion' } | { __typename: 'GlobalHelpCentreAccordion2' } | { __typename: 'GlobalHelpCentreAccordionCollection' } | { __typename: 'GlobalHelpCentreCollection' } | { __typename: 'GlobalHeroCTABanner' } | { __typename: 'GlobalImageCard' } | { __typename: 'GlobalImageCardSet' } | { __typename: 'GlobalMultiButton' } | { __typename: 'GlobalPrimaryBanner', headline?: string | null, id: string, ctaTwoURL?: string | null, ctaTwoAriaLabel?: string | null, ctaTwo?: string | null, ctaOne?: string | null, ctaOneURL?: string | null, ctaOneAriaLabel?: string | null, imageSmall?: any | null, imageMedium?: any | null, imageLarge?: any | null, contentTheme?: string | null, contentAlign?: string | null, bannerURL?: string | null, altLogoPng?: string | null, useH1?: string | null, subtitle?: string | null, contentBoxPosition?: string | null, altImageLarge?: string | null } | { __typename: 'GlobalPrimaryBannerWithList' } | { __typename: 'GlobalPrimaryBannerWithTextOverlay' } | { __typename: 'GlobalProductCardScroller' } | { __typename: 'GlobalScalableLogos' } | { __typename: 'GlobalSectionPeek' } | { __typename: 'GlobalSetAndromeda' } | { __typename: 'GlobalSimpleTextCTAWidget' } | { __typename: 'GlobalSixItemCategories' } | { __typename: 'GlobalSocialIcon' } | { __typename: 'GlobalSocialIconCollection' } | { __typename: 'GlobalSocialIconCollectionv2' } | { __typename: 'GlobalSocialIconv2' } | { __typename: 'GlobalStripBanner' } | { __typename: 'GlobalSubscriptionOptions' } | { __typename: 'GlobalTabbedWidgetSet' } | { __typename: 'GlobalThreeItemEditorial' } | { __typename: 'GlobalThreeItemEditorialSubtitleBG' } | { __typename: 'GlobalTransformationSlider' } | { __typename: 'GlobalTrendingHashtagBlock' } | { __typename: 'GlobalTrendingHashtagCollection' } | { __typename: 'GlobalTwoBestSellers' } | { __typename: 'GlobalTwoItemEditorial' } | { __typename: 'GlobalTwoItemImageTextBlock' } | { __typename: 'GlobalTwoItemImageTextCTA' } | { __typename: 'GlobalTwoItemImageTextCTA3070' } | { __typename: 'GlobalUGCCarousel' } | { __typename: 'GlobalVideoGallery' } | { __typename: 'GlobalVideoHeroBannerWidget' } | { __typename: 'GlobalVideoTextImageCTA' } | { __typename: 'GlobalWaitListSignUpFormResponses' } | { __typename: 'GlobalWaitListSignUpWidget' } | { __typename: 'GlobalWidgetSirius' } | { __typename: 'GlobalWidgetVega' } | { __typename: 'GlobalYoutubeGalleryItem' } | { __typename: 'GlobalYoutubeGallerySet' } | { __typename: 'LoyaltyHubBirthdayGift' } | { __typename: 'LoyaltyHubTier' } | { __typename: 'LoyaltyRewardTier' } | { __typename: 'LoyaltyRewardTiers' } | { __typename: 'MailingList' } | { __typename: 'MultipleCTABanner' } | { __typename: 'ProductListWidget' } | { __typename: 'ResponsiveBuildYourOwnBundle' } | { __typename: 'ResponsiveBuildYourOwnBundleProducts' } | { __typename: 'ResponsiveComparisonTable' } | { __typename: 'ResponsiveComparisonTableContainer' } | { __typename: 'ResponsiveProductBlockCarousel' } | { __typename: 'ResponsiveProductTabs' } | { __typename: 'ResponsiveSetSalon' } | { __typename: 'ResponsiveSetSalonWithSlides' } | { __typename: 'ResponsiveSliderSet' } | { __typename: 'ResponsiveSuccessStoriesWidgetContainer' } | { __typename: 'ResponsiveSuccessStoryWidget' } | { __typename: 'ResponsiveTwoItemComparisonContainer' } | { __typename: 'ResponsiveTwoItemComparisonRow' } | { __typename: 'ResponsiveUSPBar' } | { __typename: 'SeoProductCategory' } | { __typename: 'SeoProductCategorySet' } | { __typename: 'ShopTheLookHotSpot' } | { __typename: 'TopBrandsWidget' } | { __typename: 'TopProductCategory' } | { __typename: 'TopProductCategorySet' } | { __typename: 'TrustPilotCarouselWidget' } | { __typename: 'TrustPilotWidget' } | { __typename: 'VoucherCodesWidget' } | { __typename: 'asymmetricGrid' } | { __typename: 'buildyourownbundle' } | { __typename: 'categoryItemCard' } | { __typename: 'coverageCalculator' } | { __typename: 'eightLinkButtonWidget' } | { __typename: 'imageSelectCard' } | { __typename: 'imageSelectSlider' } | { __typename: 'improvedSearchBestSellers' } | { __typename: 'kitBuilder' } | { __typename: 'loyaltyRewardsList' } | { __typename: 'loyaltyWelcomeMessage' } | { __typename: 'multiCategoryCardSet' } | { __typename: 'parcelLabWidget' } | { __typename: 'promoproductslider' } | { __typename: 'provenanceBrandHeader' } | { __typename: 'revieveWidget' } | { __typename: 'shadeFinder' } | { __typename: 'shopTheLook' } | { __typename: 'simpleCTA' } | { __typename: 'simpleTextWidgetSet' } | { __typename: 'simpleTitleWidget' } | { __typename: 'simpletextwidget' } | { __typename: 'simpletextwidgetwithh1' } | { __typename: 'sponsoredProducts' } | { __typename: 'sponsoredProductsNew' } | { __typename: 'storyStreamWidget' } | { __typename: 'subscribeAndSaveInformationModal' } | { __typename: 'swatchSelectSlider' } | { __typename: 'swatchSelectSliderSet' } | { __typename: 'trustReinforcementContainer' } | { __typename: 'trustReinforcementSection' } | { __typename: 'videoEditorial' } | null> | null } | { __typename: 'ResponsiveSuccessStoriesWidgetContainer' } | { __typename: 'ResponsiveSuccessStoryWidget' } | { __typename: 'ResponsiveTwoItemComparisonContainer' } | { __typename: 'ResponsiveTwoItemComparisonRow' } | { __typename: 'ResponsiveUSPBar' } | { __typename: 'SeoProductCategory' } | { __typename: 'SeoProductCategorySet' } | { __typename: 'ShopTheLookHotSpot' } | { __typename: 'TopBrandsWidget' } | { __typename: 'TopProductCategory' } | { __typename: 'TopProductCategorySet', showMore?: string | null, showDiscoverTag?: string | null, DiscoverTitle?: string | null, banners?: Array<{ __typename: 'AccordionWidget' } | { __typename: 'AccordionWidgetContainer' } | { __typename: 'BMICalculator' } | { __typename: 'BMICalculatorV2' } | { __typename: 'BrandsPageWidget' } | { __typename: 'BuildYourOwnBundleProductList' } | { __typename: 'CriteoSponsoredBannerAds' } | { __typename: 'DeliveryInfoWidget' } | { __typename: 'DeliveryInformationWidget' } | { __typename: 'DynamicReferralWidget' } | { __typename: 'Easiware' } | { __typename: 'EditorialWidget' } | { __typename: 'EmailReEngagementModal' } | { __typename: 'FastTrackBanner' } | { __typename: 'FoundationFinderLandingPageWidget' } | { __typename: 'GlobalAboutUsVideo' } | { __typename: 'GlobalAccreditationIcon' } | { __typename: 'GlobalAccreditationIconCollection' } | { __typename: 'GlobalBrandLogos' } | { __typename: 'GlobalBuyingRightNow' } | { __typename: 'GlobalBuyingRightNowManualProductURL' } | { __typename: 'GlobalCardScrollerCard' } | { __typename: 'GlobalCardScrollerSet' } | { __typename: 'GlobalDispatchAndDateCountdownWidget' } | { __typename: 'GlobalEditorialWithFeature' } | { __typename: 'GlobalFooterAccreditationIcons' } | { __typename: 'GlobalFooterContactUs' } | { __typename: 'GlobalFourBestSellers' } | { __typename: 'GlobalFourButtonLink' } | { __typename: 'GlobalFourItemEditorial' } | { __typename: 'GlobalGeneralImageBanner' } | { __typename: 'GlobalHelpCentreAccordion' } | { __typename: 'GlobalHelpCentreAccordion2' } | { __typename: 'GlobalHelpCentreAccordionCollection' } | { __typename: 'GlobalHelpCentreCollection' } | { __typename: 'GlobalHeroCTABanner' } | { __typename: 'GlobalImageCard' } | { __typename: 'GlobalImageCardSet' } | { __typename: 'GlobalMultiButton' } | { __typename: 'GlobalPrimaryBanner' } | { __typename: 'GlobalPrimaryBannerWithList' } | { __typename: 'GlobalPrimaryBannerWithTextOverlay' } | { __typename: 'GlobalProductCardScroller' } | { __typename: 'GlobalScalableLogos' } | { __typename: 'GlobalSectionPeek' } | { __typename: 'GlobalSetAndromeda' } | { __typename: 'GlobalSimpleTextCTAWidget' } | { __typename: 'GlobalSixItemCategories' } | { __typename: 'GlobalSocialIcon' } | { __typename: 'GlobalSocialIconCollection' } | { __typename: 'GlobalSocialIconCollectionv2' } | { __typename: 'GlobalSocialIconv2' } | { __typename: 'GlobalStripBanner' } | { __typename: 'GlobalSubscriptionOptions' } | { __typename: 'GlobalTabbedWidgetSet' } | { __typename: 'GlobalThreeItemEditorial' } | { __typename: 'GlobalThreeItemEditorialSubtitleBG' } | { __typename: 'GlobalTransformationSlider' } | { __typename: 'GlobalTrendingHashtagBlock' } | { __typename: 'GlobalTrendingHashtagCollection' } | { __typename: 'GlobalTwoBestSellers' } | { __typename: 'GlobalTwoItemEditorial' } | { __typename: 'GlobalTwoItemImageTextBlock' } | { __typename: 'GlobalTwoItemImageTextCTA' } | { __typename: 'GlobalTwoItemImageTextCTA3070' } | { __typename: 'GlobalUGCCarousel' } | { __typename: 'GlobalVideoGallery' } | { __typename: 'GlobalVideoHeroBannerWidget' } | { __typename: 'GlobalVideoTextImageCTA' } | { __typename: 'GlobalWaitListSignUpFormResponses' } | { __typename: 'GlobalWaitListSignUpWidget' } | { __typename: 'GlobalWidgetSirius' } | { __typename: 'GlobalWidgetVega' } | { __typename: 'GlobalYoutubeGalleryItem' } | { __typename: 'GlobalYoutubeGallerySet' } | { __typename: 'LoyaltyHubBirthdayGift' } | { __typename: 'LoyaltyHubTier' } | { __typename: 'LoyaltyRewardTier' } | { __typename: 'LoyaltyRewardTiers' } | { __typename: 'MailingList' } | { __typename: 'MultipleCTABanner' } | { __typename: 'ProductListWidget' } | { __typename: 'ResponsiveBuildYourOwnBundle' } | { __typename: 'ResponsiveBuildYourOwnBundleProducts' } | { __typename: 'ResponsiveComparisonTable' } | { __typename: 'ResponsiveComparisonTableContainer' } | { __typename: 'ResponsiveProductBlockCarousel' } | { __typename: 'ResponsiveProductTabs' } | { __typename: 'ResponsiveSetSalon' } | { __typename: 'ResponsiveSetSalonWithSlides' } | { __typename: 'ResponsiveSliderSet' } | { __typename: 'ResponsiveSuccessStoriesWidgetContainer' } | { __typename: 'ResponsiveSuccessStoryWidget' } | { __typename: 'ResponsiveTwoItemComparisonContainer' } | { __typename: 'ResponsiveTwoItemComparisonRow' } | { __typename: 'ResponsiveUSPBar' } | { __typename: 'SeoProductCategory' } | { __typename: 'SeoProductCategorySet' } | { __typename: 'ShopTheLookHotSpot' } | { __typename: 'TopBrandsWidget' } | { __typename: 'TopProductCategory', id: string, buttonStyle?: string | null, topProductCategoryUrl?: string | null, topProductCategoryName?: string | null } | { __typename: 'TopProductCategorySet' } | { __typename: 'TrustPilotCarouselWidget' } | { __typename: 'TrustPilotWidget' } | { __typename: 'VoucherCodesWidget' } | { __typename: 'asymmetricGrid' } | { __typename: 'buildyourownbundle' } | { __typename: 'categoryItemCard' } | { __typename: 'coverageCalculator' } | { __typename: 'eightLinkButtonWidget' } | { __typename: 'imageSelectCard' } | { __typename: 'imageSelectSlider' } | { __typename: 'improvedSearchBestSellers' } | { __typename: 'kitBuilder' } | { __typename: 'loyaltyRewardsList' } | { __typename: 'loyaltyWelcomeMessage' } | { __typename: 'multiCategoryCardSet' } | { __typename: 'parcelLabWidget' } | { __typename: 'promoproductslider' } | { __typename: 'provenanceBrandHeader' } | { __typename: 'revieveWidget' } | { __typename: 'shadeFinder' } | { __typename: 'shopTheLook' } | { __typename: 'simpleCTA' } | { __typename: 'simpleTextWidgetSet' } | { __typename: 'simpleTitleWidget' } | { __typename: 'simpletextwidget' } | { __typename: 'simpletextwidgetwithh1' } | { __typename: 'sponsoredProducts' } | { __typename: 'sponsoredProductsNew' } | { __typename: 'storyStreamWidget' } | { __typename: 'subscribeAndSaveInformationModal' } | { __typename: 'swatchSelectSlider' } | { __typename: 'swatchSelectSliderSet' } | { __typename: 'trustReinforcementContainer' } | { __typename: 'trustReinforcementSection' } | { __typename: 'videoEditorial' } | null> | null } | { __typename: 'TrustPilotCarouselWidget' } | { __typename: 'TrustPilotWidget' } | { __typename: 'VoucherCodesWidget' } | { __typename: 'asymmetricGrid' } | { __typename: 'buildyourownbundle' } | { __typename: 'categoryItemCard' } | { __typename: 'coverageCalculator' } | { __typename: 'eightLinkButtonWidget' } | { __typename: 'imageSelectCard' } | { __typename: 'imageSelectSlider' } | { __typename: 'improvedSearchBestSellers' } | { __typename: 'kitBuilder' } | { __typename: 'loyaltyRewardsList' } | { __typename: 'loyaltyWelcomeMessage' } | { __typename: 'multiCategoryCardSet' } | { __typename: 'parcelLabWidget' } | { __typename: 'promoproductslider' } | { __typename: 'provenanceBrandHeader' } | { __typename: 'revieveWidget' } | { __typename: 'shadeFinder' } | { __typename: 'shopTheLook' } | { __typename: 'simpleCTA' } | { __typename: 'simpleTextWidgetSet', id: string, banners?: Array<{ __typename?: 'AccordionWidget' } | { __typename?: 'AccordionWidgetContainer' } | { __typename?: 'BMICalculator' } | { __typename?: 'BMICalculatorV2' } | { __typename?: 'BrandsPageWidget' } | { __typename?: 'BuildYourOwnBundleProductList' } | { __typename?: 'CriteoSponsoredBannerAds' } | { __typename?: 'DeliveryInfoWidget' } | { __typename?: 'DeliveryInformationWidget' } | { __typename?: 'DynamicReferralWidget' } | { __typename?: 'Easiware' } | { __typename?: 'EditorialWidget' } | { __typename?: 'EmailReEngagementModal' } | { __typename?: 'FastTrackBanner' } | { __typename?: 'FoundationFinderLandingPageWidget' } | { __typename?: 'GlobalAboutUsVideo' } | { __typename?: 'GlobalAccreditationIcon' } | { __typename?: 'GlobalAccreditationIconCollection' } | { __typename?: 'GlobalBrandLogos' } | { __typename?: 'GlobalBuyingRightNow' } | { __typename?: 'GlobalBuyingRightNowManualProductURL' } | { __typename?: 'GlobalCardScrollerCard' } | { __typename?: 'GlobalCardScrollerSet' } | { __typename?: 'GlobalDispatchAndDateCountdownWidget' } | { __typename?: 'GlobalEditorialWithFeature' } | { __typename?: 'GlobalFooterAccreditationIcons' } | { __typename?: 'GlobalFooterContactUs' } | { __typename?: 'GlobalFourBestSellers' } | { __typename?: 'GlobalFourButtonLink' } | { __typename?: 'GlobalFourItemEditorial' } | { __typename?: 'GlobalGeneralImageBanner' } | { __typename?: 'GlobalHelpCentreAccordion' } | { __typename?: 'GlobalHelpCentreAccordion2' } | { __typename?: 'GlobalHelpCentreAccordionCollection' } | { __typename?: 'GlobalHelpCentreCollection' } | { __typename?: 'GlobalHeroCTABanner' } | { __typename?: 'GlobalImageCard' } | { __typename?: 'GlobalImageCardSet' } | { __typename?: 'GlobalMultiButton' } | { __typename?: 'GlobalPrimaryBanner' } | { __typename?: 'GlobalPrimaryBannerWithList' } | { __typename?: 'GlobalPrimaryBannerWithTextOverlay' } | { __typename?: 'GlobalProductCardScroller' } | { __typename?: 'GlobalScalableLogos' } | { __typename?: 'GlobalSectionPeek' } | { __typename?: 'GlobalSetAndromeda' } | { __typename?: 'GlobalSimpleTextCTAWidget' } | { __typename?: 'GlobalSixItemCategories' } | { __typename?: 'GlobalSocialIcon' } | { __typename?: 'GlobalSocialIconCollection' } | { __typename?: 'GlobalSocialIconCollectionv2' } | { __typename?: 'GlobalSocialIconv2' } | { __typename?: 'GlobalStripBanner' } | { __typename?: 'GlobalSubscriptionOptions' } | { __typename?: 'GlobalTabbedWidgetSet' } | { __typename?: 'GlobalThreeItemEditorial' } | { __typename?: 'GlobalThreeItemEditorialSubtitleBG' } | { __typename?: 'GlobalTransformationSlider' } | { __typename?: 'GlobalTrendingHashtagBlock' } | { __typename?: 'GlobalTrendingHashtagCollection' } | { __typename?: 'GlobalTwoBestSellers' } | { __typename?: 'GlobalTwoItemEditorial' } | { __typename?: 'GlobalTwoItemImageTextBlock' } | { __typename?: 'GlobalTwoItemImageTextCTA' } | { __typename?: 'GlobalTwoItemImageTextCTA3070' } | { __typename?: 'GlobalUGCCarousel' } | { __typename?: 'GlobalVideoGallery' } | { __typename?: 'GlobalVideoHeroBannerWidget' } | { __typename?: 'GlobalVideoTextImageCTA' } | { __typename?: 'GlobalWaitListSignUpFormResponses' } | { __typename?: 'GlobalWaitListSignUpWidget' } | { __typename?: 'GlobalWidgetSirius' } | { __typename?: 'GlobalWidgetVega' } | { __typename?: 'GlobalYoutubeGalleryItem' } | { __typename?: 'GlobalYoutubeGallerySet' } | { __typename?: 'LoyaltyHubBirthdayGift' } | { __typename?: 'LoyaltyHubTier' } | { __typename?: 'LoyaltyRewardTier' } | { __typename?: 'LoyaltyRewardTiers' } | { __typename?: 'MailingList' } | { __typename?: 'MultipleCTABanner' } | { __typename?: 'ProductListWidget' } | { __typename?: 'ResponsiveBuildYourOwnBundle' } | { __typename?: 'ResponsiveBuildYourOwnBundleProducts' } | { __typename?: 'ResponsiveComparisonTable' } | { __typename?: 'ResponsiveComparisonTableContainer' } | { __typename?: 'ResponsiveProductBlockCarousel' } | { __typename?: 'ResponsiveProductTabs' } | { __typename?: 'ResponsiveSetSalon' } | { __typename?: 'ResponsiveSetSalonWithSlides' } | { __typename?: 'ResponsiveSliderSet' } | { __typename?: 'ResponsiveSuccessStoriesWidgetContainer' } | { __typename?: 'ResponsiveSuccessStoryWidget' } | { __typename?: 'ResponsiveTwoItemComparisonContainer' } | { __typename?: 'ResponsiveTwoItemComparisonRow' } | { __typename?: 'ResponsiveUSPBar' } | { __typename?: 'SeoProductCategory' } | { __typename?: 'SeoProductCategorySet' } | { __typename?: 'ShopTheLookHotSpot' } | { __typename?: 'TopBrandsWidget' } | { __typename?: 'TopProductCategory' } | { __typename?: 'TopProductCategorySet' } | { __typename?: 'TrustPilotCarouselWidget' } | { __typename?: 'TrustPilotWidget' } | { __typename?: 'VoucherCodesWidget' } | { __typename?: 'asymmetricGrid' } | { __typename?: 'buildyourownbundle' } | { __typename?: 'categoryItemCard' } | { __typename?: 'coverageCalculator' } | { __typename?: 'eightLinkButtonWidget' } | { __typename?: 'imageSelectCard' } | { __typename?: 'imageSelectSlider' } | { __typename?: 'improvedSearchBestSellers' } | { __typename?: 'kitBuilder' } | { __typename?: 'loyaltyRewardsList' } | { __typename?: 'loyaltyWelcomeMessage' } | { __typename?: 'multiCategoryCardSet' } | { __typename?: 'parcelLabWidget' } | { __typename?: 'promoproductslider' } | { __typename?: 'provenanceBrandHeader' } | { __typename?: 'revieveWidget' } | { __typename?: 'shadeFinder' } | { __typename?: 'shopTheLook' } | { __typename?: 'simpleCTA' } | { __typename?: 'simpleTextWidgetSet' } | { __typename?: 'simpleTitleWidget' } | { __typename?: 'simpletextwidget', id: string, title?: string | null, text?: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', content: any }> } | null } | { __typename?: 'simpletextwidgetwithh1' } | { __typename?: 'sponsoredProducts' } | { __typename?: 'sponsoredProductsNew' } | { __typename?: 'storyStreamWidget' } | { __typename?: 'subscribeAndSaveInformationModal' } | { __typename?: 'swatchSelectSlider' } | { __typename?: 'swatchSelectSliderSet' } | { __typename?: 'trustReinforcementContainer' } | { __typename?: 'trustReinforcementSection' } | { __typename?: 'videoEditorial' } | null> | null } | { __typename: 'simpleTitleWidget' } | { __typename: 'simpletextwidget', id: string, title?: string | null, textAlign?: string | null, text?: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', content: any }> } | null } | { __typename: 'simpletextwidgetwithh1' } | { __typename: 'sponsoredProducts' } | { __typename: 'sponsoredProductsNew' } | { __typename: 'storyStreamWidget' } | { __typename: 'subscribeAndSaveInformationModal' } | { __typename: 'swatchSelectSlider' } | { __typename: 'swatchSelectSliderSet' } | { __typename: 'trustReinforcementContainer' } | { __typename: 'trustReinforcementSection' } | { __typename: 'videoEditorial' }> | null } | null };
+
+export type CreditAccountsQueryVariables = Exact<{
+  currency?: Currency;
+}>;
+
+
+export type CreditAccountsQuery = { __typename?: 'Query', customer?: { __typename?: 'Customer', creditAccounts?: Array<{ __typename?: 'CreditAccount', currency: Currency, balance: { __typename?: 'MoneyValue', currency: Currency, amount: string }, expiringIn: { __typename?: 'MoneyValue', currency: Currency, amount: string }, actions: { __typename?: 'CreditActions', total: number, hasMore: boolean, actions: Array<{ __typename?: 'CreditAction', id: string, type: CreditActionType, status: CreditActionStatus, message?: any | null, addedAt: any, expiresAt?: any | null, amount: { __typename?: 'MoneyValue', currency: Currency, amount: string }, amountUsed: { __typename?: 'MoneyValue', currency: Currency, amount: string }, amountAvailable: { __typename?: 'MoneyValue', currency: Currency, amount: string }, order?: { __typename?: 'Order', orderNumber: any } | null }> } }> | null } | null };
+
+export type CustomerQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CustomerQuery = { __typename?: 'Query', customer?: { __typename?: 'Customer', fullName: string } | null };
+
+export type GetMessageQueryVariables = Exact<{
+  id?: InputMaybe<Scalars['ID']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  limit?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type GetMessageQuery = { __typename?: 'Query', customer?: { __typename?: 'Customer', discussions?: { __typename?: 'Discussions', discussions: Array<{ __typename?: 'Discussion', id: string, category: DiscussionCategory, status: DiscussionStatus, createdAt: any, updatedAt: any, read: boolean, selection?: { __typename?: 'DiscussionSelection', selectedOrder?: { __typename?: 'Order', orderNumber: any } | null, selectedProducts: Array<{ __typename?: 'OrderProduct', sku: any, productVariant?: { __typename?: 'ProductVariant', title: string, images: Array<{ __typename?: 'ProductImage', original?: any | null }> } | null }> } | null, messages: { __typename?: 'DiscussionMessages', total: number, hasMore: boolean, messages: Array<{ __typename?: 'DiscussionMessage', id: string, type: DiscussionMessageType, createdAt: any, message: any }> } }> } | null } | null };
+
+export type GetMessagesQueryVariables = Exact<{
+  offset?: InputMaybe<Scalars['Int']>;
+  limit?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type GetMessagesQuery = { __typename?: 'Query', customer?: { __typename?: 'Customer', discussions?: { __typename?: 'Discussions', total: number, hasMore: boolean, discussions: Array<{ __typename?: 'Discussion', id: string, category: DiscussionCategory, status: DiscussionStatus, createdAt: any, updatedAt: any, read: boolean, selection?: { __typename?: 'DiscussionSelection', selectedOrder?: { __typename?: 'Order', orderNumber: any } | null, selectedProducts: Array<{ __typename?: 'OrderProduct', sku: any, productVariant?: { __typename?: 'ProductVariant', title: string, images: Array<{ __typename?: 'ProductImage', original?: any | null }> } | null }> } | null, messages: { __typename?: 'DiscussionMessages', total: number, hasMore: boolean, messages: Array<{ __typename?: 'DiscussionMessage', id: string, type: DiscussionMessageType, createdAt: any, message: any }> } }> } | null } | null };
+
+export type EmailFieldQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type EmailFieldQuery = { __typename?: 'Query', emailField?: { __typename?: 'FormField', name: string, type?: FormFieldType | null, required: boolean, confirmable: boolean, disabled: boolean, defaultValue?: string | null, validators: Array<{ __typename?: 'Validator', name: ValidatorName, argument?: string | null }>, answerOptions?: Array<{ __typename?: 'AnswerOption', optionKey: string, translation?: any | null } | null> | null } | null };
+
+export type HeaderFooterQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type HeaderFooterQuery = { __typename?: 'Query', header?: { __typename?: 'Header', widgets?: Array<{ __typename: 'AccordionWidget' } | { __typename: 'AccordionWidgetContainer' } | { __typename: 'BMICalculator' } | { __typename: 'BMICalculatorV2' } | { __typename: 'BrandsPageWidget' } | { __typename: 'BuildYourOwnBundleProductList' } | { __typename: 'CriteoSponsoredBannerAds' } | { __typename: 'DeliveryInfoWidget' } | { __typename: 'DeliveryInformationWidget' } | { __typename: 'DynamicReferralWidget' } | { __typename: 'Easiware' } | { __typename: 'EditorialWidget' } | { __typename: 'EmailReEngagementModal' } | { __typename: 'FastTrackBanner' } | { __typename: 'FoundationFinderLandingPageWidget' } | { __typename: 'GlobalAboutUsVideo' } | { __typename: 'GlobalAccreditationIcon' } | { __typename: 'GlobalAccreditationIconCollection' } | { __typename: 'GlobalBrandLogos' } | { __typename: 'GlobalBuyingRightNow' } | { __typename: 'GlobalBuyingRightNowManualProductURL' } | { __typename: 'GlobalCardScrollerCard' } | { __typename: 'GlobalCardScrollerSet' } | { __typename: 'GlobalDispatchAndDateCountdownWidget' } | { __typename: 'GlobalEditorialWithFeature' } | { __typename: 'GlobalFooterAccreditationIcons' } | { __typename: 'GlobalFooterContactUs' } | { __typename: 'GlobalFourBestSellers' } | { __typename: 'GlobalFourButtonLink' } | { __typename: 'GlobalFourItemEditorial' } | { __typename: 'GlobalGeneralImageBanner' } | { __typename: 'GlobalHelpCentreAccordion' } | { __typename: 'GlobalHelpCentreAccordion2' } | { __typename: 'GlobalHelpCentreAccordionCollection' } | { __typename: 'GlobalHelpCentreCollection' } | { __typename: 'GlobalHeroCTABanner' } | { __typename: 'GlobalImageCard' } | { __typename: 'GlobalImageCardSet' } | { __typename: 'GlobalMultiButton' } | { __typename: 'GlobalPrimaryBanner' } | { __typename: 'GlobalPrimaryBannerWithList' } | { __typename: 'GlobalPrimaryBannerWithTextOverlay' } | { __typename: 'GlobalProductCardScroller' } | { __typename: 'GlobalScalableLogos' } | { __typename: 'GlobalSectionPeek' } | { __typename: 'GlobalSetAndromeda' } | { __typename: 'GlobalSimpleTextCTAWidget' } | { __typename: 'GlobalSixItemCategories' } | { __typename: 'GlobalSocialIcon' } | { __typename: 'GlobalSocialIconCollection' } | { __typename: 'GlobalSocialIconCollectionv2' } | { __typename: 'GlobalSocialIconv2' } | { __typename: 'GlobalStripBanner', stripBannerText?: string | null, stripBannerURL?: string | null } | { __typename: 'GlobalSubscriptionOptions' } | { __typename: 'GlobalTabbedWidgetSet' } | { __typename: 'GlobalThreeItemEditorial' } | { __typename: 'GlobalThreeItemEditorialSubtitleBG' } | { __typename: 'GlobalTransformationSlider' } | { __typename: 'GlobalTrendingHashtagBlock' } | { __typename: 'GlobalTrendingHashtagCollection' } | { __typename: 'GlobalTwoBestSellers' } | { __typename: 'GlobalTwoItemEditorial' } | { __typename: 'GlobalTwoItemImageTextBlock' } | { __typename: 'GlobalTwoItemImageTextCTA' } | { __typename: 'GlobalTwoItemImageTextCTA3070' } | { __typename: 'GlobalUGCCarousel' } | { __typename: 'GlobalVideoGallery' } | { __typename: 'GlobalVideoHeroBannerWidget' } | { __typename: 'GlobalVideoTextImageCTA' } | { __typename: 'GlobalWaitListSignUpFormResponses' } | { __typename: 'GlobalWaitListSignUpWidget' } | { __typename: 'GlobalWidgetSirius' } | { __typename: 'GlobalWidgetVega' } | { __typename: 'GlobalYoutubeGalleryItem' } | { __typename: 'GlobalYoutubeGallerySet' } | { __typename: 'LoyaltyHubBirthdayGift' } | { __typename: 'LoyaltyHubTier' } | { __typename: 'LoyaltyRewardTier' } | { __typename: 'LoyaltyRewardTiers' } | { __typename: 'MailingList' } | { __typename: 'MultipleCTABanner' } | { __typename: 'ProductListWidget' } | { __typename: 'ResponsiveBuildYourOwnBundle' } | { __typename: 'ResponsiveBuildYourOwnBundleProducts' } | { __typename: 'ResponsiveComparisonTable' } | { __typename: 'ResponsiveComparisonTableContainer' } | { __typename: 'ResponsiveProductBlockCarousel' } | { __typename: 'ResponsiveProductTabs' } | { __typename: 'ResponsiveSetSalon' } | { __typename: 'ResponsiveSetSalonWithSlides' } | { __typename: 'ResponsiveSliderSet' } | { __typename: 'ResponsiveSuccessStoriesWidgetContainer' } | { __typename: 'ResponsiveSuccessStoryWidget' } | { __typename: 'ResponsiveTwoItemComparisonContainer' } | { __typename: 'ResponsiveTwoItemComparisonRow' } | { __typename: 'ResponsiveUSPBar' } | { __typename: 'SeoProductCategory' } | { __typename: 'SeoProductCategorySet' } | { __typename: 'ShopTheLookHotSpot' } | { __typename: 'TopBrandsWidget' } | { __typename: 'TopProductCategory' } | { __typename: 'TopProductCategorySet' } | { __typename: 'TrustPilotCarouselWidget' } | { __typename: 'TrustPilotWidget' } | { __typename: 'VoucherCodesWidget' } | { __typename: 'asymmetricGrid' } | { __typename: 'buildyourownbundle' } | { __typename: 'categoryItemCard' } | { __typename: 'coverageCalculator' } | { __typename: 'eightLinkButtonWidget' } | { __typename: 'imageSelectCard' } | { __typename: 'imageSelectSlider' } | { __typename: 'improvedSearchBestSellers' } | { __typename: 'kitBuilder' } | { __typename: 'loyaltyRewardsList' } | { __typename: 'loyaltyWelcomeMessage' } | { __typename: 'multiCategoryCardSet' } | { __typename: 'parcelLabWidget' } | { __typename: 'promoproductslider' } | { __typename: 'provenanceBrandHeader' } | { __typename: 'revieveWidget' } | { __typename: 'shadeFinder' } | { __typename: 'shopTheLook' } | { __typename: 'simpleCTA' } | { __typename: 'simpleTextWidgetSet' } | { __typename: 'simpleTitleWidget' } | { __typename: 'simpletextwidget' } | { __typename: 'simpletextwidgetwithh1' } | { __typename: 'sponsoredProducts' } | { __typename: 'sponsoredProductsNew' } | { __typename: 'storyStreamWidget' } | { __typename: 'subscribeAndSaveInformationModal' } | { __typename: 'swatchSelectSlider' } | { __typename: 'swatchSelectSliderSet' } | { __typename: 'trustReinforcementContainer' } | { __typename: 'trustReinforcementSection' } | { __typename: 'videoEditorial' }> | null, navigation?: { __typename?: 'Navigation', topLevel: Array<{ __typename?: 'NavigationItem', displayName: any, type: NavigationItemType, link?: { __typename?: 'Hyperlink', url: any, openExternally?: boolean | null, noFollow?: boolean | null, noIndex?: boolean | null } | null, image?: { __typename?: 'Image', url: any } | null, subNavigation?: Array<{ __typename?: 'NavigationItem', displayName: any, type: NavigationItemType, link?: { __typename?: 'Hyperlink', text: any, url: any, openExternally?: boolean | null, noFollow?: boolean | null } | null, image?: { __typename?: 'Image', url: any, alt?: any | null } | null, subNavigation?: Array<{ __typename?: 'NavigationItem', displayName: any, type: NavigationItemType, link?: { __typename?: 'Hyperlink', text: any, url: any, openExternally?: boolean | null, noFollow?: boolean | null } | null, image?: { __typename?: 'Image', url: any, alt?: any | null } | null }> | null }> | null }> } | null } | null, footer?: { __typename?: 'Footer', navigation?: { __typename?: 'Navigation', topLevel: Array<{ __typename?: 'NavigationItem', displayName: any, type: NavigationItemType, link?: { __typename?: 'Hyperlink', url: any, openExternally?: boolean | null, noFollow?: boolean | null, noIndex?: boolean | null } | null, image?: { __typename?: 'Image', url: any } | null, subNavigation?: Array<{ __typename?: 'NavigationItem', displayName: any, type: NavigationItemType, link?: { __typename?: 'Hyperlink', url: any, openExternally?: boolean | null, noFollow?: boolean | null } | null, image?: { __typename?: 'Image', url: any } | null }> | null }> } | null } | null };
+
+export type MarketingConsentFormQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MarketingConsentFormQuery = { __typename?: 'Query', customer?: { __typename?: 'Customer', fullName: string, email: string } | null, form?: { __typename?: 'Form', fields: Array<{ __typename?: 'FormField', name: string, type?: FormFieldType | null, required: boolean, confirmable: boolean, disabled: boolean, defaultValue?: string | null, answerOptions?: Array<{ __typename?: 'AnswerOption', optionKey: string, translation?: any | null } | null> | null, validators: Array<{ __typename?: 'Validator', name: ValidatorName, argument?: string | null }> }> } | null };
+
+export type OrderDetailsQueryVariables = Exact<{
+  id: Scalars['OrderNumber'];
+}>;
+
+
+export type OrderDetailsQuery = { __typename?: 'Query', customer?: { __typename?: 'Customer', orders?: { __typename?: 'Orders', orders: Array<{ __typename?: 'Order', cancellable: boolean, orderNumber: any, createdAt: any, status: OrderStatus, totalQuantity: number, paymentType?: string | null, paymentCard?: { __typename?: 'PaymentCard', nameOnCard: string, obfuscatedCardNumber: string, validToMonth: any, validToYear: any, type?: PaymentCardType | null } | null, products: Array<{ __typename?: 'OrderProduct', cancellable: boolean, sku: any, quantity?: number | null, dispatchDate?: any | null, deliveryMethod?: any | null, trackingUrls?: Array<any> | null, status?: OrderStatus | null, specialOfferGroup?: any | null, cancelledQuantity?: number | null, pendingCancelQuantity?: number | null, cancellableQuantity?: number | null, dispatchedQuantity?: number | null, refundedQuantity?: number | null, pendingRefundQuantity?: number | null, replacementQuantity?: number | null, pendingReplaceQuantity?: number | null, productVariant?: { __typename?: 'ProductVariant', title: string, images: Array<{ __typename?: 'ProductImage', original?: any | null }>, product?: { __typename?: 'Product', url: any, images: Array<{ __typename?: 'ProductImage', original?: any | null }> } | null } | null, costPerUnit?: { __typename?: 'MoneyValue', displayValue: string } | null, deliveryDateRange?: { __typename?: 'DateRange', from?: any | null, to?: any | null } | null }>, deliveryCost?: { __typename?: 'MoneyValue', currency: Currency, amount: string } | null, totalCost: { __typename?: 'MoneyValue', displayValue: string }, discounts?: Array<{ __typename?: 'OrderDiscount', message?: any | null, amount: { __typename?: 'MoneyValue', currency: Currency, amount: string } }> | null, deliveryAddress?: { __typename?: 'Address', addresseeName: string, addressLine1: string, addressLine2?: string | null, addressLine3?: string | null, addressLine4?: string | null, addressLine5?: string | null, postalCode: string, country: Country } | null, discussions?: { __typename?: 'Discussions', discussions: Array<{ __typename?: 'Discussion', id: string, category: DiscussionCategory, status: DiscussionStatus, createdAt: any, updatedAt: any, read: boolean, selection?: { __typename?: 'DiscussionSelection', selectedOrder?: { __typename?: 'Order', orderNumber: any } | null } | null, messages: { __typename?: 'DiscussionMessages', total: number, hasMore: boolean, messages: Array<{ __typename?: 'DiscussionMessage', id: string, type: DiscussionMessageType, createdAt: any, message: any }> } }> } | null }> } | null } | null };
+
+export type OrderHistoryQueryVariables = Exact<{
+  offset?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type OrderHistoryQuery = { __typename?: 'Query', customer?: { __typename?: 'Customer', fullName: string, latest?: { __typename?: 'Orders', hasMore: boolean, total?: number | null, orders: Array<{ __typename?: 'Order', orderNumber: any, createdAt: any, status: OrderStatus, products: Array<{ __typename?: 'OrderProduct', sku: any, productVariant?: { __typename?: 'ProductVariant', title: string, images: Array<{ __typename?: 'ProductImage', original?: any | null }>, product?: { __typename?: 'Product', url: any, images: Array<{ __typename?: 'ProductImage', original?: any | null }> } | null } | null, deliveryDateRange?: { __typename?: 'DateRange', from?: any | null, to?: any | null } | null }>, totalCost: { __typename?: 'MoneyValue', displayValue: string } }> } | null, active?: { __typename?: 'Orders', hasMore: boolean, total?: number | null, orders: Array<{ __typename?: 'Order', orderNumber: any, createdAt: any, status: OrderStatus, products: Array<{ __typename?: 'OrderProduct', sku: any, productVariant?: { __typename?: 'ProductVariant', title: string, images: Array<{ __typename?: 'ProductImage', original?: any | null }> } | null }>, totalCost: { __typename?: 'MoneyValue', displayValue: string } }> } | null, completed?: { __typename?: 'Orders', hasMore: boolean, total?: number | null, orders: Array<{ __typename?: 'Order', orderNumber: any, createdAt: any, status: OrderStatus, products: Array<{ __typename?: 'OrderProduct', sku: any, productVariant?: { __typename?: 'ProductVariant', title: string, images: Array<{ __typename?: 'ProductImage', original?: any | null }>, product?: { __typename?: 'Product', url: any, images: Array<{ __typename?: 'ProductImage', original?: any | null }> } | null } | null }>, totalCost: { __typename?: 'MoneyValue', displayValue: string } }> } | null } | null };
+
+export type SavedCardsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SavedCardsQuery = { __typename?: 'Query', customer?: { __typename?: 'Customer', paymentCards?: { __typename?: 'PaymentCards', total: number, hasMore: boolean, cards: Array<{ __typename?: 'PaymentCardRecord', id: string, card: { __typename?: 'PaymentCard', nameOnCard: string, obfuscatedCardNumber: string, validFromMonth?: any | null, validFromYear?: any | null, validToMonth: any, validToYear: any, issueNumber?: string | null, type?: PaymentCardType | null } }> } | null } | null };
+
+export type ProductQueryVariables = Exact<{
+  sku: Scalars['SKU'];
+  offset?: Scalars['Int'];
+  limit?: Scalars['Int'];
+}>;
+
+
+export type ProductQuery = { __typename?: 'Query', product?: { __typename?: 'Product', title: string, sku: any, inWishlist?: boolean | null, url: any, sizeGuide?: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> } | null, marketedSpecialOffer?: { __typename?: 'ProductMarketedSpecialOffer', title?: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> } | null, description?: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> } | null, landingPageLink?: { __typename?: 'Hyperlink', text: any, url: any } | null } | null, cheapestVariantPrice?: { __typename?: 'ProductPrice', price: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string, scalarValue: any }, rrp: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string, scalarValue: any } } | null, images: Array<{ __typename?: 'ProductImage', original?: any | null, thumbnail?: any | null, largeProduct?: any | null, zoom?: any | null }>, options: Array<{ __typename?: 'VariantOption', key: string, choices: Array<{ __typename?: 'OptionChoice', optionKey: string, key: string, colour?: any | null, title: string }> }>, content: Array<{ __typename?: 'ProductContentItem', key: string, value: { __typename: 'ProductContentIntListValue', intListValue: Array<number> } | { __typename: 'ProductContentIntValue', intValue: number } | { __typename: 'ProductContentRichContentListValue', richContentListValue: Array<{ __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> }> } | { __typename: 'ProductContentRichContentValue', richContentValue: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> } } | { __typename: 'ProductContentStringListValue', stringListValue: Array<string> } | { __typename: 'ProductContentStringValue', stringValue: string } }>, reviews?: { __typename?: 'ProductReviews', total: number, averageScore: number, maxScore: number, count1Score: number, count2Score: number, count3Score: number, count4Score: number, count5Score: number, reviews?: { __typename?: 'Reviews', total: number, hasMore: boolean, reviews: Array<{ __typename?: 'Review', id: string, title: any, authorName: any, verifiedPurchase: boolean, posted: any, positiveVotes?: number | null, negativeVotes?: number | null, elements: Array<{ __typename?: 'RatingReviewElement', score: number, maxScore: number, key: string } | { __typename?: 'TextReviewElement', value: string, key: string }> }> } | null } | null, variants: Array<{ __typename?: 'ProductVariant', sku: any, title: string, inStock: boolean, availabilityMessage: any, choices: Array<{ __typename?: 'OptionChoice', optionKey: string, key: string, colour?: any | null, title: string }>, images: Array<{ __typename?: 'ProductImage', original?: any | null, thumbnail?: any | null, largeProduct?: any | null, zoom?: any | null }>, product?: { __typename?: 'Product', url: any } | null, price?: { __typename?: 'ProductPrice', price: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string }, rrp: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string } } | null, content: Array<{ __typename?: 'ProductContentItem', key: string, value: { __typename?: 'ProductContentIntListValue', intListValue: Array<number> } | { __typename?: 'ProductContentIntValue', intValue: number } | { __typename?: 'ProductContentRichContentListValue', richContentListValue: Array<{ __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> }> } | { __typename?: 'ProductContentRichContentValue', richContentValue: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> } } | { __typename?: 'ProductContentStringListValue', stringListValue: Array<string> } | { __typename?: 'ProductContentStringValue', stringValue: string } }> }>, defaultVariant?: { __typename?: 'ProductVariant', sku: any, title: string, inStock: boolean, availabilityMessage: any, choices: Array<{ __typename?: 'OptionChoice', optionKey: string, key: string, colour?: any | null, title: string }>, images: Array<{ __typename?: 'ProductImage', original?: any | null, thumbnail?: any | null, largeProduct?: any | null, zoom?: any | null }>, product?: { __typename?: 'Product', url: any } | null, price?: { __typename?: 'ProductPrice', price: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string }, rrp: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string } } | null, content: Array<{ __typename?: 'ProductContentItem', key: string, value: { __typename?: 'ProductContentIntListValue', intListValue: Array<number> } | { __typename?: 'ProductContentIntValue', intValue: number } | { __typename?: 'ProductContentRichContentListValue', richContentListValue: Array<{ __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> }> } | { __typename?: 'ProductContentRichContentValue', richContentValue: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> } } | { __typename?: 'ProductContentStringListValue', stringListValue: Array<string> } | { __typename?: 'ProductContentStringValue', stringValue: string } }> } | null } | null };
+
+export type RecentOrderHistoryQueryVariables = Exact<{
+  offset?: InputMaybe<Scalars['Int']>;
+  limit?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type RecentOrderHistoryQuery = { __typename?: 'Query', customer?: { __typename?: 'Customer', orders?: { __typename?: 'Orders', hasMore: boolean, total?: number | null, orders: Array<{ __typename?: 'Order', orderNumber: any, createdAt: any, status: OrderStatus, products: Array<{ __typename?: 'OrderProduct', sku: any, productVariant?: { __typename?: 'ProductVariant', title: string, images: Array<{ __typename?: 'ProductImage', original?: any | null }> } | null, deliveryDateRange?: { __typename?: 'DateRange', from?: any | null, to?: any | null } | null }>, totalCost: { __typename?: 'MoneyValue', displayValue: string } }> } | null } | null };
+
+export type RegisterFormQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type RegisterFormQuery = { __typename?: 'Query', form?: { __typename?: 'Form', fields: Array<{ __typename?: 'FormField', name: string, type?: FormFieldType | null, required: boolean, confirmable: boolean, disabled: boolean, defaultValue?: string | null, answerOptions?: Array<{ __typename?: 'AnswerOption', optionKey: string, translation?: any | null } | null> | null, validators: Array<{ __typename?: 'Validator', name: ValidatorName, argument?: string | null }> }> } | null };
+
+export type ReviewsQueryVariables = Exact<{
+  sku: Scalars['SKU'];
+  offset?: Scalars['Int'];
+  limit?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type ReviewsQuery = { __typename?: 'Query', product?: { __typename?: 'Product', reviews?: { __typename?: 'ProductReviews', total: number, averageScore: number, maxScore: number, count1Score: number, count2Score: number, count3Score: number, count4Score: number, count5Score: number, reviews?: { __typename?: 'Reviews', total: number, hasMore: boolean, reviews: Array<{ __typename?: 'Review', id: string, title: any, authorName: any, verifiedPurchase: boolean, posted: any, positiveVotes?: number | null, negativeVotes?: number | null, elements: Array<{ __typename?: 'RatingReviewElement', score: number, maxScore: number, key: string } | { __typename?: 'TextReviewElement', value: string, key: string }> }> } | null } | null } | null };
+
+export type SearchQueryVariables = Exact<{
+  query: Scalars['String'];
+  offset?: InputMaybe<Scalars['Int']>;
+  limit?: InputMaybe<Scalars['Int']>;
+  sort: ProductSort;
+  facets?: Array<FacetInput> | FacetInput;
+}>;
+
+
+export type SearchQuery = { __typename?: 'Query', search?: { __typename?: 'ProductList', total: number, hasMore: boolean, correctedQuery?: any | null, facets: Array<{ __typename: 'RangedFacet', facetName: string, facetHeader: any, options: Array<{ __typename?: 'RangedFacetOption', displayName: any, from?: number | null, to?: number | null, matchedProductCount: number }> } | { __typename: 'SimpleFacet', facetName: string, facetHeader: any, options: Array<{ __typename?: 'SimpleFacetOption', optionName: string, displayName: any, matchedProductCount: number }> } | { __typename: 'SliderFacet', facetName: string, facetHeader: any, minValue: number, maxValue: number }>, products: Array<{ __typename?: 'Product', url: any, title: string, sku: any, images: Array<{ __typename?: 'ProductImage', thumbnail?: any | null, largeProduct?: any | null, zoom?: any | null, original?: any | null }>, reviews?: { __typename?: 'ProductReviews', total: number, averageScore: number } | null, content: Array<{ __typename?: 'ProductContentItem', key: string, value: { __typename: 'ProductContentIntListValue', intListValue: Array<number> } | { __typename: 'ProductContentIntValue', intValue: number } | { __typename: 'ProductContentRichContentListValue', richContentListValue: Array<{ __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> }> } | { __typename: 'ProductContentRichContentValue', richContentValue: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> } } | { __typename: 'ProductContentStringListValue', stringListValue: Array<string> } | { __typename: 'ProductContentStringValue', stringValue: string } }>, cheapestVariantPrice?: { __typename?: 'ProductPrice', price: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string, scalarValue: any }, rrp: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string, scalarValue: any } } | null }> } | null };
+
+export type SearchProductSkusQueryVariables = Exact<{
+  offset: Scalars['Int'];
+  limit: Scalars['Int'];
+}>;
+
+
+export type SearchProductSkusQuery = { __typename?: 'Query', search?: { __typename?: 'ProductList', hasMore: boolean, products: Array<{ __typename?: 'Product', sku: any }> } | null };
+
+export type SiteSettingsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SiteSettingsQuery = { __typename?: 'Query', supportedCurrencies: Array<Currency>, supportedShippingDestinations: Array<Country> };
+
+export type SitemapPathsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SitemapPathsQuery = { __typename?: 'Query', sitemap: { __typename?: 'Sitemap', paths: Array<any> } };
+
+export type SocialProvidersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SocialProvidersQuery = { __typename?: 'Query', socialLoginProviders?: Array<{ __typename?: 'SocialLoginProvider', name: any, code: string, loginUrl: string, iconUrl: string, colour: string }> | null };
+
+export type WishlistQueryVariables = Exact<{
+  currency?: Currency;
+  shippingDestination?: Country;
+  sort?: WishlistSort;
+}>;
+
+
+export type WishlistQuery = { __typename?: 'Query', customer?: { __typename?: 'Customer', emailPreference?: boolean | null, wishlist?: { __typename?: 'WishlistItems', total: number, items: Array<{ __typename?: 'WishlistItem', product: { __typename?: 'Product', sku: any, url: any, title: string, inWishlist?: boolean | null, images: Array<{ __typename?: 'ProductImage', largeProduct?: any | null, original?: any | null, zoom?: any | null }>, content: Array<{ __typename?: 'ProductContentItem', key: string, value: { __typename: 'ProductContentIntListValue' } | { __typename: 'ProductContentIntValue' } | { __typename: 'ProductContentRichContentListValue' } | { __typename: 'ProductContentRichContentValue' } | { __typename: 'ProductContentStringListValue', stringListValue: Array<string> } | { __typename: 'ProductContentStringValue' } }>, cheapestVariantPrice?: { __typename?: 'ProductPrice', price: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string, scalarValue: any }, rrp: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string, scalarValue: any } } | null }, selectedVariant?: { __typename?: 'ProductVariant', sku: any, title: string, inWishlist?: boolean | null, inStock: boolean, images: Array<{ __typename?: 'ProductImage', largeProduct?: any | null, original?: any | null, zoom?: any | null }>, content: Array<{ __typename?: 'ProductContentItem', key: string, value: { __typename: 'ProductContentIntListValue' } | { __typename: 'ProductContentIntValue' } | { __typename: 'ProductContentRichContentListValue' } | { __typename: 'ProductContentRichContentValue' } | { __typename: 'ProductContentStringListValue', stringListValue: Array<string> } | { __typename: 'ProductContentStringValue' } }>, price?: { __typename?: 'ProductPrice', price: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string, scalarValue: any }, rrp: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string, scalarValue: any } } | null } | null }> } | null } | null };

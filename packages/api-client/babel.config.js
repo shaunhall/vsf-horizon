@@ -5,5 +5,8 @@ module.exports = {
         node: 'current'
       }
     }]
+  ],
+  plugins: [
+    ['graphql-tag', 'import-graphql']
   ]
 };

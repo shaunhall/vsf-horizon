@@ -1,0 +1,13 @@
+mutation CheckoutWithShippingDestination($basketId: ID!, $paymentMethod: String!, $currency:Currency! = GBP, $shippingDestination:Country! = GB) {
+  checkout(input: {
+    basketId: $basketId
+    currency: $currency,
+    shippingDestination: $shippingDestination
+    paymentOption: {
+      option: $paymentMethod
+    }
+  }) {
+    error
+    checkoutUrl
+  }
+}

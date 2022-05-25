@@ -1,6 +1,10 @@
-import { ProductContentItem } from '@vue-storefront/horizon-api/lib/graphql-types';
+import { ProductQuery } from '@vue-storefront/horizon-api/lib/graphql-types';
 
-export const getContentItemValueAsString = (contentItem: ProductContentItem): string => {
+type ArrElement<ArrType> = ArrType extends readonly (infer ElementType)[]
+  ? ElementType
+  : never;
+
+export const getContentItemValueAsString = (contentItem: ArrElement<ProductQuery['product']['content']>): string => {
   const itemValue = contentItem.value;
   switch (itemValue.__typename) {
     case 'ProductContentStringValue':

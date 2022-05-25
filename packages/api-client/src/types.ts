@@ -1,6 +1,5 @@
 import {
-  Product as GqlProduct,
-  ProductVariant as GqlProductVariant,
+  ProductQuery as GqlProduct,
   ProductReviews as GqlProductReviews,
   Review as GqlReview
 } from './graphql-types';
@@ -39,7 +38,7 @@ export type PasswordResetResult = TODO;
 
 export type Product = GqlProduct;
 
-export type ProductVariant = GqlProductVariant;
+export type ProductVariant = GqlProduct['product']['defaultVariant'];
 
 export type ProductVariantFilter = {
   sku?: number

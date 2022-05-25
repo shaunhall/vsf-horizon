@@ -13,7 +13,7 @@ function getName(product: ProductVariant): string {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getSlug(product: ProductVariant): string {
-  return product?.product?.url.match('[^/]+')[0] || '';
+  return null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

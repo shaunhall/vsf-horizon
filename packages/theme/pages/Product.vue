@@ -154,7 +154,7 @@ import {
 import InstagramFeed from '~/components/InstagramFeed.vue';
 import RelatedProducts from '~/components/RelatedProducts.vue';
 import { ref, computed, useRoute, useRouter } from '@nuxtjs/composition-api';
-import { useProduct, useCart, productGetters, productVariantGetters, reviewGetters, useReview } from '@vue-storefront/horizon';
+import { useProduct, useCart, productGetters, productVariantGetters, reviewGetters } from '@vue-storefront/horizon';
 import { onSSR } from '@vue-storefront/core';
 import LazyHydrate from 'vue-lazy-hydration';
 import { addBasePath } from '@vue-storefront/core';
@@ -167,9 +167,9 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const { products, search, loading: productLoading } = useProduct('products');
-    const { reviews: reviewBlob, search: reviewSearch } = useReview('products');
     const { addItem, loading } = useCart();
     const product = computed(() => productGetters.getFiltered(products.value)[0]);
+    const reviewBlob = computed(() => productGetters.getReviews(product.value));
     const reviews = computed(() => reviewGetters.getItems(reviewBlob?.value));
     const id = computed(() => route.value.params.id);
     const filters = computed(() => route.value.query);
@@ -195,8 +195,7 @@ export default {
     })));
 
     onSSR(async () => {
-      await search({ id: id.value });
-      await reviewSearch({ sku: id.value });
+      await search({ sku: id.value });
     });
 
     const updateSelectedVariant = (key, value) => {

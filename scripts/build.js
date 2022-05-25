@@ -2,6 +2,7 @@
 const path = require('path');
 const esbuild = require('esbuild');
 const yargs = require('yargs/yargs');
+const graphqlLoaderPlugin = require('@luckycatfactory/esbuild-graphql-loader');
 const { hideBin } = require('yargs/helpers');
 const argv = yargs(hideBin(process.argv)).argv;
 
@@ -23,6 +24,7 @@ esbuild.build({
   platform: 'node',
   target: 'node16',
   watch: Boolean(argv.watch),
+  plugins: [graphqlLoaderPlugin.default()],
   logLevel: 'warning',
   external: [
     ...Object.keys(pkg.dependencies || {}),

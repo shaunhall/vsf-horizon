@@ -1,5 +1,6 @@
 schema:
     - https://horizon-api.www.lyleandscott.com/graphql
+documents: './src/graphql-operations/**/*.graphql'
 overwrite: true
 generates:
     src/graphql-types.ts:

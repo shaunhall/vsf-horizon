@@ -1,0 +1,15 @@
+#import "../fragments/basketContents.graphql"
+
+
+mutation removeProductFromBasket($basketId: ID!, $itemId: ID!, $currency:Currency! = GBP, $shippingDestination:Country! = GB) {
+  removeProductFromBasket(
+    basketId: $basketId,
+    itemId: $itemId,
+    settings: {
+      currency: $currency,
+      shippingDestination: $shippingDestination
+    }
+  ) {
+    ...BasketContents
+  }
+}

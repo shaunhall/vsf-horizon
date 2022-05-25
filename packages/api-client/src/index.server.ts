@@ -2,23 +2,18 @@ import { apiClientFactory } from '@vue-storefront/core';
 import type { Setttings, Endpoints } from './types';
 import { getProduct } from './api/getProduct';
 import { getReviews } from './api/getReviews';
-
-class HorizonClient {
-
-  async apply (operation, variables) {
-    const data = await operation(variables)
-      .then((req) => {
-        const data = req.data;
-        console.log(`Call complete with variable: ${JSON.stringify(variables)} - `, new Date().toJSON());
-        return data;
-      });
-    return data;
-  }
-}
+import fetch from 'cross-fetch';
+import {
+  ApolloClient,
+  InMemoryCache,
+  HttpLink
+} from '@apollo/client/core';
 
 function onCreate(settings: Setttings) {
-  process.env.API_URL = settings.api.url;
-  const client = new HorizonClient();
+  const client = new ApolloClient({
+    cache: new InMemoryCache(),
+    link: new HttpLink({ uri: settings.api.url + '/graphql', fetch })
+  });
   return {
     config: settings,
     client

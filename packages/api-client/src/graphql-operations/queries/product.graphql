@@ -1,0 +1,7 @@
+#import "../fragments/productFragment.graphql"
+
+query Product($sku: SKU!, $offset: Int! = 0, $limit: Int! = 5) {
+  product(sku: $sku, strict: false) {
+    ...ProductFragment
+  }
+}

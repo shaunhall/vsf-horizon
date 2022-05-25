@@ -1,7 +1,0 @@
-#import "../fragments/basketContents.gql"
-
-mutation removeCodeFromBasket($basketId: ID, $shippingDestination:Country! = GB, $currency:Currency! = GBP) {
-  removeCodeFromBasket(basketId:$basketId, settings: { shippingDestination: $shippingDestination, currency: $currency }){
-    ...BasketContents
-  }
-}

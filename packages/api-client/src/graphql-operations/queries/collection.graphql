@@ -1,0 +1,14 @@
+#import "../fragments/pageWidgets.graphql"
+
+query PageServer($handle: PagePath!, $offset: Int = 0, $limit: Int = 30, $sort: ProductSort!) {
+  page(path: $handle) {
+    title
+    metaDescription
+    metaSearchKeywords
+    breadcrumbs {
+      displayName
+      pagePath
+    }
+    ...PageWidgetsServer
+  }
+}

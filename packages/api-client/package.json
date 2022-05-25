@@ -24,16 +24,21 @@
     "gen": "graphql-code-generator --config ./codegen.yml"
   },
   "dependencies": {
-    "@horizon-base-api/browser": "file:./base-api/prod/browser",
-    "@horizon-base-api/node": "file:./base-api/prod/node",
-    "@vue-storefront/core": "~2.5.4"
+    "@apollo/client": "^3.6.5",
+    "@vue-storefront/core": "~2.5.4",
+    "cross-fetch": "^3.1.5"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.6.2",
     "@graphql-codegen/typescript": "^2.4.11",
     "@graphql-codegen/typescript-operations": "^2.4.0",
+    "@types/graphql": "^14.5.0",
+    "apollo": "^2.34.0",
+    "babel-plugin-graphql-tag": "^3.3.0",
+    "babel-plugin-import-graphql": "^2.8.1",
     "concurrently": "^7.0.0",
-    "graphql": "^16.5.0"
+    "esbuild": "^0.14.39",
+    "graphql-tag": "^2.12.6"
   },
   "files": [
     "lib/**/*"

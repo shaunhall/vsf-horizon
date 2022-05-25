@@ -1,0 +1,13 @@
+#import "../fragments/basketContents.graphql"
+
+mutation RemoveSelectYourSampleFromBasket($sku: SKU!, $basketId: ID! $selectYourSampleId:ID!, $tierId: ID!, $shippingDestination:Country! = GB, $currency:Currency! = GBP) {
+  removeSelectYourSampleProductFromBasket(
+    basketId: $basketId
+    sku: $sku
+    selectYourSampleId: $selectYourSampleId
+    tierId: $tierId
+    settings: { currency: $currency, shippingDestination: $shippingDestination }
+  ) {
+    ...BasketContents
+  }
+}

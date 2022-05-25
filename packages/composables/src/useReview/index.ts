@@ -22,7 +22,7 @@ const params: UseReviewFactoryParams<Review, SearchParams, AddParams> = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   addReview: async (context: Context, params) => {
     console.log('Mocked: useReview.addReview');
-    return {};
+    return null;
   }
 };
 

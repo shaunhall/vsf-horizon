@@ -1,7 +1,0 @@
-#import "../fragments/product.gql"
-
-query Product($sku: SKU!) {
-  product(sku: $sku, strict: false) {
-    ...Product
-  }
-}
