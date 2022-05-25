@@ -18,7 +18,7 @@ generates:
             enumsAsTypes: true
             includeDirectives: true
             commentDescriptions: true
-            flattenGeneratedTypes: true
+            flattenGeneratedTypes: false
             avoidOptionals:
                 field: false
                 object: false

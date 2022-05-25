@@ -1,8 +1,11 @@
 import {
-  ProductQuery as GqlProduct,
-  ProductReviews as GqlProductReviews,
-  Review as GqlReview
+  ProductContentFragment,
+  ProductReviews,
+  Review as GqlReview,
+  BasketContentsFragment,
+  VariantContentFragment
 } from './graphql-types';
+import type { ArrElement } from './_utils';
 
 export type TODO = unknown;
 
@@ -18,9 +21,9 @@ export type Endpoints = TODO;
 
 export type BillingAddress = TODO;
 
-export type Cart = TODO;
+export type Cart = BasketContentsFragment;
 
-export type CartItem = TODO;
+export type CartItem = ArrElement<BasketContentsFragment['items']>;
 
 export type Category = TODO;
 
@@ -36,9 +39,9 @@ export type OrderItem = TODO;
 
 export type PasswordResetResult = TODO;
 
-export type Product = GqlProduct;
+export type Product = ProductContentFragment;
 
-export type ProductVariant = GqlProduct['product']['defaultVariant'];
+export type ProductVariant = VariantContentFragment;
 
 export type ProductVariantFilter = {
   sku?: number
@@ -48,7 +51,7 @@ export type ProductVariantFilter = {
 
 export type ProductFilter = TODO;
 
-export type Review = GqlProductReviews;
+export type Review = ProductReviews;
 
 export type ReviewItem = GqlReview;
 

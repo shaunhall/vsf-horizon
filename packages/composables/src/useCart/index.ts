@@ -12,55 +12,50 @@ import type {
 const params: UseCartFactoryParams<Cart, CartItem, Product> = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   load: async (context: Context, { customQuery }) => {
-    console.log('Mocked: useCart.load');
-    return {};
+    const data = await context.$horizon.api.getBasket(customQuery);
+    return data;
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   addItem: async (context: Context, { currentCart, product, quantity, customQuery }) => {
-    console.log('Mocked: useCart.addItem');
-    return {};
+    const data = await context.$horizon.api.addToBasket({ currentCart, product, quantity, customQuery });
+    return data;
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   removeItem: async (context: Context, { currentCart, product, customQuery }) => {
-    console.log('Mocked: useCart.removeItem');
-    return {};
+    const data = await context.$horizon.api.removeFromBasket({ currentCart, product, customQuery });
+    return data;
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   updateItemQty: async (context: Context, { currentCart, product, quantity, customQuery }) => {
-    console.log('Mocked: useCart.updateItemQty');
-    return {};
+    const data = await context.$horizon.api.updateItemQty({ currentCart, product, quantity, customQuery });
+    return data;
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   clear: async (context: Context, { currentCart }) => {
-    console.log('Mocked: useCart.clear');
-    return {};
+    const data = await context.$horizon.api.clearBasket({ currentCart });
+    return data;
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   applyCoupon: async (context: Context, { currentCart, couponCode, customQuery }) => {
-    console.log('Mocked: useCart.applyCoupon');
-    return {
-      updatedCart: {},
-      updatedCoupon: {}
-    };
+    const data = await context.$horizon.api.applyCodeToBasket({ currentCart, couponCode });
+    return data;
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   removeCoupon: async (context: Context, { currentCart, couponCode, customQuery }) => {
-    console.log('Mocked: useCart.removeCoupon');
-    return {
-      updatedCart: {}
-    };
+    const data = await context.$horizon.api.removeCodeFromBasket({ currentCart, couponCode });
+    return data;
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isInCart: (context: Context, { currentCart, product }) => {
-    console.log('Mocked: useCart.isInCart');
-    return false;
+    const data = context.$horizon.api.isInCart(currentCart, { currentCart, product });
+    return data;
   }
 };
 

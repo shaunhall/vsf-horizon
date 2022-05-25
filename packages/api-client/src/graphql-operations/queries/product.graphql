@@ -2,6 +2,6 @@
 
 query Product($sku: SKU!, $offset: Int! = 0, $limit: Int! = 5) {
   product(sku: $sku, strict: false) {
-    ...ProductFragment
+    ...ProductContent
   }
 }

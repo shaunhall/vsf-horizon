@@ -2,6 +2,16 @@ import { apiClientFactory } from '@vue-storefront/core';
 import type { Setttings, Endpoints } from './types';
 import { getProduct } from './api/getProduct';
 import { getReviews } from './api/getReviews';
+import {
+  getBasket,
+  addToBasket,
+  removeFromBasket,
+  updateItemQty,
+  clearBasket,
+  applyCodeToBasket,
+  removeCodeFromBasket,
+  isInCart
+} from './api/basket';
 import fetch from 'cross-fetch';
 import {
   ApolloClient,
@@ -24,7 +34,15 @@ const { createApiClient } = apiClientFactory<Setttings, Endpoints>({
   onCreate,
   api: {
     getProduct,
-    getReviews
+    getReviews,
+    getBasket,
+    addToBasket,
+    removeFromBasket,
+    updateItemQty,
+    clearBasket,
+    applyCodeToBasket,
+    removeCodeFromBasket,
+    isInCart
   }
 });
 

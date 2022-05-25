@@ -49,9 +49,11 @@ fragment BasketContents on Basket {
       }
       chargePricePerUnit {
         displayValue
+        amount
       }
       totalStandardPrice {
         displayValue
+        amount
       }
       totalChargePrice {
         displayValue

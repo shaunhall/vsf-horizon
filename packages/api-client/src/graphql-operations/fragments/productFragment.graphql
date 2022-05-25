@@ -1,4 +1,4 @@
-fragment VariantFragment on ProductVariant {
+fragment VariantContent on ProductVariant {
   sku
   choices {
     optionKey
@@ -65,7 +65,7 @@ fragment VariantFragment on ProductVariant {
   }
 }
 
-fragment ProductFragment on Product {
+fragment ProductContent on Product {
     title
     sku
     sizeGuide {
@@ -163,7 +163,7 @@ fragment ProductFragment on Product {
         averageScore
     }
     variants {
-        ...VariantFragment
+        ...VariantContent
     }
     reviews {
       total
@@ -201,6 +201,6 @@ fragment ProductFragment on Product {
       }
     }
     defaultVariant(options: { currency: GBP, shippingDestination: GB }) {
-        ...VariantFragment
+        ...VariantContent
     }
 }

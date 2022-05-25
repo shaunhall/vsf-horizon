@@ -7,81 +7,109 @@ import {
   AgnosticAttribute
 } from '@vue-storefront/core';
 import type { Cart, CartItem } from '@vue-storefront/horizon-api';
+import { string } from 'yargs';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getItems(cart: Cart): CartItem[] {
-  return [
-    {}
-  ];
+  return cart.items || [];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getItemName(item: CartItem): string {
-  return 'Name';
+  return item?.product?.title || '';
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getItemImage(item: CartItem): string {
-  return 'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/081223_1_large.jpg';
+  return item?.product?.images[0].largeProduct;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getItemPrice(item: CartItem): AgnosticPrice {
   return {
-    regular: 12,
-    special: 10
+    regular: parseFloat(item?.totalStandardPrice?.amount),
+    special: parseFloat(item?.totalChargePrice?.amount) < parseFloat(item?.totalStandardPrice?.amount)
+      ? parseFloat(item?.totalChargePrice?.amount)
+      : null
   };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getItemQty(item: CartItem): number {
-  return 1;
+  return item?.quantity || 1;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getItemAttributes(item: CartItem, filterByAttributeName?: Array<string>): Record<string, AgnosticAttribute | string> {
-  return {
-    color: 'red'
-  };
+  return item?.product.choices.reduce(((currentObj, choice) => {
+    currentObj[choice.optionKey] = choice.key;
+    return currentObj;
+  }), {});
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getItemSku(item: CartItem): string {
-  return '';
+  return item?.id;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getTotals(cart: Cart): AgnosticTotals {
   return {
-    total: 12,
-    subtotal: 12,
-    special: 10
+    total: parseFloat(cart?.standardPrice?.amount),
+    subtotal: parseFloat(cart?.chargePrice?.amount),
+    special: parseFloat(cart?.discount?.amount)
   };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getShippingPrice(cart: Cart): number {
-  return 0;
+  // Not possible in the current setup
+  return null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getTotalItems(cart: Cart): number {
-  return 1;
+  return cart?.items?.length || 0;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getFormattedPrice(price: number): string {
-  return '';
+  return String(price);
+}
+
+function getDisplayPrice(cartItem: CartItem, type: 'discountPrice' | 'chargePrice' | 'rrpPrice' = 'chargePrice'): string {
+  switch (type) {
+    case 'chargePrice':
+      return cartItem?.totalChargePrice?.displayValue;
+    case 'discountPrice':
+      return cartItem?.totalDiscount?.displayValue;
+    case 'rrpPrice':
+      return cartItem?.totalStandardPrice?.displayValue;
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getCoupons(cart: Cart): AgnosticCoupon[] {
-  return [];
+  return cart?.messages?.map(message => {
+    return {
+      id: null,
+      name: message?.message,
+      code: message?.type,
+      value: null
+    };
+  });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getDiscounts(cart: Cart): AgnosticDiscount[] {
-  return [];
+  return cart?.appliedOffers?.map(offer => {
+    return {
+      id: null,
+      name: '',
+      description: offer?.message,
+      value: parseFloat(offer?.totalBasketDiscount?.amount)
+    };
+  });
 }
 
 export const cartGetters: CartGetters<Cart, CartItem> = {
@@ -95,6 +123,7 @@ export const cartGetters: CartGetters<Cart, CartItem> = {
   getItemAttributes,
   getItemSku,
   getFormattedPrice,
+  getDisplayPrice,
   getTotalItems,
   getCoupons,
   getDiscounts
