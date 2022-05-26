@@ -21,7 +21,7 @@
     "test": "jest",
     "update:check": "ncu",
     "update:update": "ncu -u",
-    "gen": "graphql-code-generator --config ./codegen.yml"
+    "gen": "graphql-code-generator --config ./codegen.yml -r dotenv/config"
   },
   "dependencies": {
     "@apollo/client": "^3.6.5",

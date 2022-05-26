@@ -36,7 +36,6 @@ const placeOrder = async (context: Context): Promise<CheckoutMutation['checkout'
   const app = context.$horizonApp?.config?.app;
   const basketId = app?.$cookies.get('cart_id');
   const data = await context.$horizon.api.startCheckout({ basketId });
-  console.log(data);
   return data;
 };
 

@@ -3,7 +3,7 @@ import theme from './themeConfig';
 
 export default {
   server: {
-    port: 3000,
+    port: process.env.APP_PORT || 3001,
     host: '0.0.0.0'
   },
 
@@ -48,6 +48,10 @@ export default {
       // @core-development-only-start
       coreDevelopment: true,
       // @core-development-only-end
+
+      logger: {
+        verbosity: 'debug'
+      },
       useRawSource: {
         dev: [
           '@vue-storefront/horizon',
@@ -68,10 +72,6 @@ export default {
         }
       }
     }],
-    // @core-development-only-end
-    /* project-only-start
-    ['@vue-storefront/nuxt-theme'],
-    project-only-end */
     ['@vue-storefront/horizon/nuxt', {}]
   ],
 
@@ -148,7 +148,8 @@ export default {
     middleware: ['checkout']
   },
   publicRuntimeConfig: {
-    theme
+    theme,
+    middlewareUrl: process.env.NODE_ENV === 'production' && `http://localhost:${process.env.APP_PORT || 3001}/api/`
   },
   pwa: {
     meta: {

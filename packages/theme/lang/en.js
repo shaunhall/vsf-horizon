@@ -160,6 +160,7 @@ export default {
     'material': 'Material',
     'brand': 'Brand',
     'keyBenefits': 'Key Benefits',
+    'whyChoose': 'Why Choose',
     'synopsis': 'Synopsis'
   }
 };

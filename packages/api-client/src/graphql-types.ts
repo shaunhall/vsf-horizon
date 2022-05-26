@@ -411,6 +411,7 @@ export interface BasketItem {
   quantity: Scalars['Int'];
   /** The price per unit before applying any discounts. */
   standardPricePerUnit: MoneyValue;
+  subscriptionContract?: Maybe<SubscriptionContract>;
   /** The price after applying any discounts.  Will be 0 for free gifts */
   totalChargePrice: MoneyValue;
   totalDiscount: MoneyValue;
@@ -1015,6 +1016,8 @@ export interface Customer {
    */
   socialLinks?: Maybe<Array<SocialLink>>;
   socialReferralMethods: Array<SocialReferralMethod>;
+  /** Returns all subscriptions for the user.  If status is supplied, only returns subscriptions matching the given status */
+  subscriptions?: Maybe<Subscriptions>;
   wishlist?: Maybe<WishlistItems>;
 }
 
@@ -1059,6 +1062,13 @@ export interface CustomerPaymentCardsArgs {
 
 export interface CustomerSocialLinksArgs {
   status?: InputMaybe<SocialLinkStatus>;
+}
+
+
+export interface CustomerSubscriptionsArgs {
+  filter?: InputMaybe<SubscriptionsFilterInput>;
+  limit?: Scalars['Int'];
+  offset?: Scalars['Int'];
 }
 
 
@@ -2895,6 +2905,7 @@ export interface Mutation {
    * @deprecated Use addProductsToBasket instead
    */
   addProductToBasket: Basket;
+  addProductToBasketWithSubscriptionContract: Basket;
   addProductToWishlist?: Maybe<Scalars['Boolean']>;
   /**
    * If a null basketId is provided, this will fall back to the logged in customer's saved basket, or a new basket.
@@ -2919,6 +2930,16 @@ export interface Mutation {
   cancelOrderProducts?: Maybe<Scalars['Void']>;
   /** Partially cancels an order, cancelling entire special offer groups. */
   cancelOrderSpecialOfferGroups?: Maybe<Scalars['Void']>;
+  cancelSubscription?: Maybe<Scalars['Void']>;
+  cancelSubscriptionDelay?: Maybe<Scalars['Void']>;
+  /**
+   * If a null basketId is provided, this will fall back to the logged in customer's saved basket, or a new basket.
+   * This may return a different basket ID than provided, if the basket moved, merged, or didn't exist.
+   * Provide the item id of the product to be switched to subscribe and save and it will be changed in the basket.
+   * The toSubscription input field is used to specify the direction in which to switch. It should be true when switching a normal product to subscribe and save and false in the opposite case.
+   * If the purpose of the call is to change from a subscribe and save product to a normal product, this mutation can be called without the contractId input.
+   */
+  changeProductSubscriptionContractInBasket: Basket;
   check?: Maybe<Scalars['String']>;
   checkout?: Maybe<CheckoutStartResponse>;
   /**
@@ -2927,6 +2948,7 @@ export interface Mutation {
    * New discussions
    */
   createDiscussion: Scalars['ID'];
+  delaySubscription?: Maybe<Scalars['Void']>;
   /**
    * Deletes the address with the given ID if it exists.
    * Requires Authentication.
@@ -2940,9 +2962,7 @@ export interface Mutation {
    * The PasswordResetToken from the email can be used with the resetPassword mutation.
    */
   forgottenPassword?: Maybe<ForgottenPasswordResponse>;
-  guestCheckoutWithoutEmail?: Maybe<CheckoutStartResponse>;
-  /** Perform an impersonate login (e.g. for Customer Services agents) using a token previously obtained by other means. */
-  impersonateLogin?: Maybe<AuthenticationResponse>;
+  guestCheckout?: Maybe<CheckoutStartResponse>;
   login?: Maybe<AuthenticationResponse>;
   loginAndApproveSocialLink?: Maybe<AuthenticationResponse>;
   logout?: Maybe<Scalars['Void']>;
@@ -2998,6 +3018,7 @@ export interface Mutation {
   requestSocialLinkVerificationEmail?: Maybe<RequestSocialLinkVerificationEmailResponse>;
   resetPassword?: Maybe<AuthenticationResponse>;
   resolveOrderPaymentProblem?: Maybe<CheckoutStartResponse>;
+  resolveSubscriptionPaymentProblem?: Maybe<CheckoutStartResponse>;
   sendReferralEmail?: Maybe<Scalars['Void']>;
   signUpForEmailMarketingCampaign?: Maybe<Scalars['Void']>;
   /** Sign up for email or SMS marketing without the requirement to be logged in */
@@ -3018,9 +3039,6 @@ export interface Mutation {
    * Provide the item id of the product to be supersized (must be supersizable) and it will be added to the basket and the current product removed.
    */
   supersizeProductInBasket: Basket;
-  testCheckout?: Maybe<Scalars['String']>;
-  testGuestCheckout?: Maybe<Scalars['String']>;
-  testGuestCheckoutWithoutEmail?: Maybe<Scalars['String']>;
   unlinkAccounts?: Maybe<Scalars['Boolean']>;
   unsubscribeMarketing?: Maybe<Scalars['Void']>;
   unsubscribeSmsMarketing?: Maybe<Scalars['Boolean']>;
@@ -3040,6 +3058,8 @@ export interface Mutation {
    * This may return a different basket ID than provided, if the basket moved, merged, or didn't exist.
    */
   updateProductQuantityInBasket: Basket;
+  updateSubscriptionAddress?: Maybe<Scalars['Void']>;
+  updateSubscriptionPaymentMethod?: Maybe<CheckoutStartResponse>;
   voteReviewNegative?: Maybe<ReviewActionResult>;
   voteReviewPositive?: Maybe<ReviewActionResult>;
 }
@@ -3052,6 +3072,15 @@ export interface MutationAddAddressArgs {
 
 export interface MutationAddProductToBasketArgs {
   basketId?: InputMaybe<Scalars['ID']>;
+  quantity: Scalars['Int'];
+  settings: SessionSettings;
+  sku: Scalars['SKU'];
+}
+
+
+export interface MutationAddProductToBasketWithSubscriptionContractArgs {
+  basketId?: InputMaybe<Scalars['ID']>;
+  contractId: Scalars['ID'];
   quantity: Scalars['Int'];
   settings: SessionSettings;
   sku: Scalars['SKU'];
@@ -3111,6 +3140,25 @@ export interface MutationCancelOrderSpecialOfferGroupsArgs {
 }
 
 
+export interface MutationCancelSubscriptionArgs {
+  id: Scalars['ID'];
+}
+
+
+export interface MutationCancelSubscriptionDelayArgs {
+  id: Scalars['ID'];
+}
+
+
+export interface MutationChangeProductSubscriptionContractInBasketArgs {
+  basketId?: InputMaybe<Scalars['ID']>;
+  contractId?: InputMaybe<Scalars['ID']>;
+  settings: SessionSettings;
+  sku: Scalars['SKU'];
+  toSubscription: Scalars['Boolean'];
+}
+
+
 export interface MutationCheckoutArgs {
   input: CheckoutStartInput;
 }
@@ -3118,6 +3166,11 @@ export interface MutationCheckoutArgs {
 
 export interface MutationCreateDiscussionArgs {
   input: CreateDiscussionInput;
+}
+
+
+export interface MutationDelaySubscriptionArgs {
+  id: Scalars['ID'];
 }
 
 
@@ -3141,13 +3194,8 @@ export interface MutationForgottenPasswordArgs {
 }
 
 
-export interface MutationGuestCheckoutWithoutEmailArgs {
-  input: CheckoutStartInput;
-}
-
-
-export interface MutationImpersonateLoginArgs {
-  impersonationToken: Scalars['String'];
+export interface MutationGuestCheckoutArgs {
+  input: GuestCheckoutStartInput;
 }
 
 
@@ -3239,6 +3287,11 @@ export interface MutationResolveOrderPaymentProblemArgs {
 }
 
 
+export interface MutationResolveSubscriptionPaymentProblemArgs {
+  subscriptionId: Scalars['ID'];
+}
+
+
 export interface MutationSendReferralEmailArgs {
   emailAddresses: Array<Scalars['String']>;
 }
@@ -3275,21 +3328,6 @@ export interface MutationSupersizeProductInBasketArgs {
   basketId?: InputMaybe<Scalars['ID']>;
   itemId: Scalars['ID'];
   settings: SessionSettings;
-}
-
-
-export interface MutationTestCheckoutArgs {
-  input: TestCheckoutStartInput;
-}
-
-
-export interface MutationTestGuestCheckoutArgs {
-  input: TestGuestCheckoutStartInput;
-}
-
-
-export interface MutationTestGuestCheckoutWithoutEmailArgs {
-  input: TestCheckoutStartInput;
 }
 
 
@@ -3343,6 +3381,17 @@ export interface MutationUpdateProductQuantityInBasketArgs {
   itemId: Scalars['ID'];
   quantity: Scalars['Int'];
   settings: SessionSettings;
+}
+
+
+export interface MutationUpdateSubscriptionAddressArgs {
+  addressId: Scalars['ID'];
+  subscriptionId: Scalars['ID'];
+}
+
+
+export interface MutationUpdateSubscriptionPaymentMethodArgs {
+  subscriptionId: Scalars['ID'];
 }
 
 
@@ -3476,6 +3525,8 @@ export interface Order {
   /** If the order has been dispatched, this is the dispatched time */
   dispatchedAt?: Maybe<Scalars['Timestamp']>;
   eligibleForSelfServiceDenialOfReceipt?: Maybe<Scalars['Boolean']>;
+  /**  TODO: Need to discuss how this should work for guest orders */
+  isReturnable?: Maybe<ReturnsEligibilityResult>;
   orderNumber: Scalars['OrderNumber'];
   paymentCard?: Maybe<PaymentCard>;
   paymentType?: Maybe<Scalars['String']>;
@@ -3489,6 +3540,11 @@ export interface Order {
 export interface OrderDiscussionsArgs {
   limit?: Scalars['Int'];
   offset?: Scalars['Int'];
+}
+
+
+export interface OrderIsReturnableArgs {
+  input: ReturnsEligibilityInput;
 }
 
 export type OrderCancellationReason =
@@ -3915,6 +3971,36 @@ export type ProductSort =
   | 'PRICE_LOW_TO_HIGH'
   | 'RELEVANCE';
 
+/** An e-commerce subscription, would be just a "Subscription" if it weren't for the GraphQL feature! */
+export interface ProductSubscription {
+  __typename?: 'ProductSubscription';
+  billingAddress?: Maybe<Address>;
+  cancellable: Scalars['Boolean'];
+  /** The orders created to fulfil this subscription. */
+  childOrders?: Maybe<Array<Order>>;
+  costPerPaymentPeriod: MoneyValue;
+  createdAt: Scalars['Timestamp'];
+  delayCancellable: Scalars['Boolean'];
+  delayCount: Scalars['Int'];
+  /** @deprecated Use delayCount instead */
+  delayStatus: SubscriptionDelay;
+  delayable: Scalars['Boolean'];
+  deliveryAddress?: Maybe<Address>;
+  id: Scalars['ID'];
+  nextBillingDate?: Maybe<Scalars['Date']>;
+  /** The parent order that spawned this subscription. */
+  order?: Maybe<Order>;
+  paymentCard?: Maybe<PaymentCard>;
+  product?: Maybe<ProductVariant>;
+  schedule: SubscriptionSchedule;
+  /**
+   * The product that represents the subscription as a whole, i.e. the one placed in basket when
+   * initially signing-up, not the ones actually sent out.
+   */
+  sku?: Maybe<Scalars['SKU']>;
+  status: SubscriptionStatus;
+}
+
 export interface ProductUnit {
   __typename?: 'ProductUnit';
   /** E.g. "kg" in 5 kg or "servings" in 35 servings */
@@ -3932,6 +4018,9 @@ export interface ProductVariant {
   images: Array<ProductImage>;
   inStock: Scalars['Boolean'];
   inWishlist?: Maybe<Scalars['Boolean']>;
+  isAutoRenewSubscription: Scalars['Boolean'];
+  /** Legacy subscription fields. This functionality is being replaced by Subs By Sku. */
+  isSubscription: Scalars['Boolean'];
   /** A marketed special offer to display on product pages. */
   marketedSpecialOffer?: Maybe<ProductMarketedSpecialOffer>;
   maxPerOrder?: Maybe<Scalars['Int']>;
@@ -3942,6 +4031,7 @@ export interface ProductVariant {
    */
   product?: Maybe<Product>;
   sku: Scalars['SKU'];
+  subscriptionContracts: Array<SubscriptionContract>;
   supersize?: Maybe<Supersize>;
   /** @deprecated Use supersize -> variant instead */
   supersizeVariant?: Maybe<ProductVariant>;
@@ -4507,6 +4597,51 @@ export interface ResponsiveUspBar extends Widget {
   wednesdayCutoff?: Maybe<Scalars['String']>;
 }
 
+export interface ReturnsEligibilityInput {
+  skus: Array<Scalars['SKU']>;
+}
+
+export type ReturnsEligibilityOrderError =
+  /** The provided address is not valid */
+  | 'INVALID_ADDRESS'
+  /** The selected products are invalid for return */
+  | 'ORDER_PRODUCTS_INVALID'
+  /** Unrecognised error found */
+  | 'UNKNOWN_ERROR'
+  /** The value of the selected products is too high */
+  | 'VALUE_TOO_HIGH';
+
+export type ReturnsEligibilityProductError =
+  /** The product is a dropship */
+  | 'DROPSHIP_ORDER_PRODUCT'
+  /** The product's delivery date is unknown */
+  | 'ITEM_DELIVERY_DATE_UNKNOWN'
+  /** The product's return date has expired */
+  | 'ITEM_EXPIRED'
+  /** The product has not been dispatched yet */
+  | 'ITEM_NOT_DISPATCHED'
+  /** The product is not available for return */
+  | 'ORDER_PRODUCT_UNAVAILABLE'
+  /** The product is not in the order */
+  | 'PRODUCT_NOT_IN_ORDER'
+  /** The product type is not valid */
+  | 'PRODUCT_TYPE_INVALID'
+  /** Unrecognised error found */
+  | 'UNKNOWN_ERROR';
+
+export interface ReturnsEligibilityResult {
+  __typename?: 'ReturnsEligibilityResult';
+  orderError?: Maybe<ReturnsEligibilityOrderError>;
+  productErrors?: Maybe<Array<ReturnsEligibilitySkuAndProductError>>;
+  success: Scalars['Boolean'];
+}
+
+export interface ReturnsEligibilitySkuAndProductError {
+  __typename?: 'ReturnsEligibilitySkuAndProductError';
+  error?: Maybe<ReturnsEligibilityProductError>;
+  sku: Scalars['SKU'];
+}
+
 export interface Review {
   __typename?: 'Review';
   authorName: Scalars['DisplayString'];
@@ -4924,6 +5059,82 @@ export type State =
   | 'US_WI'
   | 'US_WV'
   | 'US_WY';
+
+export interface SubscriptionContract {
+  __typename?: 'SubscriptionContract';
+  frequency: SubscriptionFrequency;
+  id: Scalars['ID'];
+  initialDiscountPercentage: Scalars['Float'];
+  initialPrice?: Maybe<ProductPrice>;
+  /** This is the recommended contract and should probably be pre-selected in the client implementation */
+  recommended: Scalars['Boolean'];
+  recurringDiscountPercentage: Scalars['Float'];
+  recurringPrice?: Maybe<ProductPrice>;
+  upsellMessage: Scalars['DisplayString'];
+}
+
+
+export interface SubscriptionContractInitialPriceArgs {
+  currency: Currency;
+  shippingDestination: Country;
+}
+
+
+export interface SubscriptionContractRecurringPriceArgs {
+  currency: Currency;
+  shippingDestination: Country;
+}
+
+export type SubscriptionDelay =
+  | 'DELAYED_ONE_MONTH'
+  | 'DELAYED_TWO_MONTHS'
+  | 'NOT_DELAYED'
+  | 'PROCESSING_DELAY_REQUEST';
+
+/** The same day of the period each time (e.g. the nth day of each month) */
+export type SubscriptionFrequency =
+  | 'ANNUALLY'
+  | 'EVERY_FOUR_MONTHS'
+  | 'EVERY_TWO_MONTHS'
+  | 'MONTHLY'
+  | 'QUARTERLY';
+
+export type SubscriptionPaymentType =
+  | 'ON_DISPATCH'
+  | 'ON_ORDER'
+  | 'UPFRONT';
+
+export interface SubscriptionSchedule {
+  __typename?: 'SubscriptionSchedule';
+  autoRenew: Scalars['Boolean'];
+  dispatchFrequency: SubscriptionFrequency;
+  paymentFrequency: SubscriptionFrequency;
+  paymentType: SubscriptionPaymentType;
+  /** The number of orders to be placed in total. */
+  totalDeliveries: Scalars['Int'];
+}
+
+export type SubscriptionStatus =
+  | 'ACTIVE'
+  | 'CANCELLED'
+  | 'COMPLETE'
+  | 'FAILED_PAYMENT'
+  | 'NEW'
+  | 'NOTICE_PERIOD'
+  /** The subscription order has been placed, but has yet to be processed. */
+  | 'PREPROCESSED';
+
+export interface Subscriptions {
+  __typename?: 'Subscriptions';
+  hasMore: Scalars['Boolean'];
+  subscriptions: Array<ProductSubscription>;
+  total: Scalars['Int'];
+}
+
+export interface SubscriptionsFilterInput {
+  id?: InputMaybe<Scalars['ID']>;
+  status?: InputMaybe<SubscriptionStatus>;
+}
 
 export interface Supersize {
   __typename?: 'Supersize';

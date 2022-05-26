@@ -24,14 +24,13 @@ function onCreate(settings) {
   const client = new ApolloClient({
     cache: new InMemoryCache(),
     link: new HttpLink({
-      uri: settings.api.url + '/graphql',
+      uri: settings.api.url,
       credentials: 'include',
       fetch })
   });
   return {
     config: settings,
-    client,
-    cookies: settings.api.cookies
+    client
   };
 }
 
