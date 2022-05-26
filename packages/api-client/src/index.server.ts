@@ -1,5 +1,5 @@
 import { apiClientFactory } from '@vue-storefront/core';
-import type { Setttings, Endpoints } from './types';
+import type { Endpoints } from './types';
 import { getProduct } from './api/getProduct';
 import { getReviews } from './api/getReviews';
 import {
@@ -19,18 +19,19 @@ import {
   HttpLink
 } from '@apollo/client/core';
 
-function onCreate(settings: Setttings) {
+function onCreate(settings) {
   const client = new ApolloClient({
     cache: new InMemoryCache(),
     link: new HttpLink({ uri: settings.api.url + '/graphql', fetch })
   });
   return {
     config: settings,
-    client
+    client,
+    cookies: settings.api.cookies
   };
 }
 
-const { createApiClient } = apiClientFactory<Setttings, Endpoints>({
+const { createApiClient } = apiClientFactory<unknown, Endpoints>({
   onCreate,
   api: {
     getProduct,

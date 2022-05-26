@@ -7296,8 +7296,8 @@ cookie-signature@1.0.6:
 
 cookie-universal-nuxt@^2.1.5:
   version "2.1.5"
-  resolved "https://registry.yarnpkg.com/cookie-universal-nuxt/-/cookie-universal-nuxt-2.1.5.tgz#669f2ff95b1bc1962c86edd69c954f60729e71e5"
-  integrity sha512-P0WCTKIyemWNtHi9lxrS5cxZmieOIEjt28B7Alu6cdSB9RqtUtpkqYyV9PRK6oJrT5eIPDYjHsJQlh6SUrFJOg==
+  resolved "https://artifactory.io.thehut.local:443/artifactory/api/npm/npm-registry/cookie-universal-nuxt/-/cookie-universal-nuxt-2.1.5.tgz#669f2ff95b1bc1962c86edd69c954f60729e71e5"
+  integrity sha1-Zp8v+VsbwZYshu3WnJVPYHKeceU=
   dependencies:
     "@types/cookie" "^0.3.3"
     cookie-universal "^2.1.5"

@@ -80,12 +80,11 @@
           </template>
           <SfAddToCart
             v-e2e="'product_add-to-cart'"
-            :stock="stock"
             v-model="qty"
             :disabled="loading"
-            :canAddToCart="stock > 0"
+            :canAddToCart="productVariantGetters.getIsInStock(currentVariant)"
             class="product__add-to-cart"
-            @click="addItem({ product, quantity: parseInt(qty) })"
+            @click="addItem({ product: currentVariant, quantity: parseInt(qty) })"
           />
         </div>
 
@@ -258,7 +257,6 @@ export default {
   },
   data() {
     return {
-      stock: 5,
       properties: [
         {
           name: 'Product Code',

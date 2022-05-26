@@ -7,11 +7,10 @@ import {
   AgnosticAttribute
 } from '@vue-storefront/core';
 import type { Cart, CartItem } from '@vue-storefront/horizon-api';
-import { string } from 'yargs';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getItems(cart: Cart): CartItem[] {
-  return cart.items || [];
+  return cart.items.sort((a, b) => parseInt(a.id) - parseInt(b.id)) || [];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -21,7 +20,7 @@ function getItemName(item: CartItem): string {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getItemImage(item: CartItem): string {
-  return item?.product?.images[0].largeProduct;
+  return item?.product?.product?.images.length ? item?.product?.product?.images[0].largeProduct : '';
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

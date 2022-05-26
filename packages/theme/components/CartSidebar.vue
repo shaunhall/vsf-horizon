@@ -45,8 +45,9 @@
                   <div class="sf-collected-product__quantity-wrapper">
                     <SfQuantitySelector
                       :disabled="loading"
+                      :min="1"
                       :qty="cartGetters.getItemQty(product)"
-                      class="sf-collected-product__quantity-selector"
+                      class="sf-collected-product__quantity-selector__transparent"
                       @input="updateQuantity({ product: { id: product.id }, quantity: Number($event) })"
                     />
                   </div>
@@ -84,7 +85,7 @@
               <template #value>
                 <SfPrice
                   :regular="$n(totals.subtotal, 'currency')"
-                  :special="(totals.special !== totals.subtotal) ? $n(totals.special, 'currency') : 0"
+                  :special="(totals.total !== totals.subtotal) ? $n(totals.special, 'currency') : 0"
                 />
               </template>
             </SfProperty>

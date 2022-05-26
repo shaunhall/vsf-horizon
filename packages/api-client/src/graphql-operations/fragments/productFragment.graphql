@@ -17,6 +17,12 @@ fragment VariantContent on ProductVariant {
   availabilityMessage
   product {
     url
+    images {
+      original
+      thumbnail
+      largeProduct
+      zoom
+    }
   }
   price(currency: GBP, shippingDestination: GB) {
     price {

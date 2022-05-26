@@ -9,14 +9,6 @@ import type { ArrElement } from './_utils';
 
 export type TODO = unknown;
 
-export type Api = {
-  url: string
-};
-
-export type Setttings = {
-  api: Api
-};
-
 export type Endpoints = TODO;
 
 export type BillingAddress = TODO;

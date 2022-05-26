@@ -1,16 +1,38 @@
-import { UseCartFactoryParams } from '@vue-storefront/core';
+import { Context, UseCartFactoryParams } from '@vue-storefront/core';
 import addToBasketMutation from 'src/graphql-operations/mutations/basketAdd.graphql';
+import updateBasketQtyMutation from 'src/graphql-operations/mutations/basketUpdate.graphql';
+import basketQuery from 'src/graphql-operations/queries/basket.graphql';
+import removeFromBasketMutation from 'src/graphql-operations/mutations/basketRemove.graphql';
+import applyCodeToBasketMutation from 'src/graphql-operations/mutations/applyCodeToBasket.graphql';
+import removeCodeFromBasketMutation from 'src/graphql-operations/mutations/removeCodeFromBasket.graphql';
 import type {
   Cart,
   CartItem,
-  Product
+  ProductVariant
 } from '../types';
-import { AddToBasketMutation, AddToBasketMutationVariables, ApplyCodeToBasketMutation, ApplyCodeToBasketMutationVariables, BasketQuery, BasketQueryVariables, RemoveCodeFromBasketMutation, RemoveCodeFromBasketMutationVariables, RemoveProductFromBasketMutation, RemoveProductFromBasketMutationVariables } from 'src/graphql-types';
+import {
+  AddToBasketMutation,
+  AddToBasketMutationVariables,
+  ApplyCodeToBasketMutation,
+  ApplyCodeToBasketMutationVariables,
+  BasketQuery,
+  RemoveCodeFromBasketMutation,
+  RemoveCodeFromBasketMutationVariables,
+  RemoveProductFromBasketMutation,
+  RemoveProductFromBasketMutationVariables,
+  UpdateBasketQtyMutation,
+  UpdateBasketQtyMutationVariables
+} from 'src/graphql-types';
 
-type cartParams = UseCartFactoryParams<Cart, CartItem, Product>;
+type cartParams = UseCartFactoryParams<Cart, CartItem, ProductVariant>;
 
-export const getBasket: cartParams['load'] = async (context, params) => {
-  const basketData: BasketQuery = await context.client.mutation({ mutation: addToBasketMutation, variables: {} as BasketQueryVariables }).data;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const getBasket = async (context: Context, params: { id?: string }): ReturnType<cartParams['load']> => {
+  const basketData: BasketQuery = await context.client.query({ query: basketQuery, variables: params })
+    .then(res => res.data)
+    .catch((err) => {
+      console.log(err);
+    });
   return basketData.basket;
 };
 
@@ -20,7 +42,11 @@ export const addToBasket: cartParams['addItem'] = async (context, params) => {
     qty: params.quantity
   };
   if (params.currentCart?.id) variables.id = params.currentCart.id;
-  const basketData: AddToBasketMutation = await context.client.mutation({ mutation: addToBasketMutation, variables }).data;
+  const basketData: AddToBasketMutation = await context.client.mutate({ mutation: addToBasketMutation, variables })
+    .then(res => res.data)
+    .catch((err) => {
+      console.log(err);
+    });
   return basketData.addProductToBasket;
 };
 
@@ -29,18 +55,26 @@ export const removeFromBasket: cartParams['removeItem'] = async (context, params
     basketId: params.currentCart.id,
     itemId: params.product.id
   };
-  const basketData: RemoveProductFromBasketMutation = await context.client.mutation({ mutation: addToBasketMutation, variables }).data;
+  const basketData: RemoveProductFromBasketMutation = await context.client.mutate({ mutation: removeFromBasketMutation, variables })
+    .then(res => res.data)
+    .catch((err) => {
+      console.log(err);
+    });
   return basketData.removeProductFromBasket;
 };
 
 export const updateItemQty: cartParams['updateItemQty'] = async (context, params) => {
-  const variables: AddToBasketMutationVariables = {
-    sku: params.product.id,
+  const variables: UpdateBasketQtyMutationVariables = {
+    itemId: params.product.id,
     qty: params.quantity
   };
   if (params.currentCart.id) variables.id = params.currentCart.id;
-  const basketData: AddToBasketMutation = await context.client.mutation({ mutation: addToBasketMutation, variables }).data;
-  return basketData.addProductToBasket;
+  const basketData: UpdateBasketQtyMutation = await context.client.mutate({ mutation: updateBasketQtyMutation, variables })
+    .then(res => res.data)
+    .catch((err) => {
+      console.log(err);
+    });
+  return basketData.updateProductQuantityInBasket;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -53,7 +87,11 @@ export const applyCodeToBasket: cartParams['applyCoupon'] = async (context, para
     basketId: params.currentCart.id,
     code: params.couponCode
   };
-  const basketData: ApplyCodeToBasketMutation = await context.client.mutation({ mutation: addToBasketMutation, variables }).data;
+  const basketData: ApplyCodeToBasketMutation = await context.client.mutate({ mutation: applyCodeToBasketMutation, variables })
+    .then(res => res.data)
+    .catch((err) => {
+      console.log(err);
+    });
   return {
     updatedCart: basketData.applyCodeToBasket
   };
@@ -63,7 +101,11 @@ export const removeCodeFromBasket: cartParams['removeCoupon'] = async (context, 
   const variables: RemoveCodeFromBasketMutationVariables = {
     basketId: params.currentCart?.id
   };
-  const basketData: RemoveCodeFromBasketMutation = await context.client.mutation({ mutation: addToBasketMutation, variables }).data;
+  const basketData: RemoveCodeFromBasketMutation = await context.client.mutate({ mutation: removeCodeFromBasketMutation, variables })
+    .then(res => res.data)
+    .catch((err) => {
+      console.log(err);
+    });
   return {
     updatedCart: basketData.removeCodeFromBasket
   };

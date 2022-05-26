@@ -28,6 +28,25 @@ function getPrice(product: ProductVariant): AgnosticPrice {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getGallery(product: ProductVariant): AgnosticMediaGalleryItem[] {
+  if (product) {
+    return product.images?.length
+      ? product.images.map((image => {
+        return {
+          small: image.largeProduct,
+          normal: image.zoom,
+          big: image.original
+        };
+      }))
+      : product.product?.images.map((image => {
+        return {
+          small: image.largeProduct,
+          normal: image.zoom,
+          big: image.original
+        };
+      }));
+  } else {
+    return [];
+  }
   return product ? product?.images?.map((image => {
     return {
       small: image.largeProduct,
@@ -114,6 +133,11 @@ function getAverageRating(product: ProductVariant): number {
   return 0;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function getIsInStock(product: ProductVariant): boolean {
+  return product?.inStock;
+}
+
 const getBreadcrumbs = (product: ProductVariant): any => {
   const breadCrumbs = [
     {
@@ -149,5 +173,6 @@ export const productVariantGetters: ProductGetters<ProductVariant, ProductFilter
   getDisplayPrice,
   getTotalReviews,
   getAverageRating,
+  getIsInStock,
   getBreadcrumbs
 };

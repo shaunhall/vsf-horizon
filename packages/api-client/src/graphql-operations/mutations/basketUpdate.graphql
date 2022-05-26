@@ -1,0 +1,12 @@
+#import "../fragments/basketContents.graphql"
+
+mutation UpdateBasketQty($itemId: ID!, $qty:Int!, $id: ID, $currency:Currency! = GBP, $shippingDestination:Country! = GB) {
+  updateProductQuantityInBasket(
+    basketId: $id
+    itemId: $itemId
+    quantity: $qty
+    settings: { currency: $currency, shippingDestination: $shippingDestination }
+  ) {
+    ...BasketContents
+  }
+}
