@@ -2,6 +2,7 @@ import { apiClientFactory } from '@vue-storefront/core';
 import type { Endpoints } from './types';
 import { getProduct } from './api/getProduct';
 import { getReviews } from './api/getReviews';
+import { startCheckout } from './api/checkout';
 import {
   getBasket,
   addToBasket,
@@ -22,7 +23,10 @@ import {
 function onCreate(settings) {
   const client = new ApolloClient({
     cache: new InMemoryCache(),
-    link: new HttpLink({ uri: settings.api.url + '/graphql', fetch })
+    link: new HttpLink({
+      uri: settings.api.url + '/graphql',
+      credentials: 'include',
+      fetch })
   });
   return {
     config: settings,
@@ -43,7 +47,8 @@ const { createApiClient } = apiClientFactory<unknown, Endpoints>({
     clearBasket,
     applyCodeToBasket,
     removeCodeFromBasket,
-    isInCart
+    isInCart,
+    startCheckout
   }
 });
 

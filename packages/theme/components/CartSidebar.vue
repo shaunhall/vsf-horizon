@@ -89,14 +89,12 @@
                 />
               </template>
             </SfProperty>
-            <nuxt-link :to="localePath({ name: 'shipping' })">
-              <SfButton
-                class="sf-button--full-width color-secondary"
-                @click="toggleCartSidebar"
-              >
-                {{ $t('Go to checkout') }}
-              </SfButton>
-            </nuxt-link>
+            <SfButton
+              class="sf-button--full-width color-secondary"
+              @click="startCheckout"
+            >
+              {{ $t('Go to checkout') }}
+            </SfButton>
           </div>
           <div v-else>
             <SfButton
@@ -122,8 +120,8 @@ import {
   SfImage,
   SfQuantitySelector
 } from '@storefront-ui/vue';
-import { computed } from '@nuxtjs/composition-api';
-import { useCart, cartGetters } from '@vue-storefront/horizon';
+import { computed, useContext, useRouter } from '@nuxtjs/composition-api';
+import { useCart, cartGetters, useCheckout } from '@vue-storefront/horizon';
 import { useUiState } from '~/composables';
 import debounce from 'lodash.debounce';
 import { addBasePath } from '@vue-storefront/core';
@@ -144,6 +142,7 @@ export default {
   setup() {
     const { isCartSidebarOpen, toggleCartSidebar } = useUiState();
     const { cart, removeItem, updateItemQty, loading } = useCart();
+    const { placeOrder } = useCheckout();
     const products = computed(() => cartGetters.getItems(cart.value));
     const totals = computed(() => cartGetters.getTotals(cart.value));
     const totalItems = computed(() => cartGetters.getTotalItems(cart.value));
@@ -151,6 +150,14 @@ export default {
     const updateQuantity = debounce(async ({ product, quantity }) => {
       await updateItemQty({ product, quantity });
     }, 500);
+    const context = useContext();
+    const startCheckout = async () => {
+      const data = await placeOrder(context.app.$vsf);
+      console.log(data);
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      }
+    };
 
     return {
       addBasePath,
@@ -162,7 +169,8 @@ export default {
       toggleCartSidebar,
       totals,
       totalItems,
-      cartGetters
+      cartGetters,
+      startCheckout
     };
   }
 };

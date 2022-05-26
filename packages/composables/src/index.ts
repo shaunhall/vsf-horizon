@@ -1,6 +1,7 @@
 // Composables
 export { useBilling } from './useBilling';
 export { useCart } from './useCart';
+export { useCheckout } from './useCheckout';
 export { useCategory } from './useCategory';
 export { useContent } from './useContent';
 export { useFacet } from './useFacet';

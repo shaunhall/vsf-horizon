@@ -4,7 +4,7 @@ module.exports = {
       location: '@vue-storefront/horizon-api/server',
       configuration: {
         api: {
-          url: 'https://horizon-api.www.lyleandscott.com'
+          url: 'https://horizon-api.www.myprotein.com'
         }
       }
     }
