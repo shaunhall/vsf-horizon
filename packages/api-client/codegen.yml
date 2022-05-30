@@ -1,5 +1,5 @@
 schema:
-    - https://horizon-api.www.myprotein.com/graphql
+    - ${API_URL}
 documents: './src/graphql-operations/**/*.graphql'
 overwrite: true
 generates:
