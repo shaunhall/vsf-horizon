@@ -1,0 +1,31 @@
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless Express Application/API powered by API Gateway and Lambda
+
+Resources:
+  StaticBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: BucketOwnerFullControl
+
+  StaticBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: StaticBucket
+      PolicyDocument:
+        Id: WorldReadBucketPolicy
+        Version: 2012-10-17
+        Statement:
+          - Sid: PublicReadForGetBucketObjects
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Join ['', ['arn:aws:s3:::', !Ref 'StaticBucket', /*]]
+
+Outputs:
+  S3BucketName:
+    Description: Static Bucket Name
+    Value: !Ref StaticBucket
+  S3BucketDomain:
+    Description: Static Bucket Domain
+    Value: !GetAtt StaticBucket.DomainName

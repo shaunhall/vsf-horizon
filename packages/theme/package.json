@@ -13,6 +13,7 @@
     "lint": "eslint . --ext .ts,.vue",
     "lint:fix": "eslint . --ext .ts,.vue --fix",
     "start": "nuxt start",
+    "start:isr": "node local-start.js",
     "test": "jest",
     "test:e2e": "cypress open --config-file tests/e2e/cypress.json",
     "test:e2e:generate:report": "yarn -s mochawesome-merge \"tests/e2e/report/*.json\" > \"tests/e2e/report.json\" && yarn -s marge tests/e2e/report.json -o \"tests/e2e/report\"",

@@ -24,6 +24,7 @@
     "publish:api-client": "node ./scripts/publishApi.js",
     "publish:composables": "node ./scripts/publishComposable.js",
     "start": "cd packages/theme && yarn start",
+    "start:isr": "cd packages/theme && yarn start:isr",
     "test": "yarn test:api-client && yarn test:composables && yarn test:theme",
     "test:api-client": "cd packages/api-client && yarn test --passWithNoTests",
     "test:composables": "cd packages/composables && yarn test --passWithNoTests",
