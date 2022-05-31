@@ -6,11 +6,6 @@ Parameters:
     Description: CDN Domain name
     Default: ''
 
-  BranchHash:
-    Type: String
-    Description: Hash of the branch name (CNAME of the Domain)
-    Default: ''
-
   Route53HostedZone:
     Type: String
     Description: Hosted Zone
@@ -51,26 +46,8 @@ Parameters:
       - 'false'
     Default: 'false'
 
-  KillSwitch:
-    Type: String
-    Description: The killswitch boolean used to redirect to the base website
-    AllowedValues:
-      - 'true'
-      - 'false'
-
-  RedirectedUrl:
-    Type: String
-    Description: The URL redirected to after killswitch is enabled
-    Default: ''
-
-  CacheBypassPassword:
-    Type: String
-    Description: The Password to bypass the cache
-    Default: ''
-
 Conditions:
   IsAuthEnabled: !Equals [ !Ref AuthEnabled, 'true']
-  KillSwitchEnabled: !Equals [ !Ref KillSwitch, 'true']
   IsProvisionedConcurrencyEnabled: !Equals [ !Ref ProvisionedConcurrencyEnabled, 'true']
 
 Resources:
@@ -84,51 +61,8 @@ Resources:
   ExpressLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: .
-      Handler: server/edge.handler
-      MemorySize: 2048
-      ProvisionedConcurrencyConfig:
-        !If
-          - IsProvisionedConcurrencyEnabled
-          - ProvisionedConcurrentExecutions: 30
-          - !Ref "AWS::NoValue"
-      AutoPublishAlias: prod
-      Tracing: Active
-      Runtime: nodejs14.x
-      Timeout: 30
-      Policies:
-        - AWSLambdaExecute
-      Environment:
-        Variables:
-          CACHE_BYPASS:
-            !Ref CacheBypassPassword
-      Events:
-        ProxyApiRoot:
-          Type: Api
-          Properties:
-            RestApiId: !Ref ExpressApi
-            Path: /
-            Method: ANY
-        ProxyApiGreedy:
-          Type: Api
-          Properties:
-            RestApiId: !Ref ExpressApi
-            Path: /{proxy+}
-            Method: ANY
-
-  IPXExpressApi:
-    Type: AWS::Serverless::Api
-    Properties:
-      StageName: prod
-      BinaryMediaTypes: ['*/*']
-      MinimumCompressionSize: 0
-      Name: !Sub "${AWS::StackName}-IPX"
-
-  IPXExpressLambdaFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: .
-      Handler: server/edge.handler
+      CodeUri: ../..
+      Handler: ./packages/theme/scripts/edge.handler
       MemorySize: 2048
       ProvisionedConcurrencyConfig:
         !If
@@ -145,43 +79,19 @@ Resources:
         ProxyApiRoot:
           Type: Api
           Properties:
-            RestApiId: !Ref IPXExpressApi
+            RestApiId: !Ref ExpressApi
             Path: /
             Method: ANY
         ProxyApiGreedy:
           Type: Api
           Properties:
-            RestApiId: !Ref IPXExpressApi
+            RestApiId: !Ref ExpressApi
             Path: /{proxy+}
             Method: ANY
-
-  SocialLoginFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: sociallogin
-      Handler: app.handle
-      MemorySize: 1024
-      Runtime: python3.7
-      Timeout: 30
-      Policies:
-        - AWSLambdaExecute
-      Events:
-        SocialLoginProxyResource:
-          Type: Api
-          Properties:
-            RestApiId: !Ref ExpressApi
-            Path: /social-login
-            RequestParameters:
-              method.request.querystring.returnPath: false
-            Method: POST
-        SocialLoginProxyResourceGreedy:
-          Type: Api
-          Properties:
-            RestApiId: !Ref ExpressApi
-            Path: /social-login/{proxy+}
-            RequestParameters:
-              method.request.querystring.returnPath: false
-            Method: POST
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ../..
+      DockerTag: v1
 
   DefaultCachePolicy:
     Type: AWS::CloudFront::CachePolicy
@@ -195,16 +105,11 @@ Resources:
           CookiesConfig:
             CookieBehavior: whitelist
             Cookies:
-              - en_currency_V6
-              - en_shippingCountry_V6
-              - locale_V6
-              - cache_bypass_id
+              - cart_id
           EnableAcceptEncodingBrotli: true
           EnableAcceptEncodingGzip: true
           HeadersConfig:
-            HeaderBehavior: whitelist
-            Headers:
-              - cache-bypass
+            HeaderBehavior: none
           QueryStringsConfig:
             QueryStringBehavior: 'all'
 
@@ -219,66 +124,6 @@ Resources:
           HeaderBehavior: 'none'
         QueryStringsConfig:
           QueryStringBehavior: 'all'
-
-  BFFCachePolicy:
-    Type: AWS::CloudFront::CachePolicy
-    Properties:
-      CachePolicyConfig:
-        DefaultTTL: 1
-        MaxTTL: 31556952
-        MinTTL: 0
-        Name: !Sub 'BFFCachePolicy-${AWS::StackName}'
-        ParametersInCacheKeyAndForwardedToOrigin:
-          CookiesConfig:
-            CookieBehavior: 'all'
-          EnableAcceptEncodingBrotli: true
-          EnableAcceptEncodingGzip: true
-          HeadersConfig:
-            HeaderBehavior: 'whitelist'
-            Headers:
-            - Authorization
-          QueryStringsConfig:
-            QueryStringBehavior: 'whitelist'
-            QueryStrings:
-              - 'returnPath'
-
-  ManifestFunction:
-    Type: AWS::CloudFront::Function
-    Properties:
-      AutoPublish: True
-      FunctionCode: !Sub |
-        function handler(event) {
-            var request = event.request;
-            var uri = request.uri;
-            request.uri = '/_nuxt/static/_/manifest.js'
-            return request;
-        }
-      FunctionConfig:
-        Comment: !Sub "Manifest path creation for ${BranchHash}"
-        Runtime: cloudfront-js-1.0
-      Name: !Sub "${AWS::StackName}-Manifest"
-
-  KillSwitchFunction:
-    Type: AWS::CloudFront::Function
-    Properties:
-      AutoPublish: True
-      FunctionCode: !Sub |
-        var response = {
-            statusCode: 302,
-            statusDescription: 'Found',
-            headers: {
-              "location": { "value": '${RedirectedUrl}'
-            }
-          }
-        };
-
-        function handler(event) {
-          return response;
-        }
-      FunctionConfig:
-        Comment: !Sub "Redirect for ${BranchHash}"
-        Runtime: cloudfront-js-1.0
-      Name: !Sub "${AWS::StackName}-Redirect"
 
   AuthFunction:
     Type: AWS::CloudFront::Function
@@ -347,7 +192,7 @@ Resources:
 
 
       FunctionConfig:
-        Comment: !Sub "Auth for ${BranchHash}"
+        Comment: !Sub "Auth for ${DomainName}"
         Runtime: cloudfront-js-1.0
       Name: !Sub "${AWS::StackName}-Auth"
 
@@ -368,20 +213,8 @@ Resources:
           CustomOriginConfig:
             HTTPSPort: '443'
             OriginProtocolPolicy: https-only
-        - DomainName: horizon-api.www.coggles.com
-          Id: HorizonOrigin
-          CustomOriginConfig:
-            HTTPSPort: '443'
-            OriginProtocolPolicy: https-only
         - DomainName: !Ref S3BucketDomain
           Id: S3StaticOrigin
-          OriginPath: !Sub /${BranchHash}
-          CustomOriginConfig:
-            HTTPSPort: '443'
-            OriginProtocolPolicy: https-only
-        - DomainName: !Sub ${IPXExpressApi}.execute-api.${AWS::Region}.amazonaws.com
-          Id: IPXExpressLambdaOrigin
-          OriginPath: /prod
           CustomOriginConfig:
             HTTPSPort: '443'
             OriginProtocolPolicy: https-only
@@ -391,26 +224,6 @@ Resources:
           -  !Ref DomainName
         CacheBehaviors:
           - AllowedMethods:
-            - HEAD
-            - GET
-            - OPTIONS
-            - POST
-            - PUT
-            - DELETE
-            - PATCH
-            PathPattern: "/graphql*"
-            Compress: true
-            TargetOriginId: HorizonOrigin
-            CachePolicyId: !Ref DefaultCachePolicy
-            OriginRequestPolicyId: !Ref DefaultOriginRequestPolicy
-            FunctionAssociations:
-              - !If
-                - KillSwitchEnabled
-                - EventType: viewer-request
-                  FunctionARN: !GetAtt KillSwitchFunction.FunctionMetadata.FunctionARN
-                - !Ref "AWS::NoValue"
-            ViewerProtocolPolicy: redirect-to-https
-          - AllowedMethods:
               - HEAD
               - GET
               - OPTIONS
@@ -418,9 +231,6 @@ Resources:
             Compress: true
             TargetOriginId: S3StaticOrigin
             CachePolicyId: !Ref DefaultCachePolicy
-            FunctionAssociations:
-              - EventType: viewer-request
-                FunctionARN: !GetAtt ManifestFunction.FunctionMetadata.FunctionARN
             ViewerProtocolPolicy: redirect-to-https
           - AllowedMethods:
               - HEAD
@@ -430,12 +240,6 @@ Resources:
             Compress: true
             TargetOriginId: S3StaticOrigin
             CachePolicyId: !Ref DefaultCachePolicy
-            FunctionAssociations:
-              - !If
-                - KillSwitchEnabled
-                - EventType: viewer-request
-                  FunctionARN: !GetAtt KillSwitchFunction.FunctionMetadata.FunctionARN
-                - !Ref "AWS::NoValue"
             ViewerProtocolPolicy: redirect-to-https
           - AllowedMethods:
               - HEAD
@@ -445,12 +249,6 @@ Resources:
             Compress: true
             TargetOriginId: S3StaticOrigin
             CachePolicyId: !Ref DefaultCachePolicy
-            FunctionAssociations:
-              - !If
-                - KillSwitchEnabled
-                - EventType: viewer-request
-                  FunctionARN: !GetAtt KillSwitchFunction.FunctionMetadata.FunctionARN
-                - !Ref "AWS::NoValue"
             ViewerProtocolPolicy: redirect-to-https
           - AllowedMethods:
               - HEAD
@@ -465,69 +263,11 @@ Resources:
               - HEAD
               - GET
               - OPTIONS
-            PathPattern: "/flags*"
-            Compress: true
-            TargetOriginId: S3StaticOrigin
-            CachePolicyId: !Ref DefaultCachePolicy
-            ViewerProtocolPolicy: redirect-to-https
-          - AllowedMethods:
-              - HEAD
-              - GET
-              - OPTIONS
             Compress: true
             TargetOriginId: S3StaticOrigin
             CachePolicyId: !Ref DefaultCachePolicy
             ViewerProtocolPolicy: redirect-to-https
             PathPattern: "/*.txt"
-          - AllowedMethods:
-              - HEAD
-              - GET
-              - OPTIONS
-              - POST
-              - PUT
-              - DELETE
-              - PATCH
-            PathPattern: "/social-login*"
-            Compress: true
-            TargetOriginId: LambdaOrigin
-            CachePolicyId: !Ref BFFCachePolicy
-            ViewerProtocolPolicy: redirect-to-https
-          - AllowedMethods:
-              - HEAD
-              - GET
-              - OPTIONS
-            PathPattern: "/api/nav*"
-            Compress: true
-            TargetOriginId: LambdaOrigin
-            CachePolicyId: !Ref DefaultCachePolicy
-            OriginRequestPolicyId: !Ref DefaultOriginRequestPolicy
-            ViewerProtocolPolicy: redirect-to-https
-            FunctionAssociations:
-              - !If
-                - KillSwitchEnabled
-                - EventType: viewer-request
-                  FunctionARN: !GetAtt KillSwitchFunction.FunctionMetadata.FunctionARN
-                - !Ref "AWS::NoValue"
-          - AllowedMethods:
-              - HEAD
-              - GET
-              - OPTIONS
-            PathPattern: "/_ipx/*"
-            Compress: true
-            TargetOriginId: IPXExpressLambdaOrigin
-            CachePolicyId: !Ref DefaultCachePolicy
-            OriginRequestPolicyId: !Ref DefaultOriginRequestPolicy
-            ViewerProtocolPolicy: redirect-to-https
-            FunctionAssociations:
-              - !If
-                - KillSwitchEnabled
-                - EventType: viewer-request
-                  FunctionARN: !GetAtt KillSwitchFunction.FunctionMetadata.FunctionARN
-                - !If
-                  - IsAuthEnabled
-                  - EventType: viewer-request
-                    FunctionARN: !GetAtt AuthFunction.FunctionMetadata.FunctionARN
-                  - !Ref "AWS::NoValue"
         DefaultCacheBehavior:
           AllowedMethods:
             - HEAD
@@ -545,14 +285,10 @@ Resources:
           ViewerProtocolPolicy: redirect-to-https
           FunctionAssociations:
             - !If
-              - KillSwitchEnabled
+              - IsAuthEnabled
               - EventType: viewer-request
-                FunctionARN: !GetAtt KillSwitchFunction.FunctionMetadata.FunctionARN
-              - !If
-                - IsAuthEnabled
-                - EventType: viewer-request
-                  FunctionARN: !GetAtt AuthFunction.FunctionMetadata.FunctionARN
-                - !Ref "AWS::NoValue"
+                FunctionARN: !GetAtt AuthFunction.FunctionMetadata.FunctionARN
+              - !Ref "AWS::NoValue"
         PriceClass: PriceClass_All
         ViewerCertificate:
           AcmCertificateArn: !Ref CertARN
@@ -635,7 +371,3 @@ Outputs:
   LambdaFunctionName:
     Description: Name of the Serverless Express Lambda Function
     Value: !Ref ExpressLambdaFunction
-
-  MonitoringUserARN:
-    Description: The IAM user with permissions for monitoring
-    Value: !GetAtt MonitoringUser.Arn

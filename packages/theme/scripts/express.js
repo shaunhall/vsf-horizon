@@ -2,7 +2,8 @@ const express = require('express');
 const consola = require('consola');
 const { Nuxt, Builder } = require('nuxt');
 
-const config = require('./nuxt.config.js');
+require('dotenv').config();
+const config = require('../nuxt.config.js');
 
 const app = express();
 config.dev = false;
@@ -33,7 +34,9 @@ const setLambdaHeaders = (req, res, next) => {
 
 async function start () {
   // Init Nuxt.js
+  console.log(process.env.NODE_ENV);
   const nuxt = new Nuxt(config);
+  console.log(process.env.NODE_ENV);
 
   const { host, port } = nuxt.options.server;
 

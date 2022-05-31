@@ -13,7 +13,7 @@
     "lint": "eslint . --ext .ts,.vue",
     "lint:fix": "eslint . --ext .ts,.vue --fix",
     "start": "nuxt start",
-    "start:isr": "node local-start.js",
+    "start:isr": "node scripts/local-start.js",
     "test": "jest",
     "test:e2e": "cypress open --config-file tests/e2e/cypress.json",
     "test:e2e:generate:report": "yarn -s mochawesome-merge \"tests/e2e/report/*.json\" > \"tests/e2e/report.json\" && yarn -s marge tests/e2e/report.json -o \"tests/e2e/report\"",
@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@storefront-ui/vue": "0.11.4",
+    "@vendia/serverless-express": "^4.8.0",
     "@vue-storefront/horizon": "0.0.1",
     "@vue-storefront/middleware": "~2.5.4",
     "@vue-storefront/nuxt": "~2.5.4",
@@ -32,6 +33,7 @@
     "nuxt": "^2.15.8",
     "nuxt-i18n": "^6.5.0",
     "vee-validate": "^3.4.13",
+    "dotenv": "^16.0.1",
     "vue-scrollto": "^2.20.0"
   },
   "devDependencies": {

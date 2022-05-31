@@ -1,6 +1,6 @@
 const webpack = require('webpack');
 const theme = require('./themeConfig');
-
+console.log(process.env.NODE_ENV)
 module.exports = {
   server: {
     port: process.env.APP_PORT || 3001,

@@ -1,3 +1,7 @@
+console.log(__dirname);
+console.log(process.cwd());
+process.chdir('packages/theme/');
+console.log(process.cwd());
 const serverlessExpress = require('@vendia/serverless-express');
 process.env.NODE_ENV = 'production';
 const { app, start } = require('./express.js');
