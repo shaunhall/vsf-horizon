@@ -1,42 +1,75 @@
 <template>
-  <div class="sf-header__navigation desktop" v-if="!isMobile">
+  <div class="sf-header__navigation desktop nav-desktop" v-if="!isMobile">
     <SfHeaderNavigationItem
-      v-for="(category, index) in categories"
+      v-for="(category, index) in categoryTree"
       :key="index"
-      class="nav-item"
-      v-e2e="`app-header-url_${category}`"
-      :label="category"
-      :link="localePath(`/c/${category}`)"
+      class="sf-header-navigation-item__menu-item"
+      v-e2e="`app-header-url_${category.slug}`"
+      :label="category.label"
+      :link="localePath(category.slug)"
+      @mouseover="updateNavFlyout($event, category)"
+      @mouseleave="updateNavFlyout($event)"
+      @keydown.esc="updateNavFlyout($event)"
     />
   </div>
   <SfModal v-else :visible="isMobileMenuOpen">
-    <SfHeaderNavigationItem
-      v-for="(category, index) in categories"
-      :key="index"
-      class="nav-item"
-      v-e2e="`app-header-url_${category}`"
-    >
-      <template #mobile-navigation-item>
-        <SfMenuItem
-          :label="category"
-          class="sf-header-navigation-item__menu-item"
-          :link="localePath(`/c/${category}`)"
-          @click="toggleMobileMenu"
-        />
-      </template>
-    </SfHeaderNavigationItem>
+    {{ isMobileMenuOpen }}
+    <SfAccordion open="" showChevron>
+      <SfAccordionItem
+        v-for="(category, index) in categoryTree"
+        :key="index"
+        class="nav-item"
+        :header="category.label"
+      >
+        <SfAccordion
+          open="" showChevron
+        >
+          <template v-for="(item, idx) in category.items">
+            <SfAccordionItem
+              v-if="item.items.length"
+              :key="idx"
+              class="nav-item"
+              :header="item.label"
+            >
+              <SfMenuItem
+                    v-for="(subNav, i) in item.items"
+                    :key="i"
+                    :label="subNav.label"
+                    class="sf-header-navigation-item__menu-item"
+                    :link="localePath(subNav.slug)"
+                    @click="toggleMobileMenu"
+                  />
+            </SfAccordionItem>
+            <SfMenuItem
+                v-else
+                :label="item.label"
+                :key="idx"
+                class="sf-header-navigation-item__menu-item"
+                :link="localePath(item.slug)"
+                @click="toggleMobileMenu"
+              />
+          </template>
+        </SfAccordion>
+      </SfAccordionItem>
+    </SfAccordion>
   </SfModal>
 </template>
 
 <script>
-import { SfMenuItem, SfModal } from '@storefront-ui/vue';
+import { SfMenuItem, SfModal, SfAccordion, SfList, SfMegaMenu } from '@storefront-ui/vue';
+import { onSSR } from '@vue-storefront/core';
+import { computed } from '@nuxtjs/composition-api';
 import { useUiState } from '~/composables';
+import { useCategory, categoryGetters } from '@vue-storefront/horizon';
 
 export default {
   name: 'HeaderNavigation',
   components: {
     SfMenuItem,
-    SfModal
+    SfModal,
+    SfAccordion,
+    SfList,
+    SfMegaMenu
   },
   props: {
     isMobile: {
@@ -45,13 +78,19 @@ export default {
     }
   },
   setup() {
-    const { isMobileMenuOpen, toggleMobileMenu } = useUiState();
-    const categories = ['women', 'men'];
+    const { categories, search } = useCategory('categories');
+    const { isMobileMenuOpen, toggleMobileMenu, updateNavFlyout } = useUiState();
+
+    const categoryTree = computed(() => categories?.value.map(category => categoryGetters.getTree(category)));
+    onSSR(async () => {
+      await search();
+    });
 
     return {
-      categories,
+      categoryTree: categoryTree?.value,
       isMobileMenuOpen,
-      toggleMobileMenu
+      toggleMobileMenu,
+      updateNavFlyout
     };
   }
 };
@@ -63,6 +102,7 @@ export default {
     display: block;
   }
 }
+
 .sf-modal {
   ::v-deep &__bar {
     display: none;

@@ -3,7 +3,11 @@ import {
   ProductReviews,
   Review as GqlReview,
   BasketContentsFragment,
-  VariantContentFragment
+  VariantContentFragment,
+  CollectionQuery,
+  ProductListContentsFragment,
+  CollectionQueryVariables,
+  HeaderFooterQuery
 } from './graphql-types';
 import type { ArrElement } from './_utils';
 
@@ -17,13 +21,17 @@ export type Cart = BasketContentsFragment;
 
 export type CartItem = ArrElement<BasketContentsFragment['items']>;
 
-export type Category = TODO;
+export type Category = ArrElement<HeaderFooterQuery['header']['navigation']['topLevel']>;
 
 export type Coupon = TODO;
 
-export type Facet = TODO;
+export type Facet = CollectionQuery['page'];
 
-export type FacetSearchCriteria = TODO;
+export type ProductList = ProductListContentsFragment;
+
+export type Widget = ArrElement<CollectionQuery['page']['widgets']>;
+
+export type FacetSearchCriteria = CollectionQueryVariables;
 
 export type Order = TODO;
 

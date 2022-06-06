@@ -100,11 +100,53 @@
       @removeSearchResults="removeSearchResults"
     />
     <SfOverlay :visible="isSearchOpen" />
+
+    <SfMegaMenu :visible="isNavFlyoutOpen" id="navFlyout">
+      <SfList
+        v-for="(subNav, idx) in navFlyoutCategory.items"
+        :key="idx"
+      >
+        <SfMegaMenuColumn
+          v-if="subNav.items.length"
+          :title="subNav.label"
+        >
+          <SfList>
+            <SfListItem v-for="(leaf, i) in subNav.items" :key="i">
+              <SfImage
+                v-if="leaf.image && leaf.image.url"
+                :src="leaf.image.url"
+                :alt="leaf.image.alt"
+                :width="75"
+                :height="75"
+              />
+              <SfMenuItem
+                :label="leaf.label"
+                :link="leaf.slug"
+              />
+            </SfListItem>
+          </SfList>
+        </SfMegaMenuColumn>
+        <SfListItem v-else :key="idx">
+          <SfImage
+            v-if="subNav.image && subNav.image.url"
+            :src="subNav.image.url"
+            :alt="subNav.image.alt"
+            :width="75"
+            :height="75"
+            :key="idx"
+          />
+          <SfMenuItem
+            :label="subNav.label"
+            :link="subNav.slug"
+          />
+        </SfListItem>
+      </SfList>
+    </SfMegaMenu>
   </div>
 </template>
 
 <script>
-import { SfHeader, SfImage, SfIcon, SfButton, SfBadge, SfSearchBar, SfOverlay } from '@storefront-ui/vue';
+import { SfHeader, SfImage, SfIcon, SfButton, SfBadge, SfSearchBar, SfOverlay, SfMegaMenu, SfList, SfMenuItem, SfBanner } from '@storefront-ui/vue';
 import { useUiState } from '~/composables';
 import { useCart, useUser, cartGetters } from '@vue-storefront/horizon';
 import { computed, ref, watch, onBeforeUnmount, useRouter } from '@nuxtjs/composition-api';
@@ -127,17 +169,21 @@ export default {
     SfImage,
     LocaleSelector,
     SfIcon,
+    SfList,
+    SfMegaMenu,
+    SfMenuItem,
     SfButton,
     SfBadge,
     SfSearchBar,
     SearchResults,
     SfOverlay,
+    SfBanner,
     HeaderNavigation
   },
   directives: { clickOutside },
   setup(props, { root }) {
     const router = useRouter();
-    const { toggleCartSidebar, toggleWishlistSidebar, toggleLoginModal, isMobileMenuOpen } = useUiState();
+    const { toggleCartSidebar, toggleWishlistSidebar, toggleLoginModal, isMobileMenuOpen, navFlyoutCategory, updateNavFlyout, isNavFlyoutOpen } = useUiState();
     const { setTermForUrl, getFacetsFromURL } = useUiHelpers();
     const { isAuthenticated } = useUser();
     const { cart } = useCart();
@@ -224,8 +270,16 @@ export default {
       isMobile,
       isMobileMenuOpen,
       removeSearchResults,
-      addBasePath
+      addBasePath,
+      isNavFlyoutOpen,
+      navFlyoutCategory,
+      updateNavFlyout
     };
+  },
+  watch: {
+    $route () {
+      this.updateNavFlyout();
+    }
   }
 };
 </script>
@@ -242,6 +296,10 @@ export default {
 }
 .header-on-top {
   z-index: 2;
+}
+.nav-desktop {
+  overflow: auto;
+  width: 50vw;
 }
 .nav-item {
   --header-navigation-item-margin: 0 var(--spacer-base);

@@ -7,13 +7,28 @@ const state = reactive({
   isNewsletterModalOpen: false,
   isCategoryGridView: true,
   isFilterSidebarOpen: false,
-  isMobileMenuOpen: false
+  isMobileMenuOpen: false,
+  navFlyout: {
+    isOpen: false,
+    category: {}
+  }
 });
 
 const useUiState = () => {
   const isMobileMenuOpen = computed(() => state.isMobileMenuOpen);
   const toggleMobileMenu = () => {
     state.isMobileMenuOpen = !state.isMobileMenuOpen;
+  };
+
+  const isNavFlyoutOpen = computed(() => state.navFlyout.isOpen);
+  const navFlyoutCategory = computed(() => state.navFlyout.category);
+  const updateNavFlyout = (event, category = null) => {
+    if (!category) {
+      state.navFlyout.isOpen = event?.toElement?.parentElement?.id === 'navFlyout';
+    } else {
+      state.navFlyout.isOpen = true;
+      state.navFlyout.category = category;
+    }
   };
 
   const isCartSidebarOpen = computed(() => state.isCartSidebarOpen);
@@ -60,6 +75,8 @@ const useUiState = () => {
     isCategoryGridView,
     isFilterSidebarOpen,
     isMobileMenuOpen,
+    isNavFlyoutOpen,
+    navFlyoutCategory,
     toggleCartSidebar,
     toggleWishlistSidebar,
     toggleLoginModal,
@@ -67,7 +84,8 @@ const useUiState = () => {
     changeToCategoryGridView,
     changeToCategoryListView,
     toggleFilterSidebar,
-    toggleMobileMenu
+    toggleMobileMenu,
+    updateNavFlyout
   };
 };
 

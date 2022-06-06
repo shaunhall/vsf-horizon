@@ -10,30 +10,11 @@ import type {
 
 const params: UseCategoryFactoryParams<Category, SearchParams> = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  categorySearch: async (context: Context, { customQuery, ...params }) => {
-    console.log('Mocked: useCategory.categorySearch');
-
-    return [
-      {
-        id: 1,
-        name: 'Women',
-        slug: 'women',
-        items: []
-      },
-      {
-        id: 2,
-        name: 'Men',
-        slug: 'men',
-        items: []
-      },
-      {
-        id: 3,
-        name: 'Kids',
-        slug: 'kids',
-        items: []
-      }
-    ];
+  categorySearch: async (context: Context, params) => {
+    const data = await context.$horizon.api.getCategories(params);
+    console.log(data);
+    return data;
   }
 };
 
-export const useCategory = useCategoryFactory<Category, SearchParams>(params);
+export const useCategory = useCategoryFactory<Category, any>(params);

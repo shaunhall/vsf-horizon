@@ -1,4 +1,4 @@
-fragment PageWidgetsServer on Page {
+fragment PageWidgets on Page {
     widgets {
       __typename
 
@@ -17,26 +17,9 @@ fragment PageWidgetsServer on Page {
           limit: $limit
           offset: $offset
           sort: $sort
-          facets: []
+          facets: $facets
         }) {
-          total
-          facets {
-            __typename
-            ... on RangedFacet {
-              facetName
-              facetHeader
-            }
-            ... on SimpleFacet {
-              facetName
-              facetHeader
-            }
-            ... on SliderFacet {
-              facetName
-              facetHeader
-              minValue
-              maxValue
-            }
-          }
+          ...ProductListContents
         }
       }
       ... on GlobalFourButtonLink {

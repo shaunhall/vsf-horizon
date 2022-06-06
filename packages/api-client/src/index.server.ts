@@ -1,6 +1,8 @@
 import { apiClientFactory } from '@vue-storefront/core';
 import type { Endpoints } from './types';
 import { getProduct } from './api/getProduct';
+import { getCategories } from './api/getCategory';
+import { getFacets } from './api/getFacet';
 import { getReviews } from './api/getReviews';
 import { startCheckout } from './api/checkout';
 import {
@@ -39,6 +41,8 @@ const { createApiClient } = apiClientFactory<unknown, Endpoints>({
   api: {
     getProduct,
     getReviews,
+    getCategories,
+    getFacets,
     getBasket,
     addToBasket,
     removeFromBasket,

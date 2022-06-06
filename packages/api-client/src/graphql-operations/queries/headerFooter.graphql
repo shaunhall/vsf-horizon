@@ -23,6 +23,7 @@ query HeaderFooter {
         type
         image {
           url
+          alt
         }
         subNavigation {
           displayName
