@@ -41,7 +41,7 @@ function getGallery(product: Product): AgnosticMediaGalleryItem[] {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getCoverImage(product: Product): string {
-  return null;
+  return product?.images.length ? product.images[0].largeProduct : '';
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

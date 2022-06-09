@@ -60,16 +60,16 @@
           :placeholder="$t('Search for items')"
           aria-label="Search"
           class="sf-header__search"
-          :value="term"
-          @input="handleSearch"
-          @keydown.enter="handleSearch($event)"
+          :value="searchBarRef.searchResult"
+          @input="(input) => searchBarRef.searchResult = input"
+          @keydown.enter="handleSearch"
           @focus="isSearchOpen = true"
           @keydown.esc="closeSearch"
           v-click-outside="closeSearch"
         >
           <template #icon>
             <SfButton
-              v-if="!!term"
+              v-if="!!searchBarRef.searchResult"
               aria-label="Close search"
               class="sf-search-bar__button sf-button--pure"
               @click="closeOrFocusSearchBar"
@@ -92,14 +92,6 @@
         </SfSearchBar>
       </template>
     </SfHeader>
-    <SearchResults
-      :visible="isSearchOpen"
-      :result="result"
-      :term="term"
-      @close="closeSearch"
-      @removeSearchResults="removeSearchResults"
-    />
-    <SfOverlay :visible="isSearchOpen" />
 
     <SfMegaMenu :visible="isNavFlyoutOpen" id="navFlyout">
       <SfList
@@ -115,7 +107,7 @@
               <SfImage
                 v-if="leaf.image && leaf.image.url"
                 :src="leaf.image.url"
-                :alt="leaf.image.alt"
+                :alt="leaf.image.alt || ''"
                 :width="75"
                 :height="75"
               />
@@ -130,7 +122,7 @@
           <SfImage
             v-if="subNav.image && subNav.image.url"
             :src="subNav.image.url"
-            :alt="subNav.image.alt"
+            :alt="subNav.image.alt || ''"
             :width="75"
             :height="75"
             :key="idx"
@@ -149,7 +141,7 @@
 import { SfHeader, SfImage, SfIcon, SfButton, SfBadge, SfSearchBar, SfOverlay, SfMegaMenu, SfList, SfMenuItem, SfBanner } from '@storefront-ui/vue';
 import { useUiState } from '~/composables';
 import { useCart, useUser, cartGetters } from '@vue-storefront/horizon';
-import { computed, ref, watch, onBeforeUnmount, useRouter } from '@nuxtjs/composition-api';
+import { computed, ref, reactive, onBeforeUnmount, useRouter, useRoute } from '@nuxtjs/composition-api';
 import { useUiHelpers } from '~/composables';
 import LocaleSelector from './LocaleSelector';
 import SearchResults from '~/components/SearchResults';
@@ -159,8 +151,6 @@ import {
   mapMobileObserver,
   unMapMobileObserver
 } from '@storefront-ui/vue/src/utilities/mobile-observer.js';
-import debounce from 'lodash.debounce';
-import mockedSearchProducts from '../mockedSearchProducts.json';
 import { addBasePath } from '@vue-storefront/core';
 
 export default {
@@ -183,13 +173,13 @@ export default {
   directives: { clickOutside },
   setup(props, { root }) {
     const router = useRouter();
+    const route = useRoute();
     const { toggleCartSidebar, toggleWishlistSidebar, toggleLoginModal, isMobileMenuOpen, navFlyoutCategory, updateNavFlyout, isNavFlyoutOpen } = useUiState();
-    const { setTermForUrl, getFacetsFromURL } = useUiHelpers();
+    const { setTermForUrl } = useUiHelpers();
     const { isAuthenticated } = useUser();
     const { cart } = useCart();
-    const term = ref(getFacetsFromURL().phrase);
     const isSearchOpen = ref(false);
-    const searchBarRef = ref(null);
+    const searchBarRef = reactive({ searchResult: '' });
     const result = ref(null);
     const isMobile = ref(mapMobileObserver().isMobile.get());
 
@@ -215,35 +205,20 @@ export default {
       const isWishlistIconClicked = event.path.find(p => wishlistClassName.search(p.className) > 0);
       if (isWishlistIconClicked || !isSearchOpen.value) return;
 
-      term.value = '';
       isSearchOpen.value = false;
     };
 
-    const handleSearch = debounce(async (paramValue) => {
-      if (!paramValue.target) {
-        term.value = paramValue;
-      } else {
-        term.value = paramValue.target.value;
-      }
-      result.value = mockedSearchProducts;
-
-    }, 1000);
+    const handleSearch = () => {
+      router.push({ path: `/search/${searchBarRef.searchResult}` });
+    };
 
     const closeOrFocusSearchBar = () => {
       if (isMobile.value) {
         return closeSearch();
       } else {
-        term.value = '';
         return searchBarRef.value.$el.children[0].focus();
       }
     };
-
-    watch(() => term.value, (newVal, oldVal) => {
-      const shouldSearchBeOpened = (!isMobile.value && term.value.length > 0) && ((!oldVal && newVal) || (newVal.length !== oldVal.length && isSearchOpen.value === false));
-      if (shouldSearchBeOpened) {
-        isSearchOpen.value = true;
-      }
-    });
 
     const removeSearchResults = () => {
       result.value = null;
@@ -260,7 +235,6 @@ export default {
       toggleCartSidebar,
       toggleWishlistSidebar,
       setTermForUrl,
-      term,
       isSearchOpen,
       closeSearch,
       handleSearch,

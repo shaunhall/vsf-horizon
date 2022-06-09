@@ -66,8 +66,8 @@ const params: UseCartFactoryParams<Cart, CartItem, ProductVariant> = {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isInCart: (context: Context, { currentCart, product }) => {
-    const data = context.$horizon.api.isInCart(currentCart, { currentCart, product });
-    return data;
+    const skusInCart = currentCart?.items?.map(item => item.id);
+    return skusInCart?.includes(product.sku);
   }
 };
 

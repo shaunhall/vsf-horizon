@@ -12,7 +12,6 @@ const params: UseCategoryFactoryParams<Category, SearchParams> = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   categorySearch: async (context: Context, params) => {
     const data = await context.$horizon.api.getCategories(params);
-    console.log(data);
     return data;
   }
 };

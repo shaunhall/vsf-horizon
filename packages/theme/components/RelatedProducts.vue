@@ -54,7 +54,6 @@ export default {
       const productsInWhishlist = computed(() => wishlistGetters.getItems(wishlist.value));
       // const product = productsInWhishlist.value.find(wishlistProduct => wishlistProduct.variant.sku === productItem.sku);
       const product = productsInWhishlist[0];
-      console.log(productItem);
       removeItemFromWishlist({ product });
     };
     return {

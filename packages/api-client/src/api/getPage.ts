@@ -1,10 +1,9 @@
 import { Context } from '@vue-storefront/core';
 import { CollectionQuery, CollectionQueryVariables } from 'src/graphql-types';
-import { Facet } from 'src/types';
+import { Page } from 'src/types';
 import collectionQuery from 'src/graphql-operations/queries/collection.graphql';
 
-export async function getFacets(context: Context, params: CollectionQueryVariables): Promise<Facet> {
-
+export async function getPage(context: Context, params: CollectionQueryVariables): Promise<Page> {
   if (params.handle) {
     const variables = {
       handle: params.handle,

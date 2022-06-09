@@ -2,7 +2,8 @@ import { apiClientFactory } from '@vue-storefront/core';
 import type { Endpoints } from './types';
 import { getProduct } from './api/getProduct';
 import { getCategories } from './api/getCategory';
-import { getFacets } from './api/getFacet';
+import { getPage } from './api/getPage';
+import { getSearch } from './api/getSearch';
 import { getReviews } from './api/getReviews';
 import { startCheckout } from './api/checkout';
 import {
@@ -12,8 +13,7 @@ import {
   updateItemQty,
   clearBasket,
   applyCodeToBasket,
-  removeCodeFromBasket,
-  isInCart
+  removeCodeFromBasket
 } from './api/basket';
 import fetch from 'cross-fetch';
 import {
@@ -42,15 +42,15 @@ const { createApiClient } = apiClientFactory<unknown, Endpoints>({
     getProduct,
     getReviews,
     getCategories,
-    getFacets,
+    getPage,
     getBasket,
+    getSearch,
     addToBasket,
     removeFromBasket,
     updateItemQty,
     clearBasket,
     applyCodeToBasket,
     removeCodeFromBasket,
-    isInCart,
     startCheckout
   }
 });

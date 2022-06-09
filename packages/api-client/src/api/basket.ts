@@ -110,8 +110,3 @@ export const removeCodeFromBasket: cartParams['removeCoupon'] = async (context, 
     updatedCart: basketData.removeCodeFromBasket
   };
 };
-
-export const isInCart: cartParams['isInCart'] = (context, params) => {
-  const skusInCart = params.currentCart.items.map(item => item.id);
-  return skusInCart.includes(params.product.sku);
-};

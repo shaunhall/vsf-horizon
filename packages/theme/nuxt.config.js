@@ -1,6 +1,5 @@
 const webpack = require('webpack');
 const theme = require('./themeConfig');
-console.log(process.env.NODE_ENV)
 module.exports = {
   server: {
     port: process.env.APP_PORT || 3001,
@@ -143,9 +142,14 @@ module.exports = {
       })
     ]
   },
-
   router: {
-    middleware: ['checkout']
+    extendRoutes(routes, resolve) {
+      routes.push({
+        name: 'Search',
+        path: '/search/:slug/',
+        component: resolve(__dirname, 'pages/Search.vue')
+      });
+    }
   },
   publicRuntimeConfig: {
     theme,

@@ -3,6 +3,7 @@ import { categoryGetters } from './categoryGetters';
 import { facetGetters } from './facetGetters';
 import { productGetters } from './productGetters';
 import { productVariantGetters } from './productVariantGetters';
+import { pageGetters } from './pageGetters';
 import { reviewGetters } from './reviewGetters';
 import { userGetters } from './userGetters';
 import { userShippingGetters } from './userShippingGetters';
@@ -14,6 +15,7 @@ export {
   cartGetters,
   categoryGetters,
   facetGetters,
+  pageGetters,
   productGetters,
   productVariantGetters,
   reviewGetters,

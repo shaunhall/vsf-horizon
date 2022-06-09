@@ -65,6 +65,10 @@ fragment ProductListContents on ProductList {
         title
       }
     }
+    reviews {
+        total
+        averageScore
+    }
     images(limit: 2) {
       largeProduct
       zoom

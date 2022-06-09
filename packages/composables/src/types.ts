@@ -1,4 +1,5 @@
 import {
+  AgnosticFacetSearchParams,
   ProductsSearchParams
 } from '@vue-storefront/core';
 
@@ -8,7 +9,7 @@ export type UseBillingAddParams = TODO;
 
 export type UseCategorySearchParams = TODO;
 
-export type UseFacetSearchParams = TODO;
+export type UseFacetSearchParams = AgnosticFacetSearchParams;
 
 export type UseProductSearchParams = ProductsSearchParams;
 

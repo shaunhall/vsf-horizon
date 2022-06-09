@@ -9,6 +9,5 @@ export async function getCategories(context: Context, params: HeaderFooterQueryV
     .catch((err) => {
       console.log(err);
     });
-  console.log(navData);
   return navData?.header?.navigation?.topLevel || [];
 }

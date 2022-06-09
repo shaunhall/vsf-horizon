@@ -6,13 +6,16 @@ import {
 import type {
   UseFacetSearchParams as SearchParams
 } from '../types';
+import { convertToLocalSearchParams } from './_utils';
 
 const factoryParams = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   search: async (context: Context, params: FacetSearchResult<SearchParams>) => {
-    console.log('Mocked: useFacet.search');
-    return {};
+    const convertedParams = convertToLocalSearchParams(params.input);
+    console.log(convertedParams);
+    const data = await context.$horizon.api.getSearch(convertedParams);
+    return data;
   }
 };
 
-export const useFacet = useFacetFactory<SearchParams>(factoryParams);
+export const useSearch = useFacetFactory<SearchParams>(factoryParams);

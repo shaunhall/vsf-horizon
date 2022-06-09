@@ -6,8 +6,8 @@ import {
   VariantContentFragment,
   CollectionQuery,
   ProductListContentsFragment,
-  CollectionQueryVariables,
-  HeaderFooterQuery
+  HeaderFooterQuery,
+  SearchQuery
 } from './graphql-types';
 import type { ArrElement } from './_utils';
 
@@ -25,13 +25,13 @@ export type Category = ArrElement<HeaderFooterQuery['header']['navigation']['top
 
 export type Coupon = TODO;
 
-export type Facet = CollectionQuery['page'];
+export type Page = CollectionQuery['page'];
 
-export type ProductList = ProductListContentsFragment;
+export type Facet = ProductListContentsFragment;
 
 export type Widget = ArrElement<CollectionQuery['page']['widgets']>;
 
-export type FacetSearchCriteria = CollectionQueryVariables;
+export type FacetSearchCriteria = ProductListContentsFragment['products'];
 
 export type Order = TODO;
 
@@ -54,6 +54,8 @@ export type ProductFilter = TODO;
 export type Review = ProductReviews;
 
 export type ReviewItem = GqlReview;
+
+export type Search = SearchQuery['search'];
 
 export type User = TODO;
 

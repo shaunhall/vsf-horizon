@@ -23,7 +23,7 @@
           :value="sortBy.selected"
           :placeholder="$t('Select sorting')"
           class="navbar__select"
-          @input="th.changeSorting"
+          @input="changeSorting"
         >
           <SfSelectOption
             v-for="option in sortBy.options"
@@ -70,15 +70,14 @@
       />
     </div>
     <LazyHydrate when-idle>
-      <FiltersSidebar @close="toggleFilterSidebar"/>
+      <FiltersSidebar @close="toggleFilterSidebar" :facets="facets"/>
     </LazyHydrate>
   </div>
 </template>
 
 <script>
-import { computed } from '@nuxtjs/composition-api';
+import { useRouter, useRoute } from '@nuxtjs/composition-api';
 import { useUiHelpers, useUiState } from '~/composables';
-import { useFacet, facetGetters } from '@vue-storefront/horizon';
 import FiltersSidebar from '~/components/FiltersSidebar';
 import {
   SfButton,
@@ -99,24 +98,31 @@ export default {
   props: {
     pagination: {
       type: Object
+    },
+    facets: {
+      type: Array
+    },
+    sortBy: {
+      type: Object
     }
   },
   setup() {
     const th = useUiHelpers();
     const { toggleFilterSidebar, isCategoryGridView, changeToCategoryGridView, changeToCategoryListView } = useUiState();
-    const { result } = useFacet();
+    const router = useRouter();
+    const route = useRoute();
 
-    const sortBy = computed(() => facetGetters.getSortOptions(result.value));
-    const facets = computed(() => facetGetters.getGrouped(result.value, ['color', 'size']));
+    const changeSorting = (input) => {
+      router.push({ path: route.value.path, query: { ...route.value.query, sort: input, page: 1 } });
+    };
 
     return {
       th,
-      sortBy,
-      facets,
       toggleFilterSidebar,
       isCategoryGridView,
       changeToCategoryGridView,
-      changeToCategoryListView
+      changeToCategoryListView,
+      changeSorting
     };
   }
 };

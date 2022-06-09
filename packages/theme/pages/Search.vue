@@ -1,28 +1,13 @@
 <template>
-  <div>
-    <template v-if="loading" />
-    <template v-for="(widget, index) in widgets" v-else>
-      <template v-if="widget.__typename == 'ProductListWidget'">
-        <!-- ProductListWidget -->
-        <WidgetProductList
-          :key="widget.id + index"
-          :product-list="widget.productList"
-          type="collection"
-        />
-      </template>
-      <template v-else>
-        <WidgetNotSupported
-          :key="widget.__typename + index"
-          :name="widget.__typename"
-        />
-      </template>
-    </template>
-  </div>
+  <WidgetProductList
+    :product-list="productList"
+    type="search"
+  />
 </template>
 
 <script>
 import { computed, useRoute } from '@nuxtjs/composition-api';
-import { usePage, pageGetters } from '@vue-storefront/horizon';
+import { useSearch } from '@vue-storefront/horizon';
 import { useUiHelpers } from '~/composables';
 import { onSSR } from '@vue-storefront/core';
 import LazyHydrate from 'vue-lazy-hydration';
@@ -35,19 +20,19 @@ export default {
   setup(props, context) {
     const th = useUiHelpers();
     const route = useRoute();
-    const { result, search, loading, error } = usePage();
+    const { result, search, loading, error } = useSearch();
 
-    const path = computed(() => route?.value?.path);
     const page = computed(() => route?.value?.query?.page);
     const sort = computed(() => route?.value?.query?.sort);
+    const searchQuery = computed(() => route?.value?.params.slug || '');
     const initialFilters = computed(() => th.getFacetsFromURL(route?.value?.query?.filters));
-    const widgets = computed(() => pageGetters?.getWidgets(result?.value?.data));
+    const productList = computed(() => result?.value?.data);
     const input = computed(() => result?.value?.input);
 
     onSSR(async () => {
       await search({
         sort: sort.value || 'RELEVANCE',
-        categorySlug: path.value.replace(/^\/[a-zA-Z]+/g, '').replace(/\/$/, ''),
+        term: searchQuery.value,
         itemsPerPage: 30,
         page: page?.value && page.value - 1,
         facets: initialFilters?.value });
@@ -56,7 +41,7 @@ export default {
     });
 
     return {
-      widgets,
+      productList,
       input,
       loading
     };

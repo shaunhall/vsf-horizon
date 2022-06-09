@@ -1,3 +1,5 @@
+#import "../fragments/ProductListContents.graphql"
+
 query Search($query: String!, $offset: Int = 0, $limit: Int = 30, $sort: ProductSort!, $facets: [FacetInput!]! = []) {
   search(options: {
     currency: GBP
@@ -8,99 +10,7 @@ query Search($query: String!, $offset: Int = 0, $limit: Int = 30, $sort: Product
     facets: $facets
   }, query: $query
   ) {
-    total
-    hasMore
     correctedQuery
-    facets {
-      __typename
-      ... on RangedFacet {
-        facetName
-        facetHeader
-        options {
-          displayName
-          from
-          to
-          matchedProductCount
-        }
-      }
-      ... on SimpleFacet {
-        facetName
-        facetHeader
-        options {
-          optionName
-          displayName
-          matchedProductCount
-        }
-      }
-      ... on SliderFacet {
-        facetName
-        facetHeader
-        minValue
-        maxValue
-      }
-    }
-    products {
-      url
-      title
-      sku
-      images {
-        thumbnail
-        largeProduct
-        zoom
-        original
-      }
-      reviews {
-        total
-        averageScore
-      }
-      content {
-         key
-            value {
-               __typename
-               ... on ProductContentStringValue {
-                  stringValue: value
-               }
-               ... on ProductContentStringListValue {
-                  stringListValue: value
-               }
-               ... on ProductContentIntValue {
-                  intValue: value
-               }
-               ... on ProductContentIntListValue {
-                  intListValue: value
-               }
-               ... on ProductContentRichContentValue {
-               richContentValue: value {
-                  content {
-                     type
-                     content
-                  }
-               }
-            }
-            ... on ProductContentRichContentListValue {
-               richContentListValue: value {
-                  content {
-                     type
-                     content
-                  }
-               }
-            }
-         }
-      }
-      cheapestVariantPrice(currency: GBP, shippingDestination: GB){
-         price {
-            currency
-            amount
-            displayValue
-            scalarValue
-         }
-         rrp {
-            currency
-            amount
-            displayValue
-            scalarValue
-         }
-      }
-    }
+    ...ProductListContents
   }
 }
