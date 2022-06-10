@@ -6,14 +6,13 @@
     "node": ">=14.17.x"
   },
   "scripts": {
-    "build": "nuxt build -m",
+    "build": "concurrently -k -s first \"vsf-tu\" \"nuxt build -m\"",
     "build:analyze": "nuxt build -a -m",
-    "dev": "nuxt",
+    "dev": "concurrently \"vsf-tu\" \"nuxt\"",
     "generate": "nuxt generate",
     "lint": "eslint . --ext .ts,.vue",
     "lint:fix": "eslint . --ext .ts,.vue --fix",
     "start": "nuxt start",
-    "start:isr": "node scripts/local-start.js",
     "test": "jest",
     "test:e2e": "cypress open --config-file tests/e2e/cypress.json",
     "test:e2e:generate:report": "yarn -s mochawesome-merge \"tests/e2e/report/*.json\" > \"tests/e2e/report.json\" && yarn -s marge tests/e2e/report.json -o \"tests/e2e/report\"",
@@ -38,6 +37,8 @@
   },
   "devDependencies": {
     "@nuxt/types": "^2.15.8",
+    "concurrently": "^6.3.0",
+    "@vue-storefront/theme-utilities": "^0.1.8",
     "@vue/test-utils": "^1.2.2",
     "babel-jest": "^27.3.1",
     "cypress": "^8.7.0",

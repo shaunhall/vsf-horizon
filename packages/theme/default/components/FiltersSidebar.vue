@@ -9,30 +9,17 @@
       <div class="filters desktop-only">
         <div v-for="(facet, i) in facets" :key="i">
           <SfHeading
+            v-if="facet.options.filter(option => option.count > 0).length > 0"
             :level="4"
             :title="facet.label"
             class="filters__title sf-heading--left"
             :key="`filter-title-${facet.id}`"
           />
-          <div
-            v-if="isFacetColor(facet)"
-            class="filters__colors"
-            :key="`${facet.id}-colors`"
-          >
-            <SfColor
-              v-for="option in facet.options"
-              :key="`${facet.id}-${option.value}`"
-              :color="option.value"
-              :selected="isFilterSelected(facet, option)"
-              class="filters__color"
-              @click="() => selectFilter(facet, option)"
-            />
-          </div>
-          <div v-else>
+          <div>
             <SfFilter
-              v-for="option in facet.options"
-              :key="`${facet.id}-${option.value}`"
-              :label="option.id + `${option.count ? ` (${option.count})` : ''}`"
+              v-for="option in facet.options.filter(option => option.count > 0)"
+              :key="`${facet.id}-${option.id}`"
+              :label="option.attrName + `${option.count ? ` (${option.count})` : ''}`"
               :selected="isFilterSelected(facet, option)"
               class="filters__item"
               @change="() => selectFilter(facet, option)"
@@ -90,8 +77,7 @@ import {
   SfColor
 } from '@storefront-ui/vue';
 
-import { ref, computed, onMounted } from '@nuxtjs/composition-api';
-import { useFacet, facetGetters } from '@vue-storefront/horizon';
+import { ref, onMounted, useRouter, useRoute } from '@nuxtjs/composition-api';
 import { useUiHelpers, useUiState } from '~/composables';
 import Vue from 'vue';
 
@@ -105,48 +91,54 @@ export default {
     SfColor,
     SfHeading
   },
+  props: {
+    facets: {
+      type: Array
+    }
+  },
   setup(props, context) {
-    const { changeFilters, isFacetColor } = useUiHelpers();
+    const { changeFilters, isFacetColor, getFacetsFromURL } = useUiHelpers();
     const { toggleFilterSidebar, isFilterSidebarOpen } = useUiState();
-    const { result } = useFacet();
+    const router = useRouter();
+    const route = useRoute();
 
-    const facets = computed(() => facetGetters.getGrouped(result.value, ['color', 'size']));
-    const selectedFilters = ref({});
-
+    const selectedFilters = ref(getFacetsFromURL(route?.value?.query?.filters));
     const setSelectedFilters = () => {
-      if (!facets.value.length || Object.keys(selectedFilters.value).length) return;
-      selectedFilters.value = facets.value.reduce((prev, curr) => ({
+      if (!props?.facets.length || Object.keys(selectedFilters.value).length) return;
+      selectedFilters.value = props?.facets.reduce((prev, curr) => ({
         ...prev,
         [curr.id]: curr.options
           .filter(o => o.selected)
-          .map(o => o.id)
+          .map(o => o.value)
       }), {});
     };
 
-    const isFilterSelected = (facet, option) => (selectedFilters.value[facet.id] || []).includes(option.id);
+    const isFilterSelected = (facet, option) => {
+      return (JSON.stringify(selectedFilters.value[facet.id]) || []).includes(JSON.stringify(option.value));
+    };
 
     const selectFilter = (facet, option) => {
       if (!selectedFilters.value[facet.id]) {
         Vue.set(selectedFilters.value, facet.id, []);
       }
-
-      if (selectedFilters.value[facet.id].find(f => f === option.id)) {
-        selectedFilters.value[facet.id] = selectedFilters.value[facet.id].filter(f => f !== option.id);
+      if (selectedFilters.value[facet.id].find(f => JSON.stringify(f) === JSON.stringify(option.value))) {
+        selectedFilters.value[facet.id] = selectedFilters.value[facet.id].filter(f => JSON.stringify(f) !== JSON.stringify(option.value));
         return;
       }
 
-      selectedFilters.value[facet.id].push(option.id);
+      selectedFilters.value[facet.id].push(option.value);
     };
 
     const clearFilters = () => {
       toggleFilterSidebar();
       selectedFilters.value = {};
-      changeFilters(selectedFilters.value);
+      router.push({ path: route.value.path, query: {...route.value.query, filters: '', page: 1 } });
     };
 
     const applyFilters = () => {
       toggleFilterSidebar();
-      changeFilters(selectedFilters.value);
+      const query = route.value.query;
+      router.push({ path: route.value.path, query: { ...query, filters: changeFilters(selectedFilters.value), page: 1 } });
     };
 
     onMounted(() => {
@@ -155,7 +147,6 @@ export default {
     });
 
     return {
-      facets,
       isFacetColor,
       selectFilter,
       isFilterSelected,
