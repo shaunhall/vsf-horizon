@@ -2,14 +2,14 @@
   <div class="container">
     <SfButton
         class="container__lang container__lang--selected"
-        @click="isLangModalOpen = !isLangModalOpen"
+        @click="isSiteSettingsOpen = !isSiteSettingsOpen"
     >
       <SfImage :src="addBasePath(`/icons/langs/${locale}.webp`)" width="20" alt="Flag" />
     </SfButton>
     <SfBottomModal
-      :is-open="isLangModalOpen"
+      :is-open="isSiteSettingsOpen"
       title="Choose language"
-      @click:close="isLangModalOpen = !isLangModalOpen"
+      @click:close="isSiteSettingsOpen = !isSiteSettingsOpen"
     >
       <SfList>
         <SfListItem v-for="lang in availableLocales" :key="lang.code">
@@ -51,12 +51,12 @@ export default {
   },
   setup(props, context) {
     const { locales, locale } = context.root.$i18n;
-    const isLangModalOpen = ref(false);
+    const isSiteSettingsOpen = ref(false);
     const availableLocales = computed(() => locales.filter(i => i.code !== locale));
     return {
       availableLocales,
       locale,
-      isLangModalOpen,
+      isSiteSettingsOpen,
       addBasePath
     };
   }
@@ -81,6 +81,7 @@ export default {
     position: var(--circle-icon-position, absolute);
     top: var(--spacer-xs);
     right: var(--spacer-xs);
+    display: flex;
   }
   .sf-list {
     .language {
@@ -91,6 +92,7 @@ export default {
     }
     @include for-desktop {
       display: flex;
+      width: 33%;
     }
   }
   &__lang {

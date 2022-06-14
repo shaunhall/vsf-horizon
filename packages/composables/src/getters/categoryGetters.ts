@@ -1,6 +1,5 @@
 import { CategoryGetters, AgnosticCategoryTree } from '@vue-storefront/core';
 import type { Category } from '@vue-storefront/horizon-api';
-import { convertLink } from './_utils';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getTree(category: Category): AgnosticCategoryTree {
@@ -8,11 +7,11 @@ function getTree(category: Category): AgnosticCategoryTree {
     const items: AgnosticCategoryTree[] = category.subNavigation?.map((nav) => {
       return {
         label: nav?.displayName,
-        slug: convertLink(nav?.link?.url),
+        slug: nav?.link?.url,
         items: nav.subNavigation?.map((subNav) => {
           return {
             label: subNav?.displayName,
-            slug: convertLink(subNav?.link?.url),
+            slug: subNav?.link?.url,
             items: [],
             isCurrent: false,
             image: {
@@ -30,7 +29,7 @@ function getTree(category: Category): AgnosticCategoryTree {
     }) || [];
     return {
       label: category.displayName,
-      slug: convertLink(category.link?.url),
+      slug: category.link?.url,
       items,
       isCurrent: false,
       image: {

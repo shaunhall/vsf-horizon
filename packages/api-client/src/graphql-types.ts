@@ -2428,6 +2428,7 @@ export interface GlobalTwoItemImageTextBlock extends Widget {
   itemText?: Maybe<RichContent>;
   itemTitle?: Maybe<Scalars['String']>;
   itemURL?: Maybe<Scalars['String']>;
+  lightMode?: Maybe<Scalars['String']>;
   query: Query;
   textAlign?: Maybe<Scalars['String']>;
   transcript?: Maybe<RichContent>;
@@ -2963,8 +2964,6 @@ export interface Mutation {
    */
   forgottenPassword?: Maybe<ForgottenPasswordResponse>;
   guestCheckout?: Maybe<CheckoutStartResponse>;
-  /** Perform an impersonate login (e.g. for Customer Services agents) using a token previously obtained by other means. */
-  impersonateLogin?: Maybe<AuthenticationResponse>;
   login?: Maybe<AuthenticationResponse>;
   loginAndApproveSocialLink?: Maybe<AuthenticationResponse>;
   logout?: Maybe<Scalars['Void']>;
@@ -3024,7 +3023,7 @@ export interface Mutation {
   sendReferralEmail?: Maybe<Scalars['Void']>;
   signUpForEmailMarketingCampaign?: Maybe<Scalars['Void']>;
   /** Sign up for email or SMS marketing without the requirement to be logged in */
-  signUpForMarketing?: Maybe<Scalars['Void']>;
+  signUpForMarketing?: Maybe<SignUpResult>;
   signUpForPushNotifications?: Maybe<PushSubscriptionResponse>;
   /**
    * Attempts to log you into the website using the SocialAuthenticationToken returned from Social Login Service
@@ -3041,9 +3040,6 @@ export interface Mutation {
    * Provide the item id of the product to be supersized (must be supersizable) and it will be added to the basket and the current product removed.
    */
   supersizeProductInBasket: Basket;
-  testCheckout?: Maybe<Scalars['String']>;
-  testGuestCheckout?: Maybe<Scalars['String']>;
-  testGuestCheckoutWithoutEmail?: Maybe<Scalars['String']>;
   unlinkAccounts?: Maybe<Scalars['Boolean']>;
   unsubscribeMarketing?: Maybe<Scalars['Void']>;
   unsubscribeSmsMarketing?: Maybe<Scalars['Boolean']>;
@@ -3204,11 +3200,6 @@ export interface MutationGuestCheckoutArgs {
 }
 
 
-export interface MutationImpersonateLoginArgs {
-  impersonationToken: Scalars['String'];
-}
-
-
 export interface MutationLoginArgs {
   input: LoginInput;
 }
@@ -3338,21 +3329,6 @@ export interface MutationSupersizeProductInBasketArgs {
   basketId?: InputMaybe<Scalars['ID']>;
   itemId: Scalars['ID'];
   settings: SessionSettings;
-}
-
-
-export interface MutationTestCheckoutArgs {
-  input: TestCheckoutStartInput;
-}
-
-
-export interface MutationTestGuestCheckoutArgs {
-  input: TestGuestCheckoutStartInput;
-}
-
-
-export interface MutationTestGuestCheckoutWithoutEmailArgs {
-  input: TestCheckoutStartInput;
 }
 
 
@@ -3726,9 +3702,11 @@ export interface PaymentCardsFilterInput {
 export type PaymentMethod =
   | 'AFTER_PAY'
   | 'ALI_PAY'
+  | 'ALI_PAY_PLUS'
   | 'AMERICAN_EXPRESS'
   | 'APPLE_PAY'
   | 'ARVATO'
+  | 'ATOME'
   | 'BANCONTACT'
   | 'CLEAR_PAY'
   | 'DINERS_CLUB'
@@ -3764,6 +3742,7 @@ export type PaymentMethod =
   | 'SOFORT'
   | 'SOLO'
   | 'SPLIT_IT'
+  | 'SPOTII'
   | 'TENPAY'
   | 'TRUSTLY'
   | 'TRUST_PAY'
@@ -4811,6 +4790,13 @@ export interface SignUpForMarketingInput {
   contactDetails: Scalars['String'];
   type: MarketingType;
 }
+
+export type SignUpResult =
+  | 'DUPLICATE'
+  | 'NOT_FOUND'
+  | 'OK'
+  | 'REQUIRES_VERIFICATION'
+  | 'UNKNOWN_ERROR';
 
 export interface SimpleFacet extends Facet {
   __typename?: 'SimpleFacet';
@@ -5904,6 +5890,8 @@ export type ProductContentFragment = { __typename?: 'Product', title: string, sk
 
 export type ProductListContentsFragment = { __typename?: 'ProductList', total: number, hasMore: boolean, facets: Array<{ __typename: 'RangedFacet', facetName: string, facetHeader: any, options: Array<{ __typename?: 'RangedFacetOption', displayName: any, from?: number | null, to?: number | null, matchedProductCount: number }> } | { __typename: 'SimpleFacet', facetName: string, facetHeader: any, options: Array<{ __typename?: 'SimpleFacetOption', optionName: string, displayName: any, matchedProductCount: number }> } | { __typename: 'SliderFacet', facetName: string, facetHeader: any, minValue: number, maxValue: number }>, products: Array<{ __typename?: 'Product', sku: any, url: any, title: string, cheapestVariantPrice?: { __typename?: 'ProductPrice', price: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string, scalarValue: any }, rrp: { __typename?: 'MoneyValue', currency: Currency, amount: string, displayValue: string, scalarValue: any } } | null, content: Array<{ __typename?: 'ProductContentItem', key: string, value: { __typename: 'ProductContentIntListValue' } | { __typename: 'ProductContentIntValue' } | { __typename: 'ProductContentRichContentListValue' } | { __typename: 'ProductContentRichContentValue' } | { __typename: 'ProductContentStringListValue', stringListValue: Array<string> } | { __typename: 'ProductContentStringValue' } }>, options: Array<{ __typename?: 'VariantOption', key: string, choices: Array<{ __typename?: 'OptionChoice', optionKey: string, key: string, colour?: any | null, title: string }> }>, reviews?: { __typename?: 'ProductReviews', total: number, averageScore: number } | null, images: Array<{ __typename?: 'ProductImage', largeProduct?: any | null, zoom?: any | null, original?: any | null }>, marketedSpecialOffer?: { __typename?: 'ProductMarketedSpecialOffer', title?: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> } | null, description?: { __typename?: 'RichContent', content: Array<{ __typename?: 'RichContentItem', type: RichContentType, content: any }> } | null, landingPageLink?: { __typename?: 'Hyperlink', text: any, url: any } | null } | null }> };
 
+export type CustomerInfoFragment = { __typename?: 'Customer', fullName: string, email: string, emailPreference?: boolean | null, socialLinks?: Array<{ __typename?: 'SocialLink', socialLinkId: any, username?: string | null, status: SocialLinkStatus, socialLoginProvider?: { __typename?: 'SocialLoginProvider', code: string, name: any, colour: string, iconUrl: string } | null }> | null };
+
 export type AddAddressMutationVariables = Exact<{
   addresseeName: Scalars['String'];
   addressLine1: Scalars['String'];
@@ -6086,7 +6074,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'AuthenticationResponse', newCustomer?: boolean | null, error?: AuthenticationError | null, fieldErrors?: Array<{ __typename?: 'FormFieldValidationError', fieldName: string, validators: Array<ValidatorName>, requiredButNotProvided: boolean, invalidOption: boolean } | null> | null, customer?: { __typename?: 'Customer', fullName: string } | null } | null };
+export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'AuthenticationResponse', newCustomer?: boolean | null, error?: AuthenticationError | null, fieldErrors?: Array<{ __typename?: 'FormFieldValidationError', fieldName: string, validators: Array<ValidatorName>, requiredButNotProvided: boolean, invalidOption: boolean } | null> | null, customer?: { __typename?: 'Customer', fullName: string, email: string, emailPreference?: boolean | null, socialLinks?: Array<{ __typename?: 'SocialLink', socialLinkId: any, username?: string | null, status: SocialLinkStatus, socialLoginProvider?: { __typename?: 'SocialLoginProvider', code: string, name: any, colour: string, iconUrl: string } | null }> | null } | null } | null };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -6247,7 +6235,7 @@ export type CreditAccountsQuery = { __typename?: 'Query', customer?: { __typenam
 export type CustomerQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CustomerQuery = { __typename?: 'Query', customer?: { __typename?: 'Customer', fullName: string } | null };
+export type CustomerQuery = { __typename?: 'Query', customer?: { __typename?: 'Customer', fullName: string, email: string, emailPreference?: boolean | null, socialLinks?: Array<{ __typename?: 'SocialLink', socialLinkId: any, username?: string | null, status: SocialLinkStatus, socialLoginProvider?: { __typename?: 'SocialLoginProvider', code: string, name: any, colour: string, iconUrl: string } | null }> | null } | null };
 
 export type GetMessageQueryVariables = Exact<{
   id?: InputMaybe<Scalars['ID']>;

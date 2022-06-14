@@ -8,7 +8,7 @@
       <!-- TODO: add mobile view buttons after SFUI team PR -->
       <template #logo>
         <nuxt-link :to="localePath({ name: 'home' })" class="sf-header__logo">
-          <SfImage :src="addBasePath('/icons/logo.svg')" alt="Vue Storefront Next" class="sf-header__logo-image"/>
+          <SfImage :src="addBasePath('/icons/logo.svg')" alt="Vue Storefront Next" class="sf-header__logo-image" width="35" height="35"/>
         </nuxt-link>
       </template>
       <template #navigation>
@@ -72,7 +72,7 @@
               v-if="!!searchBarRef.searchResult"
               aria-label="Close search"
               class="sf-search-bar__button sf-button--pure"
-              @click="closeOrFocusSearchBar"
+              @click="searchBarRef.searchResult = ''"
             >
               <span class="sf-search-bar__icon">
                 <SfIcon color="var(--c-text)" size="18px" icon="cross" />
@@ -106,14 +106,14 @@
             <SfListItem v-for="(leaf, i) in subNav.items" :key="i">
               <SfImage
                 v-if="leaf.image && leaf.image.url"
-                :src="leaf.image.url"
+                :src="convertLink(leaf.image.url)"
                 :alt="leaf.image.alt || ''"
                 :width="75"
                 :height="75"
               />
               <SfMenuItem
                 :label="leaf.label"
-                :link="leaf.slug"
+                :link="convertLink(leaf.slug)"
               />
             </SfListItem>
           </SfList>
@@ -129,7 +129,7 @@
           />
           <SfMenuItem
             :label="subNav.label"
-            :link="subNav.slug"
+            :link="convertLink(subNav.slug)"
           />
         </SfListItem>
       </SfList>
@@ -141,7 +141,7 @@
 import { SfHeader, SfImage, SfIcon, SfButton, SfBadge, SfSearchBar, SfOverlay, SfMegaMenu, SfList, SfMenuItem, SfBanner } from '@storefront-ui/vue';
 import { useUiState } from '~/composables';
 import { useCart, useUser, cartGetters } from '@vue-storefront/horizon';
-import { computed, ref, reactive, onBeforeUnmount, useRouter, useRoute } from '@nuxtjs/composition-api';
+import { computed, ref, reactive, onBeforeUnmount, useRouter } from '@nuxtjs/composition-api';
 import { useUiHelpers } from '~/composables';
 import LocaleSelector from './LocaleSelector';
 import SearchResults from '~/components/SearchResults';
@@ -173,9 +173,8 @@ export default {
   directives: { clickOutside },
   setup(props, { root }) {
     const router = useRouter();
-    const route = useRoute();
     const { toggleCartSidebar, toggleWishlistSidebar, toggleLoginModal, isMobileMenuOpen, navFlyoutCategory, updateNavFlyout, isNavFlyoutOpen } = useUiState();
-    const { setTermForUrl } = useUiHelpers();
+    const { setTermForUrl, convertLink } = useUiHelpers();
     const { isAuthenticated } = useUser();
     const { cart } = useCart();
     const isSearchOpen = ref(false);
@@ -206,6 +205,7 @@ export default {
       if (isWishlistIconClicked || !isSearchOpen.value) return;
 
       isSearchOpen.value = false;
+      searchBarRef.searchResult = '';
     };
 
     const handleSearch = () => {
@@ -215,8 +215,6 @@ export default {
     const closeOrFocusSearchBar = () => {
       if (isMobile.value) {
         return closeSearch();
-      } else {
-        return searchBarRef.value.$el.children[0].focus();
       }
     };
 
@@ -247,7 +245,8 @@ export default {
       addBasePath,
       isNavFlyoutOpen,
       navFlyoutCategory,
-      updateNavFlyout
+      updateNavFlyout,
+      convertLink
     };
   },
   watch: {

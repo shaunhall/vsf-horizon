@@ -86,6 +86,55 @@ const useUiHelpers = () => {
     console.warn('[VSF] please implement useUiHelpers.getSearchTermFromUrl.');
   };
 
+  const _isValidHttpUrl = (link: string): boolean => {
+
+    let url;
+
+    try {
+      url = new URL(link);
+    } catch (_) {
+      return false;
+    }
+
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  };
+
+  const convertLink = (oldLink: string): string => {
+    if (!oldLink) {
+      return '';
+    }
+    if (_isValidHttpUrl(oldLink)) {
+      return oldLink;
+    }
+    let link = oldLink;
+
+    const linkArray = link.split('?');
+    const newLink = (linkArray[0][0] === '/') ? linkArray[0] : '/' + linkArray[0];
+
+    if (link.includes('.list')) {
+      link = `/c${newLink}/`;
+      link = link.replace('.list', '');
+    } else if (link.includes('.html')) {
+      link = `/p${newLink}/`;
+      link = link.replace('.html', '');
+    } else if (link.includes('.search')) {
+      link = '/search/';
+    } else {
+      link = linkArray[0];
+    }
+
+    if (linkArray.length > 1) {
+      const linkQuery = `?${linkArray[1]}`;
+      link = link + linkQuery;
+    }
+
+    if (link.includes('?search')) {
+      link = link.replace('?search', '?q');
+    }
+
+    return link;
+  };
+
   return {
     getFacetsFromURL,
     getCatLink,
@@ -95,7 +144,8 @@ const useUiHelpers = () => {
     setTermForUrl,
     isFacetColor,
     isFacetCheckbox,
-    getSearchTermFromUrl
+    getSearchTermFromUrl,
+    convertLink
   };
 };
 

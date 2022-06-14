@@ -6,7 +6,7 @@
       class="sf-header-navigation-item__menu-item"
       v-e2e="`app-header-url_${category.slug}`"
       :label="category.label"
-      :link="localePath(category.slug)"
+      :link="localePath(convertLink(category.slug))"
       @mouseover="updateNavFlyout($event, category)"
       @mouseleave="updateNavFlyout($event)"
       @keydown.esc="updateNavFlyout($event)"
@@ -36,7 +36,7 @@
                     :key="i"
                     :label="subNav.label"
                     class="sf-header-navigation-item__menu-item"
-                    :link="localePath(subNav.slug)"
+                    :link="localePath(convertLink(subNav.slug))"
                     @click="toggleMobileMenu"
                   />
             </SfAccordionItem>
@@ -45,7 +45,7 @@
                 :label="item.label"
                 :key="idx"
                 class="sf-header-navigation-item__menu-item"
-                :link="localePath(item.slug)"
+                :link="localePath(convertLink(item.slug))"
                 @click="toggleMobileMenu"
               />
           </template>
@@ -59,7 +59,7 @@
 import { SfMenuItem, SfModal, SfAccordion, SfList, SfMegaMenu } from '@storefront-ui/vue';
 import { onSSR } from '@vue-storefront/core';
 import { computed } from '@nuxtjs/composition-api';
-import { useUiState } from '~/composables';
+import { useUiState, useUiHelpers } from '~/composables';
 import { useCategory, categoryGetters } from '@vue-storefront/horizon';
 
 export default {
@@ -80,6 +80,7 @@ export default {
   setup() {
     const { categories, search } = useCategory('categories');
     const { isMobileMenuOpen, toggleMobileMenu, updateNavFlyout } = useUiState();
+    const { convertLink } = useUiHelpers();
 
     const categoryTree = computed(() => categories?.value.map(category => categoryGetters.getTree(category)));
     onSSR(async () => {
@@ -90,7 +91,8 @@ export default {
       categoryTree: categoryTree?.value,
       isMobileMenuOpen,
       toggleMobileMenu,
-      updateNavFlyout
+      updateNavFlyout,
+      convertLink
     };
   }
 };

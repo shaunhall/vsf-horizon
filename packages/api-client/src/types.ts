@@ -7,7 +7,16 @@ import {
   CollectionQuery,
   ProductListContentsFragment,
   HeaderFooterQuery,
-  SearchQuery
+  SearchQuery,
+  SiteSettingsQuery,
+  CustomerQuery,
+  UpdateAccountSettingsMutation,
+  UpdateEmailMutation,
+  UpdatePasswordMutation,
+  AuthenticationError,
+  FormFieldValidationError,
+  LoginMutation,
+  CustomerInfoFragment
 } from './graphql-types';
 import type { ArrElement } from './_utils';
 
@@ -57,7 +66,17 @@ export type ReviewItem = GqlReview;
 
 export type Search = SearchQuery['search'];
 
-export type User = TODO;
+export type SiteSettings = SiteSettingsQuery;
+
+export type User = CustomerInfoFragment;
+
+export type UserUpdateDetailsResult = UpdateAccountSettingsMutation['updateAccountSettings'];
+
+export type UserUpdateEmailResult = UpdateEmailMutation['updateEmailAddress'];
+
+export type UserUpdatePasswordResult = UpdatePasswordMutation['updatePassword'];
+
+export type UserLoginResult = LoginMutation['login'];
 
 export type UserBillingAddress = TODO;
 

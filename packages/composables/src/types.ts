@@ -2,6 +2,7 @@ import {
   AgnosticFacetSearchParams,
   ProductsSearchParams
 } from '@vue-storefront/core';
+import { OrderDetailsQueryVariables, OrderHistoryQueryVariables, RegistrationMutationVariables, UpdateAccountSettingsMutationVariables, UpdateEmailMutationVariables } from '@vue-storefront/horizon-api/lib/graphql-types';
 
 export type TODO = any;
 
@@ -21,8 +22,8 @@ export type UseShippingAddParams = TODO;
 
 export type UseStoreFilterParams = TODO;
 
-export type UseUserUpdateParams = TODO;
+export type UseUserUpdateParams = UpdateAccountSettingsMutationVariables | UpdateEmailMutationVariables;
 
-export type UseUserRegisterParams = TODO;
+export type UseUserRegisterParams = RegistrationMutationVariables;
 
-export type useUserOrderSearchParams = TODO;
+export type useUserOrderSearchParams = OrderDetailsQueryVariables | OrderHistoryQueryVariables;

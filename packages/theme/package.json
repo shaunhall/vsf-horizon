@@ -21,7 +21,7 @@
     "update:update": "ncu -u"
   },
   "dependencies": {
-    "@storefront-ui/vue": "0.11.4",
+    "@storefront-ui/vue": "0.13.2",
     "@vendia/serverless-express": "^4.8.0",
     "@vue-storefront/horizon": "0.0.1",
     "@vue-storefront/middleware": "~2.5.4",

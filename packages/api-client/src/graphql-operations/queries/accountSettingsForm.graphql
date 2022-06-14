@@ -1,20 +1,4 @@
 query AccountSettingsForm {
-  customer {
-    fullName
-    email
-    emailPreference:marketingPreferences(type: EMAIL)
-    socialLinks {
-      socialLinkId
-      socialLoginProvider {
-        code
-        name
-        colour
-        iconUrl
-      }
-      username
-      status
-    }
-  }
   accountSettingsForm {
     identifier
     fields {

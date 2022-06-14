@@ -162,5 +162,14 @@ export default {
     'keyBenefits': 'Key Benefits',
     'whyChoose': 'Why Choose',
     'synopsis': 'Synopsis'
+  },
+  loginErrors: {
+    'ACCOUNT_EXISTS': 'This E-mail address is already registered.',
+    'EMAIL_VERIFICATION_SENT': 'A verification e-mail has been sent to this account already.',
+    'FAILED_LOGIN': 'The email address or password you entered were invalid.',
+    'ACCOUNT_LOCKED': 'This account has been locked. please contact customer service for help.',
+    'INVALID_DATA': 'There is incorrect data.',
+    'INVALID_PASSWORD': 'The following inputs are incorrect: Password',
+    'USER_NOT_FOUND': 'We can\'t find an account using this email address. Please create an account.',
   }
 };

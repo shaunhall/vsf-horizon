@@ -48,7 +48,7 @@
               class="form__element checkbox"
             />
             <div v-if="error.login">
-              {{ error.login }}
+              {{ $t('loginErrors.' + error.login || 'There has been an error. Please try again.') }}
             </div>
             <SfButton v-e2e="'login-modal-submit'"
               type="submit"
@@ -275,12 +275,11 @@ export default {
     const handleForm = (fn) => async () => {
       resetErrorValues();
       await fn({ user: form.value });
-
       const hasUserErrors = userError.value.register || userError.value.login;
-
+      console.log(userError.value, login.value);
       if (hasUserErrors) {
-        error.login = userError.value.login?.message;
-        error.register = userError.value.register?.message;
+        error.login = userError.value.login?.error || userError.value.login?.errors[0].message;
+        error.register = userError.value.register?.error;
         return;
       }
       toggleLoginModal();

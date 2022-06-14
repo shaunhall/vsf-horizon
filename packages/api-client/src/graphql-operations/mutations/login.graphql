@@ -1,3 +1,5 @@
+#import "../fragments/userDetails.graphql"
+
 mutation Login($username: String!, $password: String!) {
   login(input: {
     username: $username,
@@ -12,7 +14,7 @@ mutation Login($username: String!, $password: String!) {
       invalidOption
     }
     customer {
-      fullName
+      ...CustomerInfo
     }
   }
 }

@@ -146,7 +146,7 @@ module.exports = {
       );
       routes.push({
         name: 'Search',
-        path: '/search/:slug/',
+        path: '/search/:slug?/',
         component: resolve(__dirname, rootDir + 'pages/Search.vue')
       });
     }

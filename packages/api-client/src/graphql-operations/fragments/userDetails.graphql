@@ -1,0 +1,16 @@
+fragment CustomerInfo on Customer {
+  fullName
+  email
+  emailPreference:marketingPreferences(type: EMAIL)
+  socialLinks {
+    socialLinkId
+    socialLoginProvider {
+      code
+      name
+      colour
+      iconUrl
+    }
+    username
+    status
+  }
+}
