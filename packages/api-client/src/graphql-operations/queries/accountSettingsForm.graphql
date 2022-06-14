@@ -1,37 +1,13 @@
+#import "../fragments/formFieldContents.graphql"
+
 query AccountSettingsForm {
   accountSettingsForm {
     identifier
     fields {
-      name
-      type
-      validators {
-        name
-        argument
-      }
-      required
-      disabled
-      confirmable
-      answerOptions {
-        optionKey
-        translation
-      }
-      defaultValue
+      ...FormFieldContents
     }
   }
-  passwordField {
-    name
-    type
-    validators {
-      name
-      argument
-    }
-    required
-    disabled
-    confirmable
-    answerOptions {
-      optionKey
-      translation
-    }
-    defaultValue
+  emailField {
+    ...FormFieldContents
   }
 }

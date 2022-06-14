@@ -1,6 +1,7 @@
 import { apiClientFactory } from '@vue-storefront/core';
 import type { Endpoints } from './types';
 import { getProduct } from './api/getProduct';
+import { getForm } from './api/getForm';
 import { getCategories } from './api/getCategory';
 import { getPage } from './api/getPage';
 import { getSearch } from './api/getSearch';
@@ -93,6 +94,7 @@ const { createApiClient } = apiClientFactory<unknown, Endpoints>({
   extensions: [setCookieExtension],
   api: {
     getProduct,
+    getForm,
     getReviews,
     getCategories,
     getPage,

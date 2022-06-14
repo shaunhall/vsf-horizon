@@ -1,0 +1,16 @@
+fragment FormFieldContents on FormField {
+  name
+  type
+  validators {
+    name
+    argument
+  }
+  required
+  disabled
+  confirmable
+  answerOptions {
+    optionKey
+    translation
+  }
+  defaultValue
+}

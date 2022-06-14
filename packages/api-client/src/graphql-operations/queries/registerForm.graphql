@@ -1,22 +1,11 @@
+#import "../fragments/formFieldContents.graphql"
+
 query RegisterForm{
   form(input: {
     identifier:"ACCOUNT_CREATION"
   }){
     fields {
-      name
-      type
-      required
-      confirmable
-      disabled
-      defaultValue
-      answerOptions {
-        optionKey
-        translation
-      }
-      validators {
-        name
-        argument
-      }
+      ...FormFieldContents
     }
   }
 }

@@ -9,14 +9,12 @@ import {
   HeaderFooterQuery,
   SearchQuery,
   SiteSettingsQuery,
-  CustomerQuery,
   UpdateAccountSettingsMutation,
   UpdateEmailMutation,
   UpdatePasswordMutation,
-  AuthenticationError,
-  FormFieldValidationError,
   LoginMutation,
-  CustomerInfoFragment
+  CustomerInfoFragment,
+  FormFieldContentsFragment
 } from './graphql-types';
 import type { ArrElement } from './_utils';
 
@@ -37,6 +35,10 @@ export type Coupon = TODO;
 export type Page = CollectionQuery['page'];
 
 export type Facet = ProductListContentsFragment;
+
+export type FormField = FormFieldContentsFragment;
+
+export type FormFieldInput = { type: 'register' | 'settings' | 'password' };
 
 export type Widget = ArrElement<CollectionQuery['page']['widgets']>;
 
