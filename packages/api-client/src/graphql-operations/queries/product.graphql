@@ -1,6 +1,6 @@
 #import "../fragments/productFragment.graphql"
 
-query Product($sku: SKU!, $offset: Int! = 0, $limit: Int! = 5) {
+query Product($sku: SKU!, $offset: Int! = 0, $limit: Int! = 5, $currency: Currency! = GBP, $shippingDestination: Country = GB) {
   product(sku: $sku, strict: false) {
     ...ProductContent
   }

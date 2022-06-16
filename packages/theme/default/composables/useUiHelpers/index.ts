@@ -24,66 +24,27 @@ const useUiHelpers = () => {
   };
 
   // eslint-disable-next-line
-  const getCatLink = (category): string => {
-    console.warn('[VSF] please implement useUiHelpers.getCatLink.');
-
-    return '/';
-  };
-
-  // eslint-disable-next-line
-  const changeSorting = (sort) => {
-    console.warn('[VSF] please implement useUiHelpers.changeSorting.');
-
-    return 'latest';
-  };
-
-  // eslint-disable-next-line
   const changeFilters = (filters: Record<string, { [x: string]: any }[]>) => {
-    console.warn('[VSF] please implement useUiHelpers.changeFilters.');
     const urlFilters = [];
     Object.entries(filters).forEach(([key, options]) => {
       if (options.length) {
         options.forEach(option => {
           if (option.from || option.to) {
-            console.log(`${key}:[${option.from} TO ${option.to}]`);
             urlFilters.push(`${key}:[${option.from} TO ${option.to}]`);
           } else {
-            console.log(`${key}:${option.optionName}`);
             urlFilters.push(`${key}:${option.optionName}`);
           }
         });
       }
     });
-    console.log(JSON.parse(JSON.stringify(filters)));
     return urlFilters.join('|');
   };
 
-  // eslint-disable-next-line
-  const changeItemsPerPage = (itemsPerPage) => {
-    console.warn('[VSF] please implement useUiHelpers.changeItemsPerPage.');
-  };
-
-  // eslint-disable-next-line
-  const setTermForUrl = (term: string) => {
-    console.warn('[VSF] please implement useUiHelpers.changeSearchTerm.');
-  };
-
-  // eslint-disable-next-line
-  const isFacetColor = (facet): boolean => {
-    console.warn('[VSF] please implement useUiHelpers.isFacetColor.');
-
-    return false;
-  };
-
-  // eslint-disable-next-line
-  const isFacetCheckbox = (facet): boolean => {
-    console.warn('[VSF] please implement useUiHelpers.isFacetCheckbox.');
-
-    return false;
-  };
-
-  const getSearchTermFromUrl = () => {
-    console.warn('[VSF] please implement useUiHelpers.getSearchTermFromUrl.');
+  const convertValidators = (validators) => {
+    return validators.reduce((prevObj, validator) => {
+      prevObj[validator.name] = validator.argument || true;
+      return prevObj;
+    }, {});
   };
 
   const _isValidHttpUrl = (link: string): boolean => {
@@ -137,15 +98,9 @@ const useUiHelpers = () => {
 
   return {
     getFacetsFromURL,
-    getCatLink,
-    changeSorting,
     changeFilters,
-    changeItemsPerPage,
-    setTermForUrl,
-    isFacetColor,
-    isFacetCheckbox,
-    getSearchTermFromUrl,
-    convertLink
+    convertLink,
+    convertValidators
   };
 };
 

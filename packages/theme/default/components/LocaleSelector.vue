@@ -4,28 +4,65 @@
         class="container__lang container__lang--selected"
         @click="isSiteSettingsOpen = !isSiteSettingsOpen"
     >
-      <SfImage :src="addBasePath(`/icons/langs/${locale}.webp`)" width="20" alt="Flag" />
+      <SfImage :src="`/icons/flags/${locale}.svg`" width="20" alt="Flag" />
     </SfButton>
-    <SfBottomModal
-      :is-open="isSiteSettingsOpen"
-      title="Choose language"
-      @click:close="isSiteSettingsOpen = !isSiteSettingsOpen"
+    <SfModal
+      :visible="isSiteSettingsOpen"
+      title="Settings"
+      :persistent="false"
+      @close="isSiteSettingsOpen = !isSiteSettingsOpen"
     >
-      <SfList>
-        <SfListItem v-for="lang in availableLocales" :key="lang.code">
-          <a :href="switchLocalePath(lang.code)">
-            <SfCharacteristic class="language">
-              <template #title>
-                <span>{{ lang.label }}</span>
-              </template>
-              <template #icon>
-                <SfImage :src="addBasePath(`/icons/langs/${lang.code}.webp`)" width="20" alt="Flag" class="language__flag" />
-              </template>
-            </SfCharacteristic>
-          </a>
-        </SfListItem>
-      </SfList>
-    </SfBottomModal>
+      <form class="form" @submit.prevent="handleSubmit" autocomplete="off">
+        <SfSelect
+          label="Language"
+          v-model="form['locale']"
+        >
+          <SfSelectOption
+            v-for="lang in locales"
+            :key="lang.code"
+            :value="lang.code"
+            :label="lang.label"
+            class="sf-select__option"
+            tabindex="0"
+          />
+        </SfSelect>
+        <SfSelect
+          label="Currency"
+          v-model="form['currency']"
+        >
+          <SfSelectOption
+            v-for="currency in currencyList"
+            :key="currency"
+            :value="currency"
+            :label="`${currency} (${$t('currencies.' + currency)})`"
+            class="sf-select__option"
+            tabindex="0"
+          />
+        </SfSelect>
+        <SfSelect
+          label="Shipping Destination"
+          v-model="form.shippingDestination"
+        >
+          <SfSelectOption
+            v-for="dest in shippingDestinationList"
+            :key="dest"
+            :value="dest"
+            :label="$t('countries.' + dest)"
+            class="sf-select__option"
+            tabindex="0"
+          />
+        </SfSelect>
+        <SfButton
+          type="submit"
+          class="sf-button--full-width form__button"
+          :disabled="loading"
+        >
+          <SfLoader :class="{ loader: loading }" :loading="loading">
+            <div>Save Changes</div>
+          </SfLoader>
+        </SfButton>
+      </form>
+    </SfModal>
   </div>
 </template>
 
@@ -35,29 +72,54 @@ import {
   SfSelect,
   SfButton,
   SfList,
-  SfBottomModal,
+  SfLoader,
+  SfModal,
   SfCharacteristic
 } from '@storefront-ui/vue';
 import { ref, computed } from '@nuxtjs/composition-api';
-import { addBasePath } from '@vue-storefront/core';
+import { useStore, storeGetters } from '@vue-storefront/horizon';
 export default {
   components: {
     SfImage,
     SfSelect,
     SfButton,
+    SfLoader,
     SfList,
-    SfBottomModal,
+    SfModal,
     SfCharacteristic
   },
-  setup(props, context) {
-    const { locales, locale } = context.root.$i18n;
+  setup(_, context) {
+    const { locale, locales } = context.root.$i18n;
+    const { response: store, loading, change } = useStore();
     const isSiteSettingsOpen = ref(false);
-    const availableLocales = computed(() => locales.filter(i => i.code !== locale));
+    const activeSettings = computed(() => storeGetters.getSelected(store.value)).value;
+    const currentCurrency = computed(() => activeSettings?.currency);
+    const currentShippingDestination = computed(() => activeSettings?.shippingDestination);
+
+    const form = ref({ currency: currentCurrency.value, shippingDestination: currentShippingDestination.value, locale });
+
+    const currencyList = computed(() => storeGetters.getItems(store.value, {key: 'currencies'}));
+    const shippingDestinationList = computed(() => storeGetters.getItems(store.value, {key: 'shippingDestinations'}));
+
+    const handleSubmit = () => {
+      change({ currentStore: store.value, store: { active: form.value } });
+      if (locale !== form.value.locale) {
+        console.log('CHANGE LOCALE');
+      }
+    };
+
     return {
-      availableLocales,
+      locales,
       locale,
+      loading,
+      store,
+      form,
+      currencyList,
+      shippingDestinationList,
+      currentCurrency,
+      currentShippingDestination,
       isSiteSettingsOpen,
-      addBasePath
+      handleSubmit
     };
   }
 };
@@ -70,18 +132,11 @@ export default {
   flex-wrap: nowrap;
   align-items: center;
   position: relative;
-  .sf-bottom-modal {
-    z-index: 2;
-    left: 0;
-    @include for-desktop {
-      --bottom-modal-height: 100vh;
+  .form {
+    margin-top: var(--spacer-sm);
+    &__element {
+      margin: 0 0 var(--spacer-xl) 0;
     }
-  }
-  .sf-bottom-modal::v-deep .sf-bottom-modal__close {
-    position: var(--circle-icon-position, absolute);
-    top: var(--spacer-xs);
-    right: var(--spacer-xs);
-    display: flex;
   }
   .sf-list {
     .language {

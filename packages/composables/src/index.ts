@@ -4,6 +4,7 @@ export { useCart } from './useCart';
 export { useCheckout } from './useCheckout';
 export { useCategory } from './useCategory';
 export { useContent } from './useContent';
+export { useForm } from './useForm';
 export { usePage } from './usePage';
 export { useForgotPassword } from './useForgotPassword';
 export { useMakeOrder } from './useMakeOrder';

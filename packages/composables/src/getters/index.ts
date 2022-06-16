@@ -5,6 +5,7 @@ import { productGetters } from './productGetters';
 import { productVariantGetters } from './productVariantGetters';
 import { pageGetters } from './pageGetters';
 import { reviewGetters } from './reviewGetters';
+import { storeGetters } from './storeGetters';
 import { userGetters } from './userGetters';
 import { userShippingGetters } from './userShippingGetters';
 import { userBillingGetters } from './userBillingGetters';
@@ -19,6 +20,7 @@ export {
   productGetters,
   productVariantGetters,
   reviewGetters,
+  storeGetters,
   userGetters,
   userShippingGetters,
   userBillingGetters,

@@ -3,7 +3,7 @@ import {
   useUserFactory,
   UseUserFactoryParams
 } from '@vue-storefront/core';
-import type { User, UserLoginResult, UserUpdateDetailsResult, UserUpdateEmailResult, UserUpdatePasswordResult } from '@vue-storefront/horizon-api';
+import type { User, UserLoginResult, UserRegisterResult, UserUpdateDetailsResult, UserUpdateEmailResult, UserUpdatePasswordResult } from '@vue-storefront/horizon-api';
 import type {
   UseUserUpdateParams as UpdateParams,
   UseUserRegisterParams as RegisterParams
@@ -39,16 +39,26 @@ const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   register: async (context: Context, params) => {
-    console.log('Mocked: useUser.register');
+    const registerResult: ExecutionResult<UserRegisterResult> = await context.$horizon.api.register(params);
+    if (registerResult.data?.error) {
+      return Promise.reject({
+        error: registerResult.data?.error,
+        fieldErrors: registerResult.data?.fieldErrors
+      });
+    } else if (registerResult.data?.customer) {
+      return registerResult.data?.customer;
+    } else {
+      return Promise.reject({
+        error: registerResult.errors || 'ERROR'
+      });
+    }
     return undefined;
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   logIn: async (context: Context, { username, password }) => {
     const loginResult: ExecutionResult<UserLoginResult> = await context.$horizon.api.login({ username, password });
-    console.log(loginResult);
     if (loginResult.data?.error) {
-      console.log('data error');
       return Promise.reject({
         error: loginResult.data?.error,
         fieldErrors: loginResult.data?.fieldErrors
@@ -56,11 +66,11 @@ const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
     } else if (loginResult.data?.customer) {
       return loginResult.data?.customer;
     } else {
-      console.log('graphql error');
       return Promise.reject({
         error: loginResult.errors || 'ERROR'
       });
-  }
+    }
+  },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   changePassword: async (context: Context, { currentUser, currentPassword, newPassword }) => {

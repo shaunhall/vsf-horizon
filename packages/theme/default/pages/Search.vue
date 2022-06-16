@@ -36,7 +36,6 @@ export default {
         itemsPerPage: 30,
         page: page?.value && page.value - 1,
         facets: initialFilters?.value });
-      console.log(error?.value);
       if (error?.value?.search) context.root.$nuxt.error({ statusCode: 404 });
     });
 

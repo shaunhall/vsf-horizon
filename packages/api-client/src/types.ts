@@ -1,3 +1,4 @@
+import { AgnosticStore } from '@vue-storefront/core';
 import {
   ProductContentFragment,
   ProductReviews,
@@ -14,7 +15,10 @@ import {
   UpdatePasswordMutation,
   LoginMutation,
   CustomerInfoFragment,
-  FormFieldContentsFragment
+  FormFieldContentsFragment,
+  RegistrationMutation,
+  Currency,
+  Country
 } from './graphql-types';
 import type { ArrElement } from './_utils';
 
@@ -80,6 +84,8 @@ export type UserUpdatePasswordResult = UpdatePasswordMutation['updatePassword'];
 
 export type UserLoginResult = LoginMutation['login'];
 
+export type UserRegisterResult = RegistrationMutation['register'];
+
 export type UserBillingAddress = TODO;
 
 export type UserBillingAddressItem = TODO;
@@ -98,7 +104,11 @@ export type ShippingMethod = TODO;
 
 export type ShippingProvider = TODO;
 
-export type Store = TODO;
+export type Store = AgnosticStore & { active: {
+  currency: Currency
+  shippingDestination: Country
+  locale: string
+} };
 
 export type Wishlist = TODO;
 

@@ -59,7 +59,6 @@
           ref="searchBarRef"
           :placeholder="$t('Search for items')"
           aria-label="Search"
-          class="sf-header__search"
           :value="searchBarRef.searchResult"
           @input="(input) => searchBarRef.searchResult = input"
           @keydown.enter="handleSearch"
@@ -174,7 +173,7 @@ export default {
   setup(props, { root }) {
     const router = useRouter();
     const { toggleCartSidebar, toggleWishlistSidebar, toggleLoginModal, isMobileMenuOpen, navFlyoutCategory, updateNavFlyout, isNavFlyoutOpen } = useUiState();
-    const { setTermForUrl, convertLink } = useUiHelpers();
+    const { convertLink } = useUiHelpers();
     const { isAuthenticated } = useUser();
     const { cart } = useCart();
     const isSearchOpen = ref(false);
@@ -232,7 +231,6 @@ export default {
       handleAccountClick,
       toggleCartSidebar,
       toggleWishlistSidebar,
-      setTermForUrl,
       isSearchOpen,
       closeSearch,
       handleSearch,
@@ -267,6 +265,11 @@ export default {
     height: 100%;
   }
 }
+
+.sf-search-bar {
+  min-width: var(--search-bar-width);
+}
+
 .header-on-top {
   z-index: 2;
 }

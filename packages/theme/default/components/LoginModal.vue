@@ -113,62 +113,76 @@
       <div v-else class="form">
         <ValidationObserver v-slot="{ handleSubmit }" key="sign-up">
           <form class="form" @submit.prevent="handleSubmit(handleRegister)" autocomplete="off">
-            <ValidationProvider rules="required|email" v-slot="{ errors }">
-              <SfInput
-                v-e2e="'login-modal-email'"
-                v-model="form.email"
-                :valid="!errors[0]"
-                :errorMessage="errors[0]"
-                name="email"
-                label="Your email"
-                class="form__element"
-              />
-            </ValidationProvider>
-            <ValidationProvider rules="required" v-slot="{ errors }">
-              <SfInput
-                v-e2e="'login-modal-firstName'"
-                v-model="form.firstName"
-                :valid="!errors[0]"
-                :errorMessage="errors[0]"
-                name="first-name"
-                label="First Name"
-                class="form__element"
-              />
-            </ValidationProvider>
-            <ValidationProvider rules="required" v-slot="{ errors }">
-              <SfInput
-                v-e2e="'login-modal-lastName'"
-                v-model="form.lastName"
-                :valid="!errors[0]"
-                :errorMessage="errors[0]"
-                name="last-name"
-                label="Last Name"
-                class="form__element"
-              />
-            </ValidationProvider>
-            <ValidationProvider rules="required" v-slot="{ errors }">
-              <SfInput
-                v-e2e="'login-modal-password'"
-                v-model="form.password"
-                :valid="!errors[0]"
-                :errorMessage="errors[0]"
-                name="password"
-                label="Password"
-                type="password"
-                class="form__element"
-              />
-            </ValidationProvider>
-            <ValidationProvider :rules="{ required: { allowFalse: false } }" v-slot="{ errors }">
-              <SfCheckbox
-                v-e2e="'login-modal-create-account'"
-                v-model="createAccount"
-                :valid="!errors[0]"
-                :errorMessage="errors[0]"
-                name="create-account"
-                label="I want to create an account"
-                class="form__element"
-              />
-            </ValidationProvider>
+            <template v-for="(field, idx) in fields" >
+              <div :key="idx" v-if="['TEXT', 'EMAIL', 'PASSWORD', 'PHONE_NUMBER', 'DATE'].includes(field.type)">
+                <ValidationProvider
+                  :rules="convertValidators(field.validators)"
+                  :name="field.name"
+                  v-slot="{ errors }"
+                >
+                  <SfInput
+                    v-model="form[field.name]"
+                    :type="getInputType(field.type)"
+                    :valid="!errors[0]"
+                    :errorMessage="errors[0]"
+                    :name="field.name"
+                    :label="$t('form.fieldNames.' + field.name)"
+                    class="form__element"
+                    :required="field.required"
+                    :disabled="field.disabled"
+                    :hasShowPassword="field.type === 'PASSWORD'"
+                  />
+                </ValidationProvider>
+                <ValidationProvider v-if="field.confirmable" :rules="`CONFIRMATION:@${field.name}`" v-slot="{ errors }">
+                  <SfInput
+                    type="getInputType(field.type)"
+                    v-model="form[field.name + '__confirmation']"
+                    :valid="!errors[0]"
+                    :errorMessage="errors[0]"
+                    :name="field.name + '__confirmation'"
+                    :label="'Confirm ' + $t('form.fieldNames.' + field.name)"
+                    class="form__element"
+                    :required="field.required"
+                    :disabled="field.disabled"
+                    :hasShowPassword="field.type === 'PASSWORD'"
+                  />
+                </ValidationProvider>
+              </div>
+              <ValidationProvider
+                v-else-if="field.type === 'BOOLEAN'"
+                :key="idx"
+                :rules="convertValidators(field.validators)"
+                v-slot="{ errors }"
+              >
+                <SfCheckbox
+                  v-model="form[field.name]"
+                  :valid="!errors[0]"
+                  :errorMessage="errors[0]"
+                  :name="$t('form.fieldNames.' + field.name)"
+                  :label="field.name"
+                  class="form__element"
+                />
+              </ValidationProvider>
+              <ValidationProvider
+                v-else-if="['MARKETING_CONSENT', 'GROUP'].includes(field.type)"
+                :key="idx"
+                :rules="convertValidators(field.validators)"
+                v-slot="{ errors }"
+              >
+                <span class="sf-input__label" style="position: relative;">{{ $t('form.fieldNames.' + field.name) }}</span>
+                <SfRadio
+                  v-for="(option, i) in field.answerOptions"
+                  :key="i"
+                  v-model="form[field.name]"
+                  :value="option.optionKey"
+                  :valid="!errors[0]"
+                  :errorMessage="errors[0]"
+                  :name="field.name"
+                  :label="$t('form.marketingConsent.' + option.optionKey)"
+                  class="form__element"
+                />
+              </ValidationProvider>
+            </template>
             <div v-if="error.register">
               {{ error.register }}
             </div>
@@ -194,28 +208,17 @@
   </SfModal>
 </template>
 <script>
-import { ref, watch, reactive, computed } from '@nuxtjs/composition-api';
-import { SfModal, SfInput, SfButton, SfCheckbox, SfLoader, SfAlert, SfBar } from '@storefront-ui/vue';
-import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
-import { required, email } from 'vee-validate/dist/rules';
-import { useUser, useForgotPassword } from '@vue-storefront/horizon';
-import { useUiState } from '~/composables';
-
-extend('email', {
-  ...email,
-  message: 'Invalid email'
-});
-
-extend('required', {
-  ...required,
-  message: 'This field is required'
-});
-
+import { ref, watch, reactive, computed, onMounted, useRoute } from '@nuxtjs/composition-api';
+import { SfModal, SfInput, SfButton, SfCheckbox, SfLoader, SfAlert, SfBar, SfRadio } from '@storefront-ui/vue';
+import { ValidationProvider, ValidationObserver } from 'vee-validate';
+import { useUser, useForgotPassword, useForm } from '@vue-storefront/horizon';
+import { useUiState, useUiHelpers } from '~/composables';
 export default {
   name: 'LoginModal',
   components: {
     SfModal,
     SfInput,
+    SfRadio,
     SfButton,
     SfCheckbox,
     SfLoader,
@@ -231,10 +234,13 @@ export default {
     const SCREEN_FORGOTTEN = 'forgottenPassword';
 
     const { isLoginModalOpen, toggleLoginModal } = useUiState();
-    const form = ref({});
+    const { convertValidators } = useUiHelpers();
+    const route = useRoute();
     const userEmail = ref('');
+    const form = ref({});
     const createAccount = ref(false);
     const rememberMe = ref(false);
+    const { form: fields, search: getForm, loading: formLoading } = useForm();
     const { register, login, loading, error: userError } = useUser();
     const { request, error: forgotPasswordError, loading: forgotPasswordLoading } = useForgotPassword();
     const currentScreen = ref(SCREEN_REGISTER);
@@ -274,9 +280,19 @@ export default {
 
     const handleForm = (fn) => async () => {
       resetErrorValues();
-      await fn({ user: form.value });
+      const filteredForm = form.value;
+      Object.keys(form.value).forEach(key => {
+        key.includes('__confirmation') && delete filteredForm[key];
+      });
+      if (filteredForm.marketingConsent) {
+        filteredForm.marketingConsentAuditData = {
+          messageShown: 'form.marketingConsent.' + filteredForm.marketingConsent,
+          formIdentifier: 'register modal',
+          formLocation: route.value.path
+        };
+      }
+      await fn({ user: filteredForm });
       const hasUserErrors = userError.value.register || userError.value.login;
-      console.log(userError.value, login.value);
       if (hasUserErrors) {
         error.login = userError.value.login?.error || userError.value.login?.errors[0].message;
         error.register = userError.value.register?.error;
@@ -295,6 +311,12 @@ export default {
 
     const handleLogin = async () => handleForm(login)();
 
+    onMounted(async () => {
+      await getForm({
+        type: 'register'
+      });
+    });
+
     const handleForgotten = async () => {
       userEmail.value = form.value.username;
       await request({ email: userEmail.value });
@@ -306,6 +328,7 @@ export default {
 
     return {
       form,
+      fields,
       error,
       userError,
       loading,
@@ -323,11 +346,26 @@ export default {
       barTitle,
       currentScreen,
       setCurrentScreen,
+      convertValidators,
       SCREEN_LOGIN,
       SCREEN_REGISTER,
       SCREEN_THANK_YOU,
       SCREEN_FORGOTTEN
     };
+  },
+  methods: {
+    getInputType (type) {
+      switch (type) {
+        case 'TEXT' || 'EMAIL':
+          return 'text';
+        case 'PASSWORD':
+          return 'password';
+        case 'NUMBER' || 'PHONE_NUMBER':
+          return 'number';
+        case 'DATE':
+          return 'date';
+      }
+    }
   }
 };
 </script>

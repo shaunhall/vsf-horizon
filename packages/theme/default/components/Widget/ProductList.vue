@@ -21,8 +21,10 @@
               :style="{ '--index': i }"
               :title="productGetters.getName(product)"
               :image="productGetters.getCoverImage(product)"
-              :regular-price="$n(productGetters.getPrice(product).regular, 'currency')"
-              :special-price="productGetters.getPrice(product).special && $n(productGetters.getPrice(product).special, 'currency')"
+              :imageWidth="800"
+              :imageHeight="800"
+              :regular-price="productGetters.getPrice(product).regular"
+              :special-price="productGetters.getPrice(product).special && productGetters.getPrice(product).special"
               :max-rating="5"
               :score-rating="productGetters.getAverageRating(product)"
               :show-add-to-cart-button="true"
@@ -47,10 +49,12 @@
               :key="productGetters.getSlug(product) + i"
               :style="{ '--index': i }"
               :title="productGetters.getName(product)"
+              :imageWidth="800"
+              :imageHeight="800"
               :description="productGetters.getDescription(product)"
               :image="productGetters.getCoverImage(product)"
-              :regular-price="$n(productGetters.getPrice(product).regular, 'currency')"
-              :special-price="productGetters.getPrice(product).special && $n(productGetters.getPrice(product).special, 'currency')"
+              :regular-price="productGetters.getPrice(product).regular"
+              :special-price="productGetters.getPrice(product).special && productGetters.getPrice(product).special"
               :max-rating="5"
               :score-rating="3"
               :qty="1"
@@ -89,29 +93,6 @@
               :visible="5"
             />
           </LazyHydrate>
-
-          <div
-            v-show="pagination.totalPages > 1 && pagination.pageOptions.length"
-            class="products__show-on-page"
-          >
-            <span class="products__show-on-page__label">{{ $t('Show on page') }}</span>
-            <LazyHydrate on-interaction>
-              <SfSelect
-                :value="pagination && pagination.itemsPerPage ? pagination.itemsPerPage.toString() : ''"
-                class="products__items-per-page"
-                @input="th.changeItemsPerPage"
-              >
-                <SfSelectOption
-                  v-for="option in pagination.pageOptions"
-                  :key="option"
-                  :value="option"
-                  class="products__items-per-page__option"
-                >
-                  {{ option }}
-                </SfSelectOption>
-              </SfSelect>
-            </LazyHydrate>
-          </div>
         </div>
       </SfLoader>
     </div>

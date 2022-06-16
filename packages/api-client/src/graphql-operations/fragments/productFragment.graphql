@@ -24,7 +24,10 @@ fragment VariantContent on ProductVariant {
       zoom
     }
   }
-  price(currency: GBP, shippingDestination: GB) {
+  price(
+    currency: $currency
+    shippingDestination: $shippingDestination
+  ) {
     price {
       currency
       amount
@@ -99,7 +102,10 @@ fragment ProductContent on Product {
         }
     }
     inWishlist
-    cheapestVariantPrice(currency: GBP, shippingDestination: GB){
+    cheapestVariantPrice(
+      currency: $currency
+      shippingDestination: $shippingDestination
+    ){
         price {
             currency
             amount
@@ -206,7 +212,10 @@ fragment ProductContent on Product {
         }
       }
     }
-    defaultVariant(options: { currency: GBP, shippingDestination: GB }) {
+    defaultVariant(options: { 
+      currency: $currency
+      shippingDestination: $shippingDestination
+    }) {
         ...VariantContent
     }
 }

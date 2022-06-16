@@ -3,13 +3,13 @@ import { AgnosticStore, UseStoreGetters } from '@vue-storefront/core';
 import { UseStoreFilterParams } from '../types';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function getItems(stores: Store, criteria: UseStoreFilterParams = {}): AgnosticStore[] {
-  return [];
+function getItems(store: Store, criteria: UseStoreFilterParams = { key: 'currencies' }): AgnosticStore[] {
+  return store ? store[criteria.key] : undefined;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function getSelected(stores: Store): AgnosticStore | undefined {
-  return null;
+function getSelected(store: Store): AgnosticStore | undefined {
+  return store?.active;
 }
 
 export const storeGetters: UseStoreGetters<Store, UseStoreFilterParams> = {

@@ -97,14 +97,14 @@ export default {
     }
   },
   setup(props, context) {
-    const { changeFilters, isFacetColor, getFacetsFromURL } = useUiHelpers();
+    const { changeFilters, getFacetsFromURL } = useUiHelpers();
     const { toggleFilterSidebar, isFilterSidebarOpen } = useUiState();
     const router = useRouter();
     const route = useRoute();
 
     const selectedFilters = ref(getFacetsFromURL(route?.value?.query?.filters));
     const setSelectedFilters = () => {
-      if (!props?.facets.length || Object.keys(selectedFilters.value).length) return;
+      if (!props?.facets?.length || (selectedFilters.value && Object.keys(selectedFilters.value).length)) return;
       selectedFilters.value = props?.facets.reduce((prev, curr) => ({
         ...prev,
         [curr.id]: curr.options
@@ -147,7 +147,6 @@ export default {
     });
 
     return {
-      isFacetColor,
       selectFilter,
       isFilterSelected,
       isFilterSidebarOpen,

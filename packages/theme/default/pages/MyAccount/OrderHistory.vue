@@ -21,7 +21,7 @@
           />
           <SfProperty
             name="Total"
-            :value="$n(orderGetters.getPrice(currentOrder), 'currency')"
+            :value="orderGetters.getPrice(currentOrder)"
             class="sf-property--full-width property"
           />
         </div>
@@ -38,7 +38,7 @@
               </nuxt-link>
             </SfTableData>
             <SfTableData>{{orderGetters.getItemQty(item)}}</SfTableData>
-            <SfTableData>{{$n(orderGetters.getItemPrice(item), 'currency')}}</SfTableData>
+            <SfTableData>{{orderGetters.getItemPrice(item)}}</SfTableData>
           </SfTableRow>
         </SfTable>
       </div>
@@ -61,7 +61,7 @@
           <SfTableRow v-for="order in orderGetters.getItems(orders)" :key="orderGetters.getId(order)">
             <SfTableData v-e2e="'order-number'">{{ orderGetters.getId(order) }}</SfTableData>
             <SfTableData>{{ orderGetters.getDate(order) }}</SfTableData>
-            <SfTableData>{{ $n(orderGetters.getPrice(order), 'currency') }}</SfTableData>
+            <SfTableData>{{ orderGetters.getPrice(order) }}</SfTableData>
             <SfTableData>
               <span :class="getStatusTextClass(order)">{{ orderGetters.getStatus(order) }}</span>
             </SfTableData>

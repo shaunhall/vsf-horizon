@@ -2,7 +2,6 @@ const webpack = require('webpack');
 const theme = require('./themeConfig');
 
 const rootDir = './_theme/'
-
 module.exports = {
   server: {
     port: process.env.APP_PORT || 3001,
@@ -38,7 +37,10 @@ module.exports = {
   loading: { color: '#fff' },
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ['~/plugins/addToContext.js'],
+  plugins: [
+    '~/plugins/addToContext.js',
+    '~/plugins/vee-validate.js'
+  ],
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
@@ -81,37 +83,32 @@ module.exports = {
   ],
 
   i18n: {
-    currency: 'USD',
-    country: 'US',
+    currency: 'GBP',
+    country: 'GB',
     countries: [
-      { name: 'US', label: 'United States', states: ['California', 'Nevada'] },
-      { name: 'AT', label: 'Austria' },
-      { name: 'DE', label: 'Germany' },
-      { name: 'NL', label: 'Netherlands' }
+      { name: 'GB', label: 'United Kingdom' },
     ],
     currencies: [
-      { name: 'EUR', label: 'Euro' },
-      { name: 'USD', label: 'Dollar' }
+      { name: 'GBP', label: 'Sterling' }
     ],
     locales: [
-      { code: 'en', label: 'English', file: 'en.js', iso: 'en' },
+      { code: 'gb', label: 'English', file: 'gb.js', iso: 'gb' },
       { code: 'de', label: 'German', file: 'de.js', iso: 'de' }
     ],
-    defaultLocale: 'en',
+    autoRedirectByLocale: false,
+    cookies: {
+      localeCookieName: 'locale_V6'
+    },
+    defaultLocale: 'gb',
     lazy: true,
     seo: true,
     langDir: 'lang/',
     vueI18n: {
-      fallbackLocale: 'en',
+      fallbackLocale: 'gb',
       numberFormats: {
-        en: {
+        gb: {
           currency: {
-            style: 'currency', currency: 'USD', currencyDisplay: 'symbol'
-          }
-        },
-        de: {
-          currency: {
-            style: 'currency', currency: 'EUR', currencyDisplay: 'symbol'
+            style: 'currency', currency: 'GBP', currencyDisplay: 'symbol'
           }
         }
       }

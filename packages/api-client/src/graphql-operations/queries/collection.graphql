@@ -1,6 +1,6 @@
 #import "../fragments/pageWidgets.graphql"
 
-query Collection($handle: PagePath!, $offset: Int = 0, $limit: Int = 30, $sort: ProductSort!, $facets: [FacetInput!]! = []) {
+query Collection($handle: PagePath!, $offset: Int = 0, $limit: Int = 30, $sort: ProductSort!, $facets: [FacetInput!]! = [], $currency: Currency! = GBP, $shippingDestination: Country = GB) {
   page(path: $handle) {
     title
     metaDescription

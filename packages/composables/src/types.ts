@@ -20,7 +20,7 @@ export type UseReviewAddParams = TODO;
 
 export type UseShippingAddParams = TODO;
 
-export type UseStoreFilterParams = TODO;
+export type UseStoreFilterParams = { key: string };
 
 export type UseUserUpdateParams = UpdateAccountSettingsMutationVariables | UpdateEmailMutationVariables;
 

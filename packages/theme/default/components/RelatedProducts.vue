@@ -9,8 +9,8 @@
           <SfProductCard
             :title="productGetters.getName(product)"
             :image="addBasePath(product.images[0].url)"
-            :regular-price="$n(productGetters.getFormattedPrice(productGetters.getPrice(product).regular), 'currency')"
-            :special-price="productGetters.getPrice(product).special && $n(productGetters.getPrice(product).special, 'currency')"
+            :regular-price="productGetters.getFormattedPrice(productGetters.getPrice(product).regular)"
+            :special-price="productGetters.getPrice(product).special && productGetters.getPrice(product).special"
             :max-rating="5"
             :score-rating="productGetters.getAverageRating(product)"
             :show-add-to-cart-button="true"

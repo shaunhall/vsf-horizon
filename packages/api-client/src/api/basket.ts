@@ -23,16 +23,14 @@ import {
   UpdateBasketQtyMutation,
   UpdateBasketQtyMutationVariables
 } from 'src/graphql-types';
+import { mutateWithCookies, queryWithCookies } from './_utils';
 
 type cartParams = UseCartFactoryParams<Cart, CartItem, ProductVariant>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const getBasket = async (context: Context, params: { id?: string }): ReturnType<cartParams['load']> => {
-  const basketData: BasketQuery = await context.client.query({ query: basketQuery, variables: params })
-    .then(res => res.data)
-    .catch((err) => {
-      console.log(err);
-    });
+  const basketData = await queryWithCookies<BasketQuery>(context, basketQuery, params)
+    .then(res => res.data);
   return basketData.basket;
 };
 
@@ -42,11 +40,8 @@ export const addToBasket: cartParams['addItem'] = async (context, params) => {
     qty: params.quantity
   };
   if (params.currentCart?.id) variables.id = params.currentCart.id;
-  const basketData: AddToBasketMutation = await context.client.mutate({ mutation: addToBasketMutation, variables })
-    .then(res => res.data)
-    .catch((err) => {
-      console.log(err);
-    });
+  const basketData = await mutateWithCookies<AddToBasketMutation>(context, addToBasketMutation, variables)
+    .then(res => res.data);
   return basketData.addProductToBasket;
 };
 
@@ -55,11 +50,8 @@ export const removeFromBasket: cartParams['removeItem'] = async (context, params
     basketId: params.currentCart.id,
     itemId: params.product.id
   };
-  const basketData: RemoveProductFromBasketMutation = await context.client.mutate({ mutation: removeFromBasketMutation, variables })
-    .then(res => res.data)
-    .catch((err) => {
-      console.log(err);
-    });
+  const basketData = await mutateWithCookies<RemoveProductFromBasketMutation>(context, removeFromBasketMutation, variables)
+    .then(res => res.data);
   return basketData.removeProductFromBasket;
 };
 
@@ -69,11 +61,8 @@ export const updateItemQty: cartParams['updateItemQty'] = async (context, params
     qty: params.quantity
   };
   if (params.currentCart.id) variables.id = params.currentCart.id;
-  const basketData: UpdateBasketQtyMutation = await context.client.mutate({ mutation: updateBasketQtyMutation, variables })
-    .then(res => res.data)
-    .catch((err) => {
-      console.log(err);
-    });
+  const basketData = await mutateWithCookies<UpdateBasketQtyMutation>(context, updateBasketQtyMutation, variables)
+    .then(res => res.data);
   return basketData.updateProductQuantityInBasket;
 };
 
@@ -87,11 +76,8 @@ export const applyCodeToBasket: cartParams['applyCoupon'] = async (context, para
     basketId: params.currentCart.id,
     code: params.couponCode
   };
-  const basketData: ApplyCodeToBasketMutation = await context.client.mutate({ mutation: applyCodeToBasketMutation, variables })
-    .then(res => res.data)
-    .catch((err) => {
-      console.log(err);
-    });
+  const basketData = await mutateWithCookies<ApplyCodeToBasketMutation>(context, applyCodeToBasketMutation, variables)
+    .then(res => res.data);
   return {
     updatedCart: basketData.applyCodeToBasket
   };
@@ -101,11 +87,8 @@ export const removeCodeFromBasket: cartParams['removeCoupon'] = async (context, 
   const variables: RemoveCodeFromBasketMutationVariables = {
     basketId: params.currentCart?.id
   };
-  const basketData: RemoveCodeFromBasketMutation = await context.client.mutate({ mutation: removeCodeFromBasketMutation, variables })
-    .then(res => res.data)
-    .catch((err) => {
-      console.log(err);
-    });
+  const basketData = await mutateWithCookies<RemoveCodeFromBasketMutation>(context, removeCodeFromBasketMutation, variables)
+    .then(res => res.data);
   return {
     updatedCart: basketData.removeCodeFromBasket
   };

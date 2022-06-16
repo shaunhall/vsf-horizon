@@ -1,9 +1,9 @@
 #import "../fragments/ProductListContents.graphql"
 
-query Search($query: String!, $offset: Int = 0, $limit: Int = 30, $sort: ProductSort!, $facets: [FacetInput!]! = []) {
+query Search($query: String!, $offset: Int = 0, $limit: Int = 30, $sort: ProductSort!, $facets: [FacetInput!]! = [], $currency: Currency! = GBP, $shippingDestination: Country = GB) {
   search(options: {
-    currency: GBP
-    shippingDestination: GB
+    currency: $currency
+    shippingDestination: $shippingDestination
     limit: $limit
     offset: $offset
     sort: $sort

@@ -22,7 +22,10 @@ query Wishlist ($currency: Currency! = GBP, $shippingDestination: Country! = GB,
             }
           }
           inWishlist
-          cheapestVariantPrice(currency: GBP, shippingDestination: GB) {
+          cheapestVariantPrice(
+            currency: $currency
+            shippingDestination: $shippingDestination
+          ) {
             price {
               currency
               amount
@@ -56,7 +59,10 @@ query Wishlist ($currency: Currency! = GBP, $shippingDestination: Country! = GB,
           }
           inWishlist
           inStock
-          price(currency: GBP, shippingDestination: GB) {
+          price(
+            currency: $currency
+            shippingDestination: $shippingDestination
+          ) {
             price {
               currency
               amount

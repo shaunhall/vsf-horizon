@@ -5,14 +5,15 @@ import { getForm } from './api/getForm';
 import { getCategories } from './api/getCategory';
 import { getPage } from './api/getPage';
 import { getSearch } from './api/getSearch';
-import { getState } from './api/getState';
+import { getStore } from './api/getStore';
 import {
   getUser,
   updateUserDetails,
   updateUserEmail,
   updateUserPassword,
   login,
-  logout
+  logout,
+  register
 } from './api/getUser';
 import { getReviews } from './api/getReviews';
 import { startCheckout } from './api/checkout';
@@ -36,19 +37,27 @@ import {
 
 let cookieResponse: string;
 
+const middlewareLink = new ApolloLink((operation, forward) => {
+  const context = operation.getContext();
+  const cookie = context?.headers?.cookie;
+  const currencyCookie = cookie?.match(/en_currency_V6=([^;]+)/)?.length ? cookie.match(/en_currency_V6=([^;]+)/)[1] : '';
+  const shippingCookie = cookie?.match(/en_shippingCountry_V6=([^;]+)/)?.length ? cookie.match(/en_shippingCountry_V6=([^;]+)/)[1] : '';
+  operation.variables = {
+    ...operation.variables,
+    currency: currencyCookie,
+    shippingDestination: shippingCookie
+  };
+  return forward(operation);
+});
+
 const afterwareLink = new ApolloLink((operation, forward) => {
   return forward(operation).map(response => {
     const context = operation.getContext();
     const {
       response: { headers }
     } = context;
-    if (headers) {
-      const initialCookie = headers.get('set-cookie');
-      console.log(initialCookie);
-      cookieResponse = process.env.NODE_ENV === 'production' ? initialCookie : initialCookie?.replace(/Domain=[^;]+;|Secure;/g, '');
-      console.log(cookieResponse);
-    }
-
+    const initialCookie = headers && headers.get('set-cookie');
+    cookieResponse = process.env.NODE_ENV === 'production' ? initialCookie : initialCookie?.replace(/Domain=[^;]+;|Secure;/g, '');
     return response;
   });
 });
@@ -57,6 +66,7 @@ function onCreate(settings) {
   const client = new ApolloClient({
     cache: new InMemoryCache(),
     link: from([
+      middlewareLink,
       afterwareLink,
       new HttpLink({
         uri: settings.api.url,
@@ -82,7 +92,7 @@ const setCookieExtension = {
   hooks: (req, res) => {
     return {
       afterCall: ({ response }) => {
-        res.cookie(cookieResponse);
+        cookieResponse && res.cookie(cookieResponse);
         return response;
       }
     };
@@ -100,12 +110,13 @@ const { createApiClient } = apiClientFactory<unknown, Endpoints>({
     getPage,
     getBasket,
     getSearch,
-    getState,
+    getStore,
     getUser,
     updateUserDetails,
     updateUserPassword,
     updateUserEmail,
     login,
+    register,
     logout,
     addToBasket,
     removeFromBasket,

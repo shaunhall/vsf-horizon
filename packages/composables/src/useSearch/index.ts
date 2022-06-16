@@ -12,7 +12,6 @@ const factoryParams = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   search: async (context: Context, params: FacetSearchResult<SearchParams>) => {
     const convertedParams = convertToLocalSearchParams(params.input);
-    console.log(convertedParams);
     const data = await context.$horizon.api.getSearch(convertedParams);
     return data;
   }

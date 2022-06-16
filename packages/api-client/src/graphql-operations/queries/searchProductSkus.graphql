@@ -1,8 +1,0 @@
-query SearchProductSkus($offset: Int!, $limit: Int!) {
-  search(options: {currency: GBP, shippingDestination: GB, offset: $offset, limit: $limit, sort: RELEVANCE, facets: []}, query: "") {
-    hasMore
-    products {
-      sku
-    }
-  }
-}

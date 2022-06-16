@@ -6,28 +6,19 @@ import accountSettingsFormQuery from 'src/graphql-operations/queries/accountSett
 import passwordFormQuery from 'src/graphql-operations/queries/passwordForm.graphql';
 import registerFormQuery from 'src/graphql-operations/queries/registerForm.graphql';
 import { ExecutionResult } from 'graphql';
+import { queryWithCookies } from './_utils';
 
 export async function getForm(context: Context, params: FormFieldInput): Promise<ExecutionResult<FormField[]>> {
-  const cookie = context.req?.headers?.cookie;
   if (params.type === 'password') {
-    const formExecutionData: ExecutionResult<PasswordFieldQuery> = await context.client.query({ context: { headers: { cookie } }, query: passwordFormQuery })
-      .catch((err) => {
-        console.log(err);
-      });
+    const formExecutionData = await queryWithCookies<PasswordFieldQuery>(context, passwordFormQuery);
     return { ...formExecutionData, data: [formExecutionData.data?.passwordField] };
   }
   if (params.type === 'register') {
-    const formExecutionData: ExecutionResult<RegisterFormQuery> = await context.client.query({ context: { headers: { cookie } }, query: registerFormQuery })
-      .catch((err) => {
-        console.log(err);
-      });
+    const formExecutionData = await queryWithCookies<RegisterFormQuery>(context, registerFormQuery);
     return { ...formExecutionData, data: formExecutionData.data?.form.fields };
   }
   if (params.type === 'settings') {
-    const formExecutionData: ExecutionResult<AccountSettingsFormQuery> = await context.client.query({ context: { headers: { cookie } }, query: accountSettingsFormQuery })
-      .catch((err) => {
-        console.log(err);
-      });
+    const formExecutionData = await queryWithCookies<AccountSettingsFormQuery>(context, accountSettingsFormQuery);
     return { ...formExecutionData, data: [...formExecutionData.data.accountSettingsForm.fields, formExecutionData.data.emailField] };
   } else {
     return { data: [] };

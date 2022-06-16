@@ -38,8 +38,8 @@
         <SfTableData class="table__data">{{ cartGetters.getItemQty(product) }}</SfTableData>
         <SfTableData class="table__data price">
           <SfPrice
-            :regular="$n(cartGetters.getItemPrice(product).regular, 'currency')"
-            :special="cartGetters.getItemPrice(product).special && $n(cartGetters.getItemPrice(product).special, 'currency')"
+            :regular="cartGetters.getItemPrice(product).regular"
+            :special="cartGetters.getItemPrice(product).special && cartGetters.getItemPrice(product).special"
             class="product-price"
           />
         </SfTableData>
@@ -50,7 +50,7 @@
         <div class="summary__total">
           <SfProperty
             name="Subtotal"
-            :value="$n(totals.special > 0 ? totals.special : totals.subtotal, 'currency')"
+            :value="totals.special > 0 ? totals.special : totals.subtotal"
             class="sf-property--full-width property"
           />
         </div>
@@ -59,7 +59,7 @@
 
         <SfProperty
           name="Total price"
-          :value="$n(totals.total, 'currency')"
+          :value="totals.total"
           class="sf-property--full-width sf-property--large summary__property-total"
         />
 

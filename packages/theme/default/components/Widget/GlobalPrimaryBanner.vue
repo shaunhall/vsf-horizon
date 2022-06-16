@@ -46,10 +46,8 @@ export default {
     SfImage,
     SfLink
   },
-  setup(props) {
+  setup() {
     const { convertLink } = useUiHelpers();
-    console.log(props.banner);
-
     return {
       convertLink
     };

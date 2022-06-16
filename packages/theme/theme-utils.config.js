@@ -1,5 +1,3 @@
-console.log(process.env.THEME_CONFIG);
-
 const baseList = [{
   path: '@vue-storefront/nuxt-theme/theme',
   ignore: [],

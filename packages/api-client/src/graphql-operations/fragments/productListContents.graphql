@@ -33,7 +33,10 @@ fragment ProductListContents on ProductList {
     sku
     url
     title
-    cheapestVariantPrice(currency: GBP, shippingDestination: GB) {
+    cheapestVariantPrice(
+      currency: $currency
+      shippingDestination: $shippingDestination
+    ) {
       price {
         currency
         amount
