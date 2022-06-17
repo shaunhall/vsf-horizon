@@ -17,7 +17,7 @@
       <div v-if="currentScreen === SCREEN_LOGIN">
         <ValidationObserver v-slot="{ handleSubmit }" key="log-in">
           <form class="form" @submit.prevent="handleSubmit(handleLogin)">
-            <ValidationProvider rules="required|email" v-slot="{ errors }">
+            <ValidationProvider rules="required" v-slot="{ errors }">
               <SfInput
                 v-e2e="'login-modal-email'"
                 v-model="form.username"
@@ -77,7 +77,7 @@
         <p>{{ $t('Forgot Password') }}</p>
         <ValidationObserver v-slot="{ handleSubmit }" key="log-in">
           <form class="form" @submit.prevent="handleSubmit(handleForgotten)">
-            <ValidationProvider rules="required|email" v-slot="{ errors }">
+            <ValidationProvider rules="required" v-slot="{ errors }">
               <SfInput
                 v-e2e="'forgot-modal-email'"
                 v-model="form.username"

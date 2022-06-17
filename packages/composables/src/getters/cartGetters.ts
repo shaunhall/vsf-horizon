@@ -76,17 +76,6 @@ function getFormattedPrice(price: number): string {
   return String(price);
 }
 
-function getDisplayPrice(cartItem: CartItem, type: 'discountPrice' | 'chargePrice' | 'rrpPrice' = 'chargePrice'): string {
-  switch (type) {
-    case 'chargePrice':
-      return cartItem?.totalChargePrice?.displayValue;
-    case 'discountPrice':
-      return cartItem?.totalDiscount?.displayValue;
-    case 'rrpPrice':
-      return cartItem?.totalStandardPrice?.displayValue;
-  }
-}
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getCoupons(cart: Cart): AgnosticCoupon[] {
   return cart?.messages?.map(message => {
@@ -122,7 +111,6 @@ export const cartGetters: CartGetters<Cart, CartItem> = {
   getItemAttributes,
   getItemSku,
   getFormattedPrice,
-  getDisplayPrice,
   getTotalItems,
   getCoupons,
   getDiscounts

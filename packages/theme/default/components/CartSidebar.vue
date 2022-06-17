@@ -84,8 +84,8 @@
             >
               <template #value>
                 <SfPrice
-                  :regular="$n(totals.subtotal, 'currency', currency)"
-                  :special="(totals.total !== totals.subtotal) ? $n(totals.special, 'currency', currency) : 0"
+                  :regular="$n(totals.total, 'currency', currency)"
+                  :special="(totals.total !== totals.subtotal) ? $n(totals.subtotal, 'currency', currency) : 0"
                 />
               </template>
             </SfProperty>
@@ -239,6 +239,7 @@ export default {
 }
 .collected-product {
   margin: 0 0 var(--spacer-lg) 0;
+  min-height: 250px;
   &__properties {
     margin: var(--spacer-xs) 0 0 0;
     display: flex;
@@ -273,6 +274,7 @@ export default {
     @include for-desktop {
       .collected-product__properties {
         display: none;
+        font-size: 0.8rem;
       }
     }
   }
