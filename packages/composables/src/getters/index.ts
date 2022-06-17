@@ -1,11 +1,11 @@
 import { cartGetters } from './cartGetters';
-import { categoryGetters } from './categoryGetters';
 import { facetGetters } from './facetGetters';
 import { productGetters } from './productGetters';
 import { productVariantGetters } from './productVariantGetters';
 import { pageGetters } from './pageGetters';
 import { reviewGetters } from './reviewGetters';
-import { storeGetters } from './storeGetters';
+import { settingsGetters } from './settingsGetters';
+import { navigationGetters } from './navigationGetters';
 import { userGetters } from './userGetters';
 import { userShippingGetters } from './userShippingGetters';
 import { userBillingGetters } from './userBillingGetters';
@@ -14,13 +14,13 @@ import { wishlistGetters } from './wishlistGetters';
 
 export {
   cartGetters,
-  categoryGetters,
+  navigationGetters,
   facetGetters,
   pageGetters,
   productGetters,
   productVariantGetters,
   reviewGetters,
-  storeGetters,
+  settingsGetters,
   userGetters,
   userShippingGetters,
   userBillingGetters,

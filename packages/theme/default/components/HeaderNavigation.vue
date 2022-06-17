@@ -1,19 +1,24 @@
 <template>
-  <div class="sf-header__navigation desktop nav-desktop" v-if="!isMobile">
-    <SfHeaderNavigationItem
-      v-for="(category, index) in categoryTree"
-      :key="index"
-      class="sf-header-navigation-item__menu-item"
-      v-e2e="`app-header-url_${category.slug}`"
-      :label="category.label"
-      :link="localePath(convertLink(category.slug))"
-      @mouseover="updateNavFlyout($event, category)"
-      @mouseleave="updateNavFlyout($event)"
-      @keydown.esc="updateNavFlyout($event)"
-    />
+  <div
+    v-if="!isMobile"
+    @mouseleave="changeNavFlyoutOpenStatus()"
+  >
+    <div class="sf-header__navigation desktop nav-desktop">
+      <SfHeaderNavigationItem
+        v-for="(category, index) in nav"
+        :key="index"
+        class="sf-header-navigation-item__menu-item"
+        v-e2e="`app-header-url_${category.slug}`"
+        :label="category.label"
+        :link="localePath(convertLink(category.slug))"
+        @mouseover="updateNavFlyout(category)"
+        @click="changeNavFlyoutOpenStatus()"
+        @keydown.esc="changeNavFlyoutOpenStatus()"
+      />
+    </div>
+    <desktop-nav-flyout />
   </div>
   <SfModal v-else :visible="isMobileMenuOpen">
-    {{ isMobileMenuOpen }}
     <SfAccordion open="" showChevron>
       <SfAccordionItem
         v-for="(category, index) in categoryTree"
@@ -58,9 +63,13 @@
 <script>
 import { SfMenuItem, SfModal, SfAccordion, SfList, SfMegaMenu } from '@storefront-ui/vue';
 import { onSSR } from '@vue-storefront/core';
-import { computed } from '@nuxtjs/composition-api';
+import { computed, ref } from '@nuxtjs/composition-api';
 import { useUiState, useUiHelpers } from '~/composables';
-import { useCategory, categoryGetters } from '@vue-storefront/horizon';
+import { useSettings, settingsGetters, navigationGetters } from '@vue-storefront/horizon';
+import {
+  mapMobileObserver
+} from '@storefront-ui/vue/src/utilities/mobile-observer.js';
+import DesktopNavFlyout from './DesktopNavFlyout.vue';
 
 export default {
   name: 'HeaderNavigation',
@@ -69,30 +78,26 @@ export default {
     SfModal,
     SfAccordion,
     SfList,
-    SfMegaMenu
-  },
-  props: {
-    isMobile: {
-      type: Boolean,
-      default: false
-    }
+    SfMegaMenu,
+    DesktopNavFlyout
   },
   setup() {
-    const { categories, search } = useCategory('categories');
-    const { isMobileMenuOpen, toggleMobileMenu, updateNavFlyout } = useUiState();
+    const { settings } = useSettings();
+    const { isMobileMenuOpen, toggleMobileMenu, updateNavFlyout, changeNavFlyoutOpenStatus, isNavFlyoutOpen } = useUiState();
     const { convertLink } = useUiHelpers();
-
-    const categoryTree = computed(() => categories?.value.map(category => categoryGetters.getTree(category)));
-    onSSR(async () => {
-      await search();
-    });
+    const isMobile = ref(mapMobileObserver().isMobile.get());
+    const header = computed(() => settingsGetters.getHeader(settings.value));
+    const nav = computed(() => header?.value?.navigation?.topLevel.map(item => navigationGetters.getTree(item)));
 
     return {
-      categoryTree: categoryTree?.value,
+      nav,
       isMobileMenuOpen,
       toggleMobileMenu,
       updateNavFlyout,
-      convertLink
+      changeNavFlyoutOpenStatus,
+      isMobile,
+      convertLink,
+      isNavFlyoutOpen
     };
   }
 };
@@ -111,6 +116,17 @@ export default {
   }
   ::v-deep &__content {
     padding: var(--modal-content-padding, var(--spacer-base) 0);
+  }
+}
+
+.nav-desktop {
+  overflow: auto;
+  width: 50vw;
+}
+.nav-item {
+  --header-navigation-item-margin: 0 var(--spacer-base);
+  .sf-header-navigation-item__item--mobile {
+    display: none;
   }
 }
 </style>

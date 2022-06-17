@@ -22,13 +22,14 @@ const useUiState = () => {
 
   const isNavFlyoutOpen = computed(() => state.navFlyout.isOpen);
   const navFlyoutCategory = computed(() => state.navFlyout.category);
-  const updateNavFlyout = (event, category = null) => {
-    if (!category) {
-      state.navFlyout.isOpen = event?.toElement?.parentElement?.id === 'navFlyout';
-    } else {
-      state.navFlyout.isOpen = true;
-      state.navFlyout.category = category;
-    }
+  const updateNavFlyout = (category = null) => {
+    state.navFlyout.isOpen = true;
+    state.navFlyout.category = category;
+    console.log('update method', state.navFlyout.isOpen);
+  };
+  const changeNavFlyoutOpenStatus = (isOpen = false) => {
+    state.navFlyout.isOpen = isOpen;
+    console.log('changed value', state.navFlyout.isOpen);
   };
 
   const isCartSidebarOpen = computed(() => state.isCartSidebarOpen);
@@ -77,6 +78,7 @@ const useUiState = () => {
     isMobileMenuOpen,
     isNavFlyoutOpen,
     navFlyoutCategory,
+    changeNavFlyoutOpenStatus,
     toggleCartSidebar,
     toggleWishlistSidebar,
     toggleLoginModal,

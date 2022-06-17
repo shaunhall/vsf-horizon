@@ -1,4 +1,3 @@
-import { AgnosticStore } from '@vue-storefront/core';
 import {
   ProductContentFragment,
   ProductReviews,
@@ -7,9 +6,7 @@ import {
   VariantContentFragment,
   CollectionQuery,
   ProductListContentsFragment,
-  HeaderFooterQuery,
   SearchQuery,
-  SiteSettingsQuery,
   UpdateAccountSettingsMutation,
   UpdateEmailMutation,
   UpdatePasswordMutation,
@@ -17,9 +14,12 @@ import {
   CustomerInfoFragment,
   FormFieldContentsFragment,
   RegistrationMutation,
-  Currency,
-  Country
+  Currency as GqlCurrency,
+  Country as GqlCountry,
+  InitialSettingsQuery,
+  NavigationItemFragment
 } from './graphql-types';
+
 import type { ArrElement } from './_utils';
 
 export type TODO = unknown;
@@ -31,8 +31,6 @@ export type BillingAddress = TODO;
 export type Cart = BasketContentsFragment;
 
 export type CartItem = ArrElement<BasketContentsFragment['items']>;
-
-export type Category = ArrElement<HeaderFooterQuery['header']['navigation']['topLevel']>;
 
 export type Coupon = TODO;
 
@@ -72,8 +70,6 @@ export type ReviewItem = GqlReview;
 
 export type Search = SearchQuery['search'];
 
-export type SiteSettings = SiteSettingsQuery;
-
 export type User = CustomerInfoFragment;
 
 export type UserUpdateDetailsResult = UpdateAccountSettingsMutation['updateAccountSettings'];
@@ -104,11 +100,13 @@ export type ShippingMethod = TODO;
 
 export type ShippingProvider = TODO;
 
-export type Store = AgnosticStore & { active: {
-  currency: Currency
-  shippingDestination: Country
-  locale: string
-} };
+export type Navigation = NavigationItemFragment;
+
+export type SiteSettings = InitialSettingsQuery;
+
+export type Currency = GqlCurrency;
+
+export type Country = GqlCountry;
 
 export type Wishlist = TODO;
 

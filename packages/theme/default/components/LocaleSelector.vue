@@ -77,7 +77,7 @@ import {
   SfCharacteristic
 } from '@storefront-ui/vue';
 import { ref, computed } from '@nuxtjs/composition-api';
-import { useStore, storeGetters } from '@vue-storefront/horizon';
+import { useSettings, settingsGetters } from '@vue-storefront/horizon';
 export default {
   components: {
     SfImage,
@@ -90,29 +90,29 @@ export default {
   },
   setup(_, context) {
     const { locale, locales } = context.root.$i18n;
-    const { response: store, loading, change } = useStore();
+    const { settings, loading, change } = useSettings();
     const isSiteSettingsOpen = ref(false);
-    const activeSettings = computed(() => storeGetters.getSelected(store.value)).value;
+    const activeSettings = computed(() => settingsGetters.getSelected(settings.value)).value;
     const currentCurrency = computed(() => activeSettings?.currency);
     const currentShippingDestination = computed(() => activeSettings?.shippingDestination);
 
     const form = ref({ currency: currentCurrency.value, shippingDestination: currentShippingDestination.value, locale });
 
-    const currencyList = computed(() => storeGetters.getItems(store.value, {key: 'currencies'}));
-    const shippingDestinationList = computed(() => storeGetters.getItems(store.value, {key: 'shippingDestinations'}));
+    const currencyList = computed(() => settingsGetters.getCurrencies(settings.value));
+    const shippingDestinationList = computed(() => settingsGetters.getShippingDestinations(settings.value));
 
     const handleSubmit = () => {
-      change({ currentStore: store.value, store: { active: form.value } });
+      change(form.value);
       if (locale !== form.value.locale) {
         console.log('CHANGE LOCALE');
       }
+      isSiteSettingsOpen.value = !isSiteSettingsOpen.value;
     };
 
     return {
       locales,
       locale,
       loading,
-      store,
       form,
       currencyList,
       shippingDestinationList,

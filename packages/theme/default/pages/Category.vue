@@ -10,7 +10,7 @@
           type="collection"
         />
       </template>
-      <template v-if="widget.__typename == 'GlobalPrimaryBanner'">
+      <template v-else-if="widget.__typename == 'GlobalPrimaryBanner'">
         <WidgetGlobalPrimaryBanner
           :key="widget.id + index"
           :widget="widget"

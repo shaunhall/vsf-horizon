@@ -97,7 +97,13 @@ module.exports = {
     ],
     autoRedirectByLocale: false,
     cookies: {
-      localeCookieName: 'locale_V6'
+      localeCookieName: 'locale_V6',
+      currencyCookieName: 'en_currency_V6',
+      countryCookieName: 'en_shippingCountry_V6'
+    },
+    autoChangeCookie: {
+      currency: false,
+      country: false
     },
     defaultLocale: 'gb',
     lazy: true,
@@ -106,11 +112,16 @@ module.exports = {
     vueI18n: {
       fallbackLocale: 'gb',
       numberFormats: {
-        gb: {
+        GBP: {
           currency: {
             style: 'currency', currency: 'GBP', currencyDisplay: 'symbol'
           }
-        }
+        },
+        EUR: {
+          currency: {
+            style: 'currency', currency: 'EUR', currencyDisplay: 'symbol'
+          }
+        },
       }
     },
     detectBrowserLanguage: false

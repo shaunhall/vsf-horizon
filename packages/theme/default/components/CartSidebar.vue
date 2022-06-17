@@ -25,8 +25,8 @@
                 :key="cartGetters.getItemSku(product)"
                 :image="addBasePath(cartGetters.getItemImage(product))"
                 :title="cartGetters.getItemName(product)"
-                :regular-price="cartGetters.getItemPrice(product).regular"
-                :special-price="cartGetters.getItemPrice(product).special && cartGetters.getItemPrice(product).special"
+                :regular-price="$n(cartGetters.getItemPrice(product).regular, 'currency', currency)"
+                :special-price="cartGetters.getItemPrice(product).special && $n(cartGetters.getItemPrice(product).special, 'currency', currency)"
                 :stock="99999"
                 @click:remove="removeItem({ product: { id: product.id } })"
                 class="collected-product"
@@ -84,8 +84,8 @@
             >
               <template #value>
                 <SfPrice
-                  :regular="totals.subtotal"
-                  :special="(totals.total !== totals.subtotal) ? totals.special : 0"
+                  :regular="$n(totals.subtotal, 'currency', currency)"
+                  :special="(totals.total !== totals.subtotal) ? $n(totals.special, 'currency', currency) : 0"
                 />
               </template>
             </SfProperty>
@@ -120,8 +120,8 @@ import {
   SfImage,
   SfQuantitySelector
 } from '@storefront-ui/vue';
-import { computed, useContext, useRouter } from '@nuxtjs/composition-api';
-import { useCart, cartGetters, useCheckout } from '@vue-storefront/horizon';
+import { computed, useContext } from '@nuxtjs/composition-api';
+import { useCart, cartGetters, useCheckout, useSettings, settingsGetters } from '@vue-storefront/horizon';
 import { useUiState } from '~/composables';
 import debounce from 'lodash.debounce';
 import { addBasePath } from '@vue-storefront/core';
@@ -146,6 +146,8 @@ export default {
     const products = computed(() => cartGetters.getItems(cart.value));
     const totals = computed(() => cartGetters.getTotals(cart.value));
     const totalItems = computed(() => cartGetters.getTotalItems(cart.value));
+    const { settings } = useSettings();
+    const currency = computed(() => settingsGetters.getSelected(settings.value)?.currency);
 
     const updateQuantity = debounce(async ({ product, quantity }) => {
       await updateItemQty({ product, quantity });
@@ -161,6 +163,7 @@ export default {
 
     return {
       addBasePath,
+      currency,
       updateQuantity,
       loading,
       products,
@@ -235,7 +238,7 @@ export default {
   flex: 1;
 }
 .collected-product {
-  margin: 0 0 var(--spacer-sm) 0;
+  margin: 0 0 var(--spacer-lg) 0;
   &__properties {
     margin: var(--spacer-xs) 0 0 0;
     display: flex;

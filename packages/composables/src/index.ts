@@ -2,7 +2,7 @@
 export { useBilling } from './useBilling';
 export { useCart } from './useCart';
 export { useCheckout } from './useCheckout';
-export { useCategory } from './useCategory';
+export { useSettings } from './useSettings';
 export { useContent } from './useContent';
 export { useForm } from './useForm';
 export { usePage } from './usePage';
@@ -12,7 +12,7 @@ export { useProduct } from './useProduct';
 export { useReview } from './useReview';
 export { useShipping } from './useShipping';
 export { useShippingProvider } from './useShippingProvider';
-export { useStore } from './useStore';
+
 export { useSearch } from './useSearch';
 export { useUser } from './useUser';
 export { useUserBilling } from './useUserBilling';

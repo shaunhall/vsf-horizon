@@ -1,4 +1,0 @@
-query SiteSettings {
-  supportedCurrencies,
-  supportedShippingDestinations
-}

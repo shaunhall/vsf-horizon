@@ -10,12 +10,13 @@
   <template #img-tag>
     <SfLink v-if="widget.bannerURL"
       :link="convertLink(widget.bannerURL)"
-        class="primary-banner__background"
+      class="primary-banner__background"
     >
       <SfImage
         :src="widget.imageLarge"
         :alt="widget.altImageLarge || ''"
         class="primary-banner__background_secondary"
+        width="1920"
       />
     </SfLink>
     <SfImage v-else
@@ -56,27 +57,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .primary-banner {
 
+  .primary-banner {
     position: relative;
-    min-height: 500px;
 
     &__background_secondary {
       position: relative;
-      top: 0;
-      left: 0;
       width: inherit;
       height: inherit;
-      min-height: inherit;
       object-fit: cover;
     }
 
     &__background {
-      position: absolute;
-      top: 0;
-      left: 0;
+      position: relative;
       width: inherit;
-      min-height: inherit;
       object-fit: cover;
     }
   }
@@ -85,6 +79,15 @@ export default {
       &__call-to-action {
         z-index: 2;
       }
+      &__wrapper-desktop {
+        position: absolute;
+      }
+      &__image {
+        position: relative !important;
+      }
+    }
+    .sf-image {
+      position: relative;
     }
   }
 </style>

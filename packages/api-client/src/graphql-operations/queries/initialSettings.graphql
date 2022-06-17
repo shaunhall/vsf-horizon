@@ -1,0 +1,73 @@
+query InitialSettings {
+  supportedCurrencies,
+  supportedShippingDestinations,
+  header {
+    widgets {
+      __typename
+      ...on GlobalStripBanner {
+      	__typename
+        stripBannerText
+        stripBannerURL
+    	}
+      ...on ResponsiveUSPBar {
+      	__typename
+    	}
+    }
+    navigation {
+      topLevel {
+      	...NavigationItem
+      }
+    }
+  }
+  footer {
+    navigation {
+      topLevel {
+      	...NavigationItem
+      }
+    }
+  }
+}
+
+fragment NavigationItem on NavigationItem {
+  displayName
+  link {
+    text
+    url
+    openExternally
+    noFollow
+  }
+  type
+  image {
+    url
+    alt
+  }
+  subNavigation {
+    displayName
+    type
+    link {
+      text
+      url
+      openExternally
+      noFollow
+    }
+    image {
+      url
+      alt
+    }
+    subNavigation {
+      displayName
+      link {
+        text
+        url
+        openExternally
+        noFollow
+      }
+      type
+      image {
+        url
+        alt
+      }
+    }
+  }
+}
+

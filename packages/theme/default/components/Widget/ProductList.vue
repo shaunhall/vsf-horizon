@@ -23,8 +23,8 @@
               :image="productGetters.getCoverImage(product)"
               :imageWidth="800"
               :imageHeight="800"
-              :regular-price="productGetters.getPrice(product).regular"
-              :special-price="productGetters.getPrice(product).special && productGetters.getPrice(product).special"
+              :regular-price="$n(productGetters.getPrice(product).regular, 'currency', currency)"
+              :special-price="productGetters.getPrice(product).special && $n(productGetters.getPrice(product).special, 'currency', currency)"
               :max-rating="5"
               :score-rating="productGetters.getAverageRating(product)"
               :show-add-to-cart-button="true"
@@ -53,8 +53,8 @@
               :imageHeight="800"
               :description="productGetters.getDescription(product)"
               :image="productGetters.getCoverImage(product)"
-              :regular-price="productGetters.getPrice(product).regular"
-              :special-price="productGetters.getPrice(product).special && productGetters.getPrice(product).special"
+              :regular-price="$n(productGetters.getPrice(product).regular, 'currency', currency)"
+              :special-price="productGetters.getPrice(product).special && $n(productGetters.getPrice(product).special, 'currency', currency)"
               :max-rating="5"
               :score-rating="3"
               :qty="1"
@@ -119,7 +119,7 @@ import {
   SfProperty
 } from '@storefront-ui/vue';
 import { computed, ref, useRoute } from '@nuxtjs/composition-api';
-import { useCart, useWishlist, productGetters, usePage, useSearch, facetGetters, wishlistGetters } from '@vue-storefront/horizon';
+import { useCart, useWishlist, productGetters, usePage, useSearch, facetGetters, wishlistGetters, useSettings, settingsGetters } from '@vue-storefront/horizon';
 import { useUiHelpers, useUiState } from '~/composables';
 import LazyHydrate from 'vue-lazy-hydration';
 import CategoryPageHeader from '~/components/CategoryPageHeader';
@@ -143,11 +143,11 @@ export default {
     const { addItem: addItemToCart, isInCart } = useCart();
     const { result: pageResult, loading: pageLoading } = usePage();
     const { result: searchResult, loading: searchLoading } = useSearch();
-
+    const { settings } = useSettings();
+    const currency = computed(() => settingsGetters.getSelected(settings.value)?.currency);
     const result = props.type === 'search' ? searchResult : pageResult;
     const loading = props.type === 'search' ? searchLoading : pageLoading;
     const { addItem: addItemToWishlist, isInWishlist, removeItem: removeItemFromWishlist, wishlist } = useWishlist();
-
     const initialFilters = computed(() => th.getFacetsFromURL(route?.value?.query?.filters));
     const productListWidget = computed(() => {
       return {
@@ -182,6 +182,7 @@ export default {
       loading,
       facets,
       sortBy,
+      currency,
       productGetters,
       pagination,
       initialFilters,

@@ -25,8 +25,8 @@
         </div>
         <div class="product__price-and-rating">
           <SfPrice
-            :regular="productVariantGetters.getPrice(currentVariant).regular && productVariantGetters.getDisplayPrice(currentVariant, 'rrp')"
-            :special="productVariantGetters.getPrice(currentVariant).special && productVariantGetters.getDisplayPrice(currentVariant)"
+            :regular="$n(productVariantGetters.getPrice(currentVariant).regular, 'currency', currency)"
+            :special="productVariantGetters.getPrice(currentVariant).special && $n(productVariantGetters.getPrice(currentVariant).special, 'currency', currency)"
           />
           <div v-if="!!totalReviews">
             <div class="product__rating">
@@ -153,7 +153,7 @@ import {
 import InstagramFeed from '~/components/InstagramFeed.vue';
 import RelatedProducts from '~/components/RelatedProducts.vue';
 import { ref, computed, useRoute, useRouter } from '@nuxtjs/composition-api';
-import { useProduct, useCart, productGetters, productVariantGetters, reviewGetters } from '@vue-storefront/horizon';
+import { useProduct, useCart, productGetters, productVariantGetters, reviewGetters, useSettings, settingsGetters } from '@vue-storefront/horizon';
 import { onSSR } from '@vue-storefront/core';
 import LazyHydrate from 'vue-lazy-hydration';
 import { addBasePath } from '@vue-storefront/core';
@@ -167,6 +167,9 @@ export default {
     const router = useRouter();
     const { products, search, loading: productLoading } = useProduct('products');
     const { addItem, loading } = useCart();
+    const { settings } = useSettings();
+    const currency = computed(() => settingsGetters.getSelected(settings.value)?.currency);
+
     const product = computed(() => productGetters.getFiltered(products.value)[0]);
     const reviewBlob = computed(() => productGetters.getReviews(product.value));
     const reviews = computed(() => reviewGetters.getItems(reviewBlob?.value));
@@ -214,6 +217,7 @@ export default {
 
     return {
       updateSelectedVariant,
+      currency,
       configuration,
       product,
       breadcrumbs,
