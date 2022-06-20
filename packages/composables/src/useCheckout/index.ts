@@ -1,42 +1,27 @@
 import { UseCheckout, Context } from '@vue-storefront/core';
 import { ref, Ref, computed } from '@nuxtjs/composition-api';
 import { CheckoutMutation, CheckoutMutationVariables } from '@vue-storefront/horizon-api/lib/graphql-types';
+import { ExecutionResult } from 'graphql';
 
-const PAYMENT_METHODS_MOCK = [
-  {
-    label: 'Visa Debit',
-    value: 'debit'
-  },
-  {
-    label: 'MasterCard',
-    value: 'mastercard'
-  },
-  {
-    label: 'Visa Electron',
-    value: 'electron'
-  },
-  {
-    label: 'Cash on delivery',
-    value: 'cash'
-  },
-  {
-    label: 'Check',
-    value: 'check'
-  }
-];
-
-const paymentMethods: Ref<any[]> = ref(PAYMENT_METHODS_MOCK);
+const paymentMethods: Ref<any[]> = ref([]);
 const shippingMethods: Ref<any[]> = ref([]);
 const personalDetails: Ref<any> = ref({});
 const shippingDetails: Ref<any> = ref({});
 const billingDetails: Ref<any> = ref({});
 const chosenPaymentMethod: Ref<string> = ref('');
 const chosenShippingMethod: Ref<any> = ref({});
+
+const loading = computed(() => false);
+
 const placeOrder = async (context: Context): Promise<CheckoutMutation['checkout']> => {
   const app = context.$horizonApp?.config?.app;
   const basketId = app?.$cookies.get('cart_id');
-  const data = await context.$horizon.api.startCheckout({ basketId });
-  return data;
+  const response: ExecutionResult<CheckoutMutation['checkout']> = await context.$horizon.api.startCheckout({ basketId });
+  if (response.errors?.length) {
+    throw Promise.reject(response.errors);
+  } else {
+    return response.data;
+  }
 };
 
 export const useCheckout: () => UseCheckout<any, any, any, any, any, any, any, (context: Context, { basketId }: CheckoutMutationVariables) => Promise<CheckoutMutation['checkout']>> = () => {
@@ -49,6 +34,6 @@ export const useCheckout: () => UseCheckout<any, any, any, any, any, any, any, (
     chosenPaymentMethod,
     chosenShippingMethod,
     placeOrder,
-    loading: computed(() => false)
+    loading
   };
 };

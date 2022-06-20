@@ -14,6 +14,7 @@
           name="Total items"
           :value="totalItems"
         />
+        <SfAlert v-if="isMerged" :message="$t('basket.mergedAlert')" type="warning"/>
       </template>
       <transition name="sf-fade" mode="out-in">
         <div v-if="totalItems" key="my-cart" class="my-cart">
@@ -100,8 +101,13 @@
             <SfButton
               class="sf-button--full-width color-primary"
               @click="toggleCartSidebar"
-            >{{ $t('Go back shopping') }}</SfButton
+              :disabled="checkoutLoading"
             >
+
+              <SfLoader :class="{ loader: checkoutLoading }" :loading="checkoutLoading">
+                <div>{{ $t('Go back shopping') }}</div>
+              </SfLoader>
+            </SfButton>
           </div>
         </transition>
       </template>
@@ -118,6 +124,8 @@ import {
   SfPrice,
   SfCollectedProduct,
   SfImage,
+  SfLoader,
+  SfAlert,
   SfQuantitySelector
 } from '@storefront-ui/vue';
 import { computed, useContext } from '@nuxtjs/composition-api';
@@ -134,18 +142,21 @@ export default {
     SfHeading,
     SfIcon,
     SfProperty,
+    SfLoader,
+    SfAlert,
     SfPrice,
     SfCollectedProduct,
     SfImage,
     SfQuantitySelector
   },
   setup() {
-    const { isCartSidebarOpen, toggleCartSidebar } = useUiState();
+    const { isCartSidebarOpen, toggleCartSidebar, toggleLoginModal } = useUiState();
     const { cart, removeItem, updateItemQty, loading } = useCart();
-    const { placeOrder } = useCheckout();
+    const { placeOrder, loading: checkoutLoading } = useCheckout();
     const products = computed(() => cartGetters.getItems(cart.value));
     const totals = computed(() => cartGetters.getTotals(cart.value));
     const totalItems = computed(() => cartGetters.getTotalItems(cart.value));
+    const isMerged = computed(() => cartGetters.isMerged(cart.value));
     const { settings } = useSettings();
     const currency = computed(() => settingsGetters.getSelected(settings.value)?.currency);
 
@@ -154,19 +165,27 @@ export default {
     }, 500);
     const context = useContext();
     const startCheckout = async () => {
-      const data = await placeOrder(context.app.$vsf);
-      console.log(data);
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      }
+      await placeOrder(context.app.$vsf)
+        .then((data) => {
+          console.log(data);
+          if (data.checkoutUrl) {
+            window.location.href = data.checkoutUrl;
+          }
+        })
+        .catch(errors => {
+          console.log(errors);
+          toggleLoginModal();
+        });
     };
 
     return {
       addBasePath,
       currency,
+      checkoutLoading,
       updateQuantity,
       loading,
       products,
+      isMerged,
       removeItem,
       isCartSidebarOpen,
       toggleCartSidebar,

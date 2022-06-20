@@ -4195,7 +4195,7 @@
   resolved "https://registry.npmjs.org/@vendia/serverless-express/-/serverless-express-4.8.0.tgz#2e3410a07e35487e4e1572c4e2700dfba0c933c2"
   integrity sha512-ELqWnPq+Y0GPnVa7S63pe/SpxYPwksZhuy+lE50S3WabYOzFTusJda0s9TaDZCkJ/hp8fhbDpGr9eA1UhIlVOQ==
 
-"@vue-storefront/core@~2.5.4":
+"@vue-storefront/core@2.5.13":
   version "2.5.13"
   resolved "https://registry.npmjs.org/@vue-storefront/core/-/core-2.5.13.tgz#ad7cf7c8f7a51b521202c5cb81b0511c7f1ffab8"
   integrity sha512-o8mS+nha9FYgYaQdFKYbx0WEx2qtYErjeqGgtdCC1F435SliVctuxhBg5CxGkPPfk6tGO7BBAaOWMUr5Qp5ZFg==

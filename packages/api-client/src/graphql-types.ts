@@ -4189,6 +4189,7 @@ export interface Query {
   supportedComponentWidgetNames: Array<Scalars['String']>;
   supportedCurrencies: Array<Currency>;
   supportedShippingDestinations: Array<Country>;
+  video?: Maybe<Video>;
   voucherCodes?: Maybe<VoucherCodes>;
 }
 
@@ -4286,6 +4287,11 @@ export interface QuerySitePropertiesArgs {
 export interface QuerySitemapArgs {
   limit?: Scalars['Int'];
   offset?: Scalars['Int'];
+}
+
+
+export interface QueryVideoArgs {
+  id: Scalars['ID'];
 }
 
 
@@ -5101,6 +5107,11 @@ export type State =
   | 'US_WV'
   | 'US_WY';
 
+export type StatusType =
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'PROCESSING';
+
 export interface SubscriptionContract {
   __typename?: 'SubscriptionContract';
   frequency: SubscriptionFrequency;
@@ -5441,6 +5452,31 @@ export interface VariantOptions {
   shippingDestination: Country;
 }
 
+export interface Video {
+  __typename?: 'Video';
+  assets: Array<VideoAsset>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  status: StatusType;
+  thumbnailUrl?: Maybe<Scalars['URL']>;
+  title?: Maybe<Scalars['String']>;
+  transcript: Scalars['String'];
+  vttType: VttType;
+  vttUrl: Scalars['URL'];
+}
+
+export interface VideoAsset {
+  __typename?: 'VideoAsset';
+  status: StatusType;
+  type: VideoAssetType;
+  url: Scalars['URL'];
+}
+
+export type VideoAssetType =
+  | 'MP4'
+  | 'ORIGINAL'
+  | 'WEBM';
+
 export interface VoucherCode {
   __typename?: 'VoucherCode';
   discountCode?: Maybe<Scalars['String']>;
@@ -5462,6 +5498,11 @@ export interface VoucherCodesWidget extends Widget {
   id: Scalars['ID'];
   query: Query;
 }
+
+export type VttType =
+  | 'BACKGROUND_MUSIC'
+  | 'CUSTOM'
+  | 'NO_AUDIO';
 
 export interface Widget {
   id: Scalars['ID'];
@@ -5917,6 +5958,7 @@ export interface VideoEditorial extends Widget {
   subtitle?: Maybe<RichContent>;
   thumbnail?: Maybe<Scalars['URL']>;
   title?: Maybe<Scalars['String']>;
+  vpsVideoId?: Maybe<Video>;
 }
 
 export interface YotiAgeVerification extends Widget {
@@ -6252,6 +6294,7 @@ export type BasketQueryVariables = Exact<{
   id?: InputMaybe<Scalars['ID']>;
   currency?: Currency;
   shippingDestination?: Country;
+  acknowledgeMerge?: Scalars['Boolean'];
 }>;
 
 

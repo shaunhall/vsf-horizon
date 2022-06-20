@@ -12,6 +12,7 @@ import type {
 const params: UseCartFactoryParams<Cart, CartItem, ProductVariant> = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   load: async (context: Context, { customQuery }) => {
+    console.log('loading');
     const app = context.$horizonApp?.config?.app;
     const existingBasketId = app?.$cookies.get('cart_id');
     const variables = existingBasketId !== undefined && existingBasketId !== ''

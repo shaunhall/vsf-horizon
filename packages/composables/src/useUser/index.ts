@@ -3,15 +3,21 @@ import {
   useUserFactory,
   UseUserFactoryParams
 } from '@vue-storefront/core';
+// import { useCart } from '@vue-storefront/horizon';
 import type { User, UserLoginResult, UserRegisterResult, UserUpdateDetailsResult, UserUpdateEmailResult, UserUpdatePasswordResult } from '@vue-storefront/horizon-api';
 import type {
   UseUserUpdateParams as UpdateParams,
   UseUserRegisterParams as RegisterParams
 } from '../types';
 import { ExecutionResult } from 'graphql';
+import { useCart } from 'src/useCart';
 
 const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  provide() {
+    return useCart();
+  },
+
   load: async (context: Context) => {
     const user: ExecutionResult<User> = await context.$horizon.api.getUser();
     return user.data || null;
@@ -20,6 +26,7 @@ const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   logOut: async (context: Context) => {
     await context.$horizon.api.logout();
+    await context.clear();
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -49,10 +56,9 @@ const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
       return registerResult.data?.customer;
     } else {
       return Promise.reject({
-        error: registerResult.errors || 'ERROR'
+        error: registerResult.errors[0].message || 'ERROR'
       });
     }
-    return undefined;
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -64,10 +70,13 @@ const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
         fieldErrors: loginResult.data?.fieldErrors
       });
     } else if (loginResult.data?.customer) {
+      console.log(context);
+      await context.setCart(null);
+      await context.load();
       return loginResult.data?.customer;
     } else {
       return Promise.reject({
-        error: loginResult.errors || 'ERROR'
+        error: loginResult.errors[0].message || 'ERROR'
       });
     }
   },

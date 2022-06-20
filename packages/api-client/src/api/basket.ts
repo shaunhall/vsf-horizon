@@ -28,7 +28,7 @@ import { mutateWithCookies, queryWithCookies } from './_utils';
 type cartParams = UseCartFactoryParams<Cart, CartItem, ProductVariant>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const getBasket = async (context: Context, params: { id?: string }): ReturnType<cartParams['load']> => {
+export const getBasket = async (context: Context, params: { id?: string, acknowledgeMerge?: boolean }): ReturnType<cartParams['load']> => {
   const basketData = await queryWithCookies<BasketQuery>(context, basketQuery, params)
     .then(res => res.data);
   return basketData.basket;

@@ -100,6 +100,10 @@ function getDiscounts(cart: Cart): AgnosticDiscount[] {
   });
 }
 
+const isMerged = (cart: Cart): boolean => {
+  return cart?.merged;
+};
+
 export const cartGetters: CartGetters<Cart, CartItem> = {
   getTotals,
   getShippingPrice,
@@ -113,5 +117,6 @@ export const cartGetters: CartGetters<Cart, CartItem> = {
   getFormattedPrice,
   getTotalItems,
   getCoupons,
-  getDiscounts
+  getDiscounts,
+  isMerged
 };

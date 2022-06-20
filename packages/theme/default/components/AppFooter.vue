@@ -1,49 +1,14 @@
 <template>
-  <SfFooter :column="4" multiple class="footer">
-    <SfFooterColumn :title="$t('About us')">
+  <SfFooter :column="footer.length" multiple class="footer">
+    <SfFooterColumn v-for="(nav, index) in footer" :key="index" :title="nav.displayName">
       <SfList>
         <SfListItem
-          v-for="item in aboutUs"
-          :key="item"
+          v-for="(item, idx) in nav.subNavigation"
+          :key="idx"
           >
           <SfMenuItem
-            :label="$t(item)"
-          />
-        </SfListItem>
-      </SfList>
-    </SfFooterColumn>
-    <SfFooterColumn :title="$t('Departments')">
-      <SfList>
-        <SfListItem
-          v-for="item in departments"
-          :key="item"
-        >
-          <SfMenuItem
-            :label="$t(item)"
-          />
-        </SfListItem>
-      </SfList>
-    </SfFooterColumn>
-    <SfFooterColumn :title="$t('Help')">
-      <SfList>
-        <SfListItem
-          v-for="item in help"
-          :key="item"
-        >
-          <SfMenuItem
-            :label="$t(item)"
-          />
-        </SfListItem>
-      </SfList>
-    </SfFooterColumn>
-    <SfFooterColumn :title="$t('Payment & Delivery')">
-      <SfList>
-        <SfListItem
-          v-for="item in paymentsDelivery"
-          :key="item"
-        >
-          <SfMenuItem
-            :label="$t(item)"
+            :label="item.displayName"
+            :link="convertLink(item.link.url)"
           />
         </SfListItem>
       </SfList>
@@ -58,7 +23,10 @@
 
 <script>
 import { SfFooter, SfList, SfImage, SfMenuItem } from '@storefront-ui/vue';
+import { useSettings, settingsGetters } from '@vue-storefront/horizon';
 import { addBasePath } from '@vue-storefront/core';
+import { computed } from '@nuxtjs/composition-api';
+import { useUiHelpers } from '~/composables';
 
 export default {
   components: {
@@ -68,8 +36,14 @@ export default {
     SfMenuItem
   },
   setup() {
+    const { convertLink } = useUiHelpers();
+    const { settings } = useSettings();
+
+    const footer = computed(() => settingsGetters.getFooter(settings.value)?.navigation.topLevel);
     return {
-      addBasePath
+      footer,
+      addBasePath,
+      convertLink
     };
   },
   data() {

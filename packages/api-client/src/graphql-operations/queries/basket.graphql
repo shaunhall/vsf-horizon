@@ -1,12 +1,13 @@
 #import "../fragments/basketContents.graphql"
 
-query Basket($id: ID, $currency:Currency! = GBP, $shippingDestination:Country! = GB) {
+query Basket($id: ID, $currency:Currency! = GBP, $shippingDestination:Country! = GB, $acknowledgeMerge: Boolean! = false) {
   basket(
     id: $id,
     settings: {
       currency: $currency
       shippingDestination: $shippingDestination
     }
+    acknowledgeMerge: $acknowledgeMerge
   ) {
     ...BasketContents
   }

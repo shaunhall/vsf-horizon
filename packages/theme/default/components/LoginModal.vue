@@ -48,7 +48,7 @@
               class="form__element checkbox"
             />
             <div v-if="error.login">
-              {{ $t('loginErrors.' + error.login || 'There has been an error. Please try again.') }}
+              {{ error.login || 'There has been an error. Please try again.' }}
             </div>
             <SfButton v-e2e="'login-modal-submit'"
               type="submit"
@@ -208,7 +208,7 @@
   </SfModal>
 </template>
 <script>
-import { ref, watch, reactive, computed, onMounted, useRoute } from '@nuxtjs/composition-api';
+import { ref, watch, reactive, computed, onMounted, useRoute, useRouter } from '@nuxtjs/composition-api';
 import { SfModal, SfInput, SfButton, SfCheckbox, SfLoader, SfAlert, SfBar, SfRadio } from '@storefront-ui/vue';
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import { useUser, useForgotPassword, useForm } from '@vue-storefront/horizon';
@@ -236,6 +236,7 @@ export default {
     const { isLoginModalOpen, toggleLoginModal } = useUiState();
     const { convertValidators } = useUiHelpers();
     const route = useRoute();
+    const router = useRouter();
     const userEmail = ref('');
     const form = ref({});
     const createAccount = ref(false);
@@ -243,7 +244,7 @@ export default {
     const { form: fields, search: getForm, loading: formLoading } = useForm();
     const { register, login, loading, error: userError } = useUser();
     const { request, error: forgotPasswordError, loading: forgotPasswordLoading } = useForgotPassword();
-    const currentScreen = ref(SCREEN_REGISTER);
+    const currentScreen = ref(SCREEN_LOGIN);
 
     const error = reactive({
       login: null,
@@ -294,11 +295,13 @@ export default {
       await fn({ user: filteredForm });
       const hasUserErrors = userError.value.register || userError.value.login;
       if (hasUserErrors) {
-        error.login = userError.value.login?.error || userError.value.login?.errors[0].message;
+        console.log(userError.value.login);
+        error.login = userError.value.login?.error;
         error.register = userError.value.register?.error;
         return;
       }
       toggleLoginModal();
+      router.push({ name: 'my-account___gb'});
     };
 
     const closeModal = () => {

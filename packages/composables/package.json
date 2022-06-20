@@ -22,7 +22,7 @@
     "update:update": "ncu -u"
   },
   "dependencies": {
-    "@vue-storefront/core": "~2.5.4",
+    "@vue-storefront/core": "2.5.13",
     "@vue-storefront/horizon-api": "0.0.1"
   },
   "devDependencies": {

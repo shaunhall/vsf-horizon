@@ -76,7 +76,7 @@ function onCreate(settings) {
         errorPolicy: 'ignore'
       },
       mutate: {
-        errorPolicy: 'ignore'
+        errorPolicy: 'all'
       }
     }
   });

@@ -1,4 +1,5 @@
 import { Context } from '@vue-storefront/core';
+import { ExecutionResult } from 'graphql';
 import startCheckoutMutation from 'src/graphql-operations/mutations/checkoutStart.graphql';
 import {
   CheckoutMutation,
@@ -7,13 +8,7 @@ import {
 import { mutateWithCookies } from './_utils';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const startCheckout = async (context: Context, params: CheckoutMutationVariables): Promise<CheckoutMutation['checkout']> => {
-  let checkoutData: CheckoutMutation;
-  try {
-    checkoutData = await mutateWithCookies<CheckoutMutation>(context, startCheckoutMutation, params)
-      .then(res => res.data);
-  } catch (err) {
-    console.log(err);
-  }
-  return checkoutData?.checkout;
+export const startCheckout = async (context: Context, params: CheckoutMutationVariables): Promise<ExecutionResult<CheckoutMutation['checkout']>> => {
+  const checkoutRes = await mutateWithCookies<CheckoutMutation>(context, startCheckoutMutation, params);
+  return { ...checkoutRes, data: checkoutRes?.data?.checkout };
 };

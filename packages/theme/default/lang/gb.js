@@ -190,6 +190,9 @@ export default {
       "confirmable": "Confirm "
     }
   },
+  basket: {
+    mergedAlert: 'Items have been added to those already stored in your basket'
+  },
   countries: {
     AF: "Afghanistan",
     AX: "Aland Islands",

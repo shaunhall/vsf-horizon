@@ -14,6 +14,7 @@
     >
       <SfImage
         :src="widget.imageLarge"
+        :srcsets="srcSetImage"
         :alt="widget.altImageLarge || ''"
         class="primary-banner__background_secondary"
         width="1920"
@@ -21,6 +22,7 @@
     </SfLink>
     <SfImage v-else
         :src="widget.imageLarge"
+        :srcSet="srcSetImage"
         :alt="widget.altImageLarge || ''"
         class="primary-banner__background"
       />
@@ -47,10 +49,29 @@ export default {
     SfImage,
     SfLink
   },
-  setup() {
+  setup(props) {
+
     const { convertLink } = useUiHelpers();
+
+    const srcSetImage = [
+      {
+        src: props.widget.imageSmall,
+        width: 400,
+        breakpoint: 480
+      },
+      {
+        src: props.widget.imageMedium,
+        width: 1280,
+        breakpoint: 768},
+      {
+        src: props.widget.imageLarge,
+        width: 1920,
+        breakpoint: 1200}
+    ];
+
     return {
-      convertLink
+      convertLink,
+      srcSetImage
     };
   }
 };
@@ -60,6 +81,8 @@ export default {
 
   .primary-banner {
     position: relative;
+    width: 100%;
+    height: max-content;
 
     &__background_secondary {
       position: relative;
@@ -70,6 +93,7 @@ export default {
 
     &__background {
       position: relative;
+      height: max-content;
       width: inherit;
       object-fit: cover;
     }
@@ -80,6 +104,9 @@ export default {
         z-index: 2;
       }
       &__wrapper-desktop {
+        position: absolute;
+      }
+      &__wrapper {
         position: absolute;
       }
       &__image {

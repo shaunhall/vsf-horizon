@@ -107,6 +107,7 @@ export default {
         console.log('CHANGE LOCALE');
       }
       isSiteSettingsOpen.value = !isSiteSettingsOpen.value;
+      context.root.$nuxt.refresh();
     };
 
     return {
