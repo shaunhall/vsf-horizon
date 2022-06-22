@@ -33,6 +33,7 @@ fragment ProductListContents on ProductList {
     sku
     url
     title
+    inWishlist
     cheapestVariantPrice(
       currency: $currency
       shippingDestination: $shippingDestination
