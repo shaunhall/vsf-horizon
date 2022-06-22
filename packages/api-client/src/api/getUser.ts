@@ -1,4 +1,4 @@
-import { Context } from '@vue-storefront/core';
+import { Context, CustomQuery } from '@vue-storefront/core';
 import { CustomerQuery, LoginMutation, LoginMutationVariables, LogoutMutation, RegistrationMutation, RegistrationMutationVariables, UpdateAccountSettingsMutation, UpdateAccountSettingsMutationVariables, UpdateEmailMutation, UpdateEmailMutationVariables, UpdatePasswordMutation, UpdatePasswordMutationVariables } from 'src/graphql-types';
 import { User, UserLoginResult, UserRegisterResult, UserUpdateDetailsResult, UserUpdateEmailResult, UserUpdatePasswordResult } from 'src/types';
 import customerQuery from 'src/graphql-operations/queries/customer.graphql';
@@ -11,33 +11,33 @@ import registerMutation from 'src/graphql-operations/mutations/register.graphql'
 import { ExecutionResult } from 'graphql';
 import { mutateWithCookies, queryWithCookies } from './_utils';
 
-export async function getUser(context: Context): Promise<ExecutionResult<User>> {
-  const userExecutionData = await queryWithCookies<CustomerQuery>(context, customerQuery);
+export async function getUser(context: Context, customQuery: CustomQuery): Promise<ExecutionResult<User>> {
+  const userExecutionData = await queryWithCookies<CustomerQuery>(context, customerQuery, {}, customQuery);
   return { ...userExecutionData, data: userExecutionData.data?.customer };
 }
 
-export async function updateUserEmail(context: Context, params: UpdateEmailMutationVariables): Promise<ExecutionResult<UserUpdateEmailResult>> {
-  const userExecutionData = await mutateWithCookies<UpdateEmailMutation>(context, accountUpdateEmailMutation, params);
+export async function updateUserEmail(context: Context, params: UpdateEmailMutationVariables, customQuery: CustomQuery): Promise<ExecutionResult<UserUpdateEmailResult>> {
+  const userExecutionData = await mutateWithCookies<UpdateEmailMutation>(context, accountUpdateEmailMutation, params, customQuery);
   return { ...userExecutionData, data: userExecutionData.data?.updateEmailAddress };
 }
 
-export async function updateUserDetails(context: Context, params: UpdateAccountSettingsMutationVariables): Promise<ExecutionResult<UserUpdateDetailsResult>> {
-  const userExecutionData = await mutateWithCookies<UpdateAccountSettingsMutation>(context, accountUpdateDetailsMutation, params);
+export async function updateUserDetails(context: Context, params: UpdateAccountSettingsMutationVariables, customQuery: CustomQuery): Promise<ExecutionResult<UserUpdateDetailsResult>> {
+  const userExecutionData = await mutateWithCookies<UpdateAccountSettingsMutation>(context, accountUpdateDetailsMutation, params, customQuery);
   return { ...userExecutionData, data: userExecutionData.data?.updateAccountSettings };
 }
 
-export async function updateUserPassword(context: Context, params: UpdatePasswordMutationVariables): Promise<ExecutionResult<UserUpdatePasswordResult>> {
-  const userExecutionData = await mutateWithCookies<UpdatePasswordMutation>(context, accountUpdatePasswordMutation, params);
+export async function updateUserPassword(context: Context, params: UpdatePasswordMutationVariables, customQuery: CustomQuery): Promise<ExecutionResult<UserUpdatePasswordResult>> {
+  const userExecutionData = await mutateWithCookies<UpdatePasswordMutation>(context, accountUpdatePasswordMutation, params, customQuery);
   return { ...userExecutionData, data: userExecutionData.data?.updatePassword };
 }
 
-export async function login(context: Context, params: LoginMutationVariables): Promise<ExecutionResult<UserLoginResult>> {
-  const userExecutionData = await mutateWithCookies<LoginMutation>(context, loginMutation, params);
+export async function login(context: Context, params: LoginMutationVariables, customQuery: CustomQuery): Promise<ExecutionResult<UserLoginResult>> {
+  const userExecutionData = await mutateWithCookies<LoginMutation>(context, loginMutation, params, customQuery);
   return { ...userExecutionData, data: userExecutionData.data?.login };
 }
 
-export async function register(context: Context, params: RegistrationMutationVariables): Promise<ExecutionResult<UserRegisterResult>> {
-  const userExecutionData = await mutateWithCookies<RegistrationMutation>(context, registerMutation, params);
+export async function register(context: Context, params: RegistrationMutationVariables, customQuery: CustomQuery): Promise<ExecutionResult<UserRegisterResult>> {
+  const userExecutionData = await mutateWithCookies<RegistrationMutation>(context, registerMutation, params, customQuery);
   return { ...userExecutionData, data: userExecutionData.data?.register };
 }
 

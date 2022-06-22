@@ -144,7 +144,15 @@ module.exports = {
           lastCommit: process.env.LAST_COMMIT || ''
         })
       })
-    ]
+    ],
+    extend(config) {
+      config.module.rules.push({
+        test: /\.(graphql|gql)$/,
+        exclude: /node_modules/,
+        loader: 'graphql-tag/loader'
+      })
+    },
+
   },
   router: {
     extendRoutes(routes, resolve) {

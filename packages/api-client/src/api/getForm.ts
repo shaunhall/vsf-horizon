@@ -1,4 +1,4 @@
-import { Context } from '@vue-storefront/core';
+import { Context, CustomQuery } from '@vue-storefront/core';
 import { AccountSettingsFormQuery, PasswordFieldQuery, RegisterFormQuery } from 'src/graphql-types';
 import { FormField, FormFieldInput } from 'src/types';
 
@@ -8,17 +8,17 @@ import registerFormQuery from 'src/graphql-operations/queries/registerForm.graph
 import { ExecutionResult } from 'graphql';
 import { queryWithCookies } from './_utils';
 
-export async function getForm(context: Context, params: FormFieldInput): Promise<ExecutionResult<FormField[]>> {
+export async function getForm(context: Context, params: FormFieldInput, customQuery: CustomQuery): Promise<ExecutionResult<FormField[]>> {
   if (params.type === 'password') {
-    const formExecutionData = await queryWithCookies<PasswordFieldQuery>(context, passwordFormQuery);
+    const formExecutionData = await queryWithCookies<PasswordFieldQuery>(context, passwordFormQuery, {}, customQuery);
     return { ...formExecutionData, data: [formExecutionData.data?.passwordField] };
   }
   if (params.type === 'register') {
-    const formExecutionData = await queryWithCookies<RegisterFormQuery>(context, registerFormQuery);
+    const formExecutionData = await queryWithCookies<RegisterFormQuery>(context, registerFormQuery, {}, customQuery);
     return { ...formExecutionData, data: formExecutionData.data?.form.fields };
   }
   if (params.type === 'settings') {
-    const formExecutionData = await queryWithCookies<AccountSettingsFormQuery>(context, accountSettingsFormQuery);
+    const formExecutionData = await queryWithCookies<AccountSettingsFormQuery>(context, accountSettingsFormQuery, {}, customQuery);
     return { ...formExecutionData, data: [...formExecutionData.data.accountSettingsForm.fields, formExecutionData.data.emailField] };
   } else {
     return { data: [] };

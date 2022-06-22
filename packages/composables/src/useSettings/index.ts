@@ -1,10 +1,10 @@
 import { computed, Ref } from '@nuxtjs/composition-api';
-import { sharedRef, useVSFContext, Logger } from '@vue-storefront/core';
+import { sharedRef, useVSFContext, Logger, CustomQuery } from '@vue-storefront/core';
 import type { Currency, Country, SiteSettings } from '@vue-storefront/horizon-api';
 import { EnhancedSettings } from '../types';
 
 export const useSettings = (id: string): {
-  load: () => Promise<void>,
+  load: (customQuery: CustomQuery) => Promise<void>,
   change: (params: {
       currency: Currency
       shippingDestination: Country
@@ -22,7 +22,7 @@ export const useSettings = (id: string): {
     change: null
   }, `useSettings-error-${id}`);
 
-  const load = async (): Promise<void> => {
+  const load = async (customQuery: CustomQuery): Promise<void> => {
     Logger.debug(`useSettings/${id}/search`);
     try {
       loading.value = true;
@@ -46,7 +46,7 @@ export const useSettings = (id: string): {
           secure: true
         });
       }
-      const apiSettings: SiteSettings = await context.$horizon.api.getSettings().then(res => res.data);
+      const apiSettings: SiteSettings = await context.$horizon.api.getSettings(customQuery).then(res => res.data);
       settings.value = {
         ...apiSettings,
         active: {

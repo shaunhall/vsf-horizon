@@ -1,3 +1,5 @@
+const customQueries = require('./customQueries');
+
 module.exports = {
   integrations: {
     horizon: {
@@ -6,7 +8,8 @@ module.exports = {
         api: {
           url: process.env.API_URL
         }
-      }
+      },
+      customQueries
     }
   }
 };

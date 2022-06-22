@@ -11,7 +11,7 @@ import type {
 const params: UseProductFactoryParams<Product, SearchParams> = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   productsSearch: async (context: Context, params) => {
-    const data = await context.$horizon.api.getProduct(params);
+    const data = await context.$horizon.api.getProduct(params, params.customQuery);
     return data;
   }
 };

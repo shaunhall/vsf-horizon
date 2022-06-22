@@ -1,8 +1,13 @@
-import { computed } from '@nuxtjs/composition-api';
-import { sharedRef, useVSFContext, Logger } from '@vue-storefront/core';
-import type { FormFieldInput } from '@vue-storefront/horizon-api';
+import { computed, Ref } from '@nuxtjs/composition-api';
+import { sharedRef, useVSFContext, Logger, CustomQuery } from '@vue-storefront/core';
+import type { FormField, FormFieldInput } from '@vue-storefront/horizon-api';
 
-export const useForm = (id: string) => {
+export const useForm = (id: string): {
+  search: (params: FormFieldInput, customQuery: CustomQuery) => Promise<void>,
+  form: Ref<FormField[]>,
+  loading: Ref<boolean>,
+  error: Ref<Record<string, any>>
+} => {
   const context = useVSFContext();
   const form = sharedRef(null, `useForm-${id}`);
   const loading = sharedRef(false, `useForm-loading-${id}`);
@@ -11,12 +16,12 @@ export const useForm = (id: string) => {
     search: null
   }, `useForm-error-${id}`);
 
-  const search = async (params: FormFieldInput): Promise<void> => {
+  const search = async (params: FormFieldInput, customQuery: CustomQuery): Promise<void> => {
     Logger.debug(`useForm/${id}/search`, params);
 
     try {
       loading.value = true;
-      const data = await context.$horizon.api.getForm(params).then(res => res.data);
+      const data: FormField[] = await context.$horizon.api.getForm(params, customQuery).then(res => res.data);
       form.value = data;
       error.value.search = null;
     } catch (err) {

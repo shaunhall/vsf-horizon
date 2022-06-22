@@ -14,7 +14,7 @@ const params: UseReviewFactoryParams<Review, SearchParams, AddParams> = {
   searchReviews: async (context: Context, params) => {
     console.log('IN PROGRESS: userReview.searchReviews with params: ' + JSON.stringify(params));
 
-    const data = await context.$horizon.api.getReviews(params);
+    const data = await context.$horizon.api.getReviews(params, params.customQuery);
     // console.log('COMPLETE WITH DATA RETURNED: ', data);
     return data;
   },

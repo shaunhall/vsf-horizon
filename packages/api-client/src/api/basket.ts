@@ -1,4 +1,4 @@
-import { Context, UseCartFactoryParams } from '@vue-storefront/core';
+import { Context, CustomQuery, UseCartFactoryParams } from '@vue-storefront/core';
 import addToBasketMutation from 'src/graphql-operations/mutations/basketAdd.graphql';
 import updateBasketQtyMutation from 'src/graphql-operations/mutations/basketUpdate.graphql';
 import basketQuery from 'src/graphql-operations/queries/basket.graphql';
@@ -28,68 +28,64 @@ import { mutateWithCookies, queryWithCookies } from './_utils';
 type cartParams = UseCartFactoryParams<Cart, CartItem, ProductVariant>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const getBasket = async (context: Context, params: { id?: string, acknowledgeMerge?: boolean }): ReturnType<cartParams['load']> => {
-  const basketData = await queryWithCookies<BasketQuery>(context, basketQuery, params)
+export const getBasket = async (context: Context, params: { id?: string, acknowledgeMerge?: boolean } = {}, customQuery: CustomQuery = {}): Promise<Cart> => {
+  const basketData = await queryWithCookies<BasketQuery>(context, basketQuery, params, customQuery)
     .then(res => res.data);
   return basketData.basket;
 };
 
-export const addToBasket: cartParams['addItem'] = async (context, params) => {
+export const addToBasket = async (context: Context, params: { currentCart: Cart, product: ProductVariant, quantity: number }, customQuery: CustomQuery = {}): Promise<Cart> => {
   const variables: AddToBasketMutationVariables = {
     sku: params.product?.sku,
     qty: params.quantity
   };
   if (params.currentCart?.id) variables.id = params.currentCart.id;
-  const basketData = await mutateWithCookies<AddToBasketMutation>(context, addToBasketMutation, variables)
+  const basketData = await mutateWithCookies<AddToBasketMutation>(context, addToBasketMutation, variables, customQuery)
     .then(res => res.data);
   return basketData.addProductToBasket;
 };
 
-export const removeFromBasket: cartParams['removeItem'] = async (context, params) => {
+export const removeFromBasket = async (context: Context, params: { currentCart: Cart, product: CartItem }, customQuery: CustomQuery = {}): Promise<Cart> => {
   const variables: RemoveProductFromBasketMutationVariables = {
     basketId: params.currentCart.id,
     itemId: params.product.id
   };
-  const basketData = await mutateWithCookies<RemoveProductFromBasketMutation>(context, removeFromBasketMutation, variables)
+  const basketData = await mutateWithCookies<RemoveProductFromBasketMutation>(context, removeFromBasketMutation, variables, customQuery)
     .then(res => res.data);
   return basketData.removeProductFromBasket;
 };
 
-export const updateItemQty: cartParams['updateItemQty'] = async (context, params) => {
+export const updateItemQty = async (context: Context, params: { currentCart: Cart, product: CartItem, quantity: number }, customQuery: CustomQuery = {}): Promise<Cart> => {
   const variables: UpdateBasketQtyMutationVariables = {
     itemId: params.product.id,
     qty: params.quantity
   };
   if (params.currentCart.id) variables.id = params.currentCart.id;
-  const basketData = await mutateWithCookies<UpdateBasketQtyMutation>(context, updateBasketQtyMutation, variables)
+  const basketData = await mutateWithCookies<UpdateBasketQtyMutation>(context, updateBasketQtyMutation, variables, customQuery)
     .then(res => res.data);
   return basketData.updateProductQuantityInBasket;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const clearBasket: cartParams['clear'] = async (context, params) => {
-  return await getBasket(context, {});
+  return await getBasket(context);
 };
 
-export const applyCodeToBasket: cartParams['applyCoupon'] = async (context, params) => {
+export const applyCodeToBasket = async (context: Context, params: { currentCart: Cart, couponCode: string }, customQuery: CustomQuery): Promise<Cart> => {
   const variables: ApplyCodeToBasketMutationVariables = {
     basketId: params.currentCart.id,
     code: params.couponCode
   };
-  const basketData = await mutateWithCookies<ApplyCodeToBasketMutation>(context, applyCodeToBasketMutation, variables)
+  const basketData = await mutateWithCookies<ApplyCodeToBasketMutation>(context, applyCodeToBasketMutation, variables, customQuery)
     .then(res => res.data);
-  return {
-    updatedCart: basketData.applyCodeToBasket
-  };
+  return basketData.applyCodeToBasket;
 };
 
-export const removeCodeFromBasket: cartParams['removeCoupon'] = async (context, params) => {
+export const removeCodeFromBasket = async (context: Context, params: { currentCart: Cart, couponCode: string }, customQuery: CustomQuery): Promise<Cart> => {
   const variables: RemoveCodeFromBasketMutationVariables = {
     basketId: params.currentCart?.id
   };
-  const basketData = await mutateWithCookies<RemoveCodeFromBasketMutation>(context, removeCodeFromBasketMutation, variables)
+  const basketData = await mutateWithCookies<RemoveCodeFromBasketMutation>(context, removeCodeFromBasketMutation, variables, customQuery)
     .then(res => res.data);
-  return {
-    updatedCart: basketData.removeCodeFromBasket
-  };
+  return basketData.removeCodeFromBasket;
 };

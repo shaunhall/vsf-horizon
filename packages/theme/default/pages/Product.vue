@@ -197,7 +197,12 @@ export default {
     })));
 
     onSSR(async () => {
-      await search({ sku: id.value });
+      await search({
+        sku: id.value,
+        customQuery: {
+          overwrite: 'product-query'
+        }
+      });
     });
 
     const updateSelectedVariant = (key, value) => {
