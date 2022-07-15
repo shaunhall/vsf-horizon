@@ -78,8 +78,7 @@ import {
 import UserBillingAddress from '~/components/UserBillingAddress';
 import BillingAddressForm from '~/components/MyAccount/BillingAddressForm';
 import { useUserBilling, userBillingGetters } from '@vue-storefront/horizon';
-import { ref, computed } from '@nuxtjs/composition-api';
-import { onSSR } from '@vue-storefront/core';
+import { ref, computed, useFetch } from '@nuxtjs/composition-api';
 
 export default {
   name: 'BillingDetails',
@@ -116,9 +115,11 @@ export default {
       }
     };
 
-    onSSR(async () => {
+    const { fetch } = useFetch(async () => {
       await loadUserBilling();
     });
+
+    fetch();
 
     return {
       changeAddress,

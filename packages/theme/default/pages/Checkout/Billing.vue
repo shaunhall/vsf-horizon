@@ -196,8 +196,7 @@ import {
   SfRadio,
   SfCheckbox
 } from '@storefront-ui/vue';
-import { ref, useRouter } from '@nuxtjs/composition-api';
-import { onSSR } from '@vue-storefront/core';
+import { ref, useRouter, useFetch } from '@nuxtjs/composition-api';
 import { useBilling } from '@vue-storefront/horizon';
 import { required, min, digits } from 'vee-validate/dist/rules';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
@@ -255,9 +254,11 @@ export default {
       router.push(context.root.localePath({ name: 'payment' }));
     };
 
-    onSSR(async () => {
+    const { fetch } = useFetch(async () => {
       await load();
     });
+
+    fetch();
 
     return {
       router,

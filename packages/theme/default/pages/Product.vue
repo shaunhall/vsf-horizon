@@ -1,5 +1,6 @@
 <template>
   <div id="product">
+    {{ productVariantGetters }}
     <SfBreadcrumbs
       class="breadcrumbs desktop-only"
       :breadcrumbs="breadcrumbs"
@@ -152,9 +153,8 @@ import {
 
 import InstagramFeed from '~/components/InstagramFeed.vue';
 import RelatedProducts from '~/components/RelatedProducts.vue';
-import { ref, computed, useRoute, useRouter } from '@nuxtjs/composition-api';
+import { ref, computed, useRoute, useRouter, useFetch } from '@nuxtjs/composition-api';
 import { useProduct, useCart, productGetters, productVariantGetters, reviewGetters, useSettings, settingsGetters } from '@vue-storefront/horizon';
-import { onSSR } from '@vue-storefront/core';
 import LazyHydrate from 'vue-lazy-hydration';
 import { addBasePath } from '@vue-storefront/core';
 
@@ -196,7 +196,7 @@ export default {
       alt: `${title} image ${idx}`
     })));
 
-    onSSR(async () => {
+    const { fetch } = useFetch(async () => {
       await search({
         sku: id.value,
         customQuery: {
@@ -219,6 +219,9 @@ export default {
         }
       });
     };
+    console.log(productVariantGetters);
+
+    fetch();
 
     return {
       updateSelectedVariant,

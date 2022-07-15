@@ -108,8 +108,7 @@ import {
   SfAccordion,
   SfLink
 } from '@storefront-ui/vue';
-import { onSSR } from '@vue-storefront/core';
-import { ref, computed, useRouter } from '@nuxtjs/composition-api';
+import { ref, computed, useRouter, useFetch } from '@nuxtjs/composition-api';
 import { useMakeOrder, useCart, cartGetters, orderGetters } from '@vue-storefront/horizon';
 import { addBasePath } from '@vue-storefront/core';
 
@@ -137,7 +136,7 @@ export default {
     const isPaymentReady = ref(false);
     const terms = ref(false);
 
-    onSSR(async () => {
+    const { fetch } = useFetch(async () => {
       await load();
     });
 
@@ -147,6 +146,8 @@ export default {
       router.push(context.root.localePath(thankYouPath));
       setCart(null);
     };
+
+    fetch();
 
     return {
       addBasePath,

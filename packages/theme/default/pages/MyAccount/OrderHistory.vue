@@ -94,10 +94,9 @@ import {
   SfProperty,
   SfLink
 } from '@storefront-ui/vue';
-import { computed, ref } from '@nuxtjs/composition-api';
+import { computed, ref, useFetch } from '@nuxtjs/composition-api';
 import { useUserOrder, orderGetters } from '@vue-storefront/horizon';
 import { AgnosticOrderStatus } from '@vue-storefront/core';
-import { onSSR } from '@vue-storefront/core';
 
 export default {
   name: 'PersonalDetails',
@@ -112,7 +111,7 @@ export default {
     const { orders, search } = useUserOrder();
     const currentOrder = ref(null);
 
-    onSSR(async () => {
+    const { fetch } = useFetch(async () => {
       await search();
     });
 
@@ -134,6 +133,8 @@ export default {
           return '';
       }
     };
+
+    fetch();
 
     return {
       tableHeaders,

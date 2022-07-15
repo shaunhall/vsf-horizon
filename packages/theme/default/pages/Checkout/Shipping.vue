@@ -192,8 +192,7 @@ import {
   SfButton,
   SfSelect
 } from '@storefront-ui/vue';
-import { ref, useRouter } from '@nuxtjs/composition-api';
-import { onSSR } from '@vue-storefront/core';
+import { ref, useRouter, useFetch } from '@nuxtjs/composition-api';
 import { useShipping } from '@vue-storefront/horizon';
 import { required, min, digits } from 'vee-validate/dist/rules';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
@@ -251,9 +250,11 @@ export default {
       isFormSubmitted.value = true;
     };
 
-    onSSR(async () => {
+    const { fetch } = useFetch(async () => {
       await load();
     });
+
+    fetch();
 
     return {
       router,

@@ -62,7 +62,6 @@
 
 <script>
 import { SfMenuItem, SfModal, SfAccordion, SfList, SfMegaMenu } from '@storefront-ui/vue';
-import { onSSR } from '@vue-storefront/core';
 import { computed, ref } from '@nuxtjs/composition-api';
 import { useUiState, useUiHelpers } from '~/composables';
 import { useSettings, settingsGetters, navigationGetters } from '@vue-storefront/horizon';

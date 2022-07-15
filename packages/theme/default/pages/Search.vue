@@ -6,10 +6,9 @@
 </template>
 
 <script>
-import { computed, useRoute } from '@nuxtjs/composition-api';
+import { computed, useRoute, useFetch } from '@nuxtjs/composition-api';
 import { useSearch } from '@vue-storefront/horizon';
 import { useUiHelpers } from '~/composables';
-import { onSSR } from '@vue-storefront/core';
 import LazyHydrate from 'vue-lazy-hydration';
 import CategoryPageHeader from '~/components/CategoryPageHeader';
 import WidgetProductList from '~/components/Widget/ProductList';
@@ -29,7 +28,7 @@ export default {
     const productList = computed(() => result?.value?.data);
     const input = computed(() => result?.value?.input);
 
-    onSSR(async () => {
+    const { fetch } = useFetch(async () => {
       await search({
         sort: sort.value || 'RELEVANCE',
         term: searchQuery.value,
@@ -38,6 +37,8 @@ export default {
         facets: initialFilters?.value });
       if (error?.value?.search) context.root.$nuxt.error({ statusCode: 404 });
     });
+
+    fetch();
 
     return {
       productList,

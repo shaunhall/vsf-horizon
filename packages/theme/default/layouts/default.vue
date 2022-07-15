@@ -31,8 +31,7 @@ import WishlistSidebar from '~/components/WishlistSidebar.vue';
 import LoginModal from '~/components/LoginModal.vue';
 import LazyHydrate from 'vue-lazy-hydration';
 import Notification from '~/components/Notification';
-import { onSSR } from '@vue-storefront/core';
-import { useRoute, onBeforeMount } from '@nuxtjs/composition-api';
+import { useRoute, onBeforeMount, useFetch } from '@nuxtjs/composition-api';
 import { useCart, useSettings, useUser, useWishlist } from '@vue-storefront/horizon';
 
 export default {
@@ -57,7 +56,7 @@ export default {
     const { load: loadCart } = useCart();
     const { load: loadWishlist } = useWishlist();
 
-    onSSR(async () => {
+    const { fetch } = useFetch(async () => {
       await Promise.all([
         loadSettings(),
         loadWishlist()
@@ -68,6 +67,8 @@ export default {
       await loadUser();
       await loadCart();
     });
+
+    fetch();
 
     return {
       route

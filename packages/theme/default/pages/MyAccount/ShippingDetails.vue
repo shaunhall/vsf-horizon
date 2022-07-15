@@ -78,8 +78,7 @@ import {
 import UserShippingAddress from '~/components/UserShippingAddress';
 import ShippingAddressForm from '~/components/MyAccount/ShippingAddressForm';
 import { useUserShipping, userShippingGetters } from '@vue-storefront/horizon';
-import { ref, computed } from '@nuxtjs/composition-api';
-import { onSSR } from '@vue-storefront/core';
+import { ref, computed, useFetch } from '@nuxtjs/composition-api';
 
 export default {
   name: 'ShippingDetails',
@@ -116,9 +115,11 @@ export default {
       }
     };
 
-    onSSR(async () => {
+    const { fetch } = useFetch(async () => {
       await loadUserShipping();
     });
+
+    fetch();
 
     return {
       changeAddress,
