@@ -21,8 +21,8 @@
               :style="{ '--index': i }"
               :title="productGetters.getName(product)"
               :image="productGetters.getCoverImage(product)"
-              :imageWidth="800"
-              :imageHeight="800"
+              :imageWidth="216"
+              :imageHeight="216"
               :regular-price="$n(productGetters.getPrice(product).regular, 'currency', currency)"
               :special-price="productGetters.getPrice(product).special && $n(productGetters.getPrice(product).special, 'currency', currency)"
               :max-rating="5"
@@ -49,8 +49,8 @@
               :key="productGetters.getSlug(product) + i"
               :style="{ '--index': i }"
               :title="productGetters.getName(product)"
-              :imageWidth="800"
-              :imageHeight="800"
+              :imageWidth="216"
+              :imageHeight="216"
               :description="productGetters.getDescription(product)"
               :image="productGetters.getCoverImage(product)"
               :regular-price="$n(productGetters.getPrice(product).regular, 'currency', currency)"
@@ -166,7 +166,6 @@ export default {
       const product = productsInWhishlist.value.find(wishlistProduct => wishlistProduct.variant.sku === productItem.sku);
       removeItemFromWishlist({ product });
     };
-
     const addToCart = ({ product, quantity }) => {
       const { id, sku } = product;
       addItemToCart({

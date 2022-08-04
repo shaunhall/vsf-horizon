@@ -1,16 +1,15 @@
 const webpack = require('webpack');
 const theme = require('./themeConfig');
 
-const rootDir = './_theme/'
 module.exports = {
   server: {
     port: process.env.APP_PORT || 3001,
     host: '0.0.0.0'
   },
-  rootDir,
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'Vue Storefront',
+    mode: 'spa',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -68,7 +67,14 @@ module.exports = {
       }
     }],
     // @core-development-only-start
-    '@vue-storefront/nuxt-theme',
+    ['@vue-storefront/nuxt-theme', {
+      generate: {
+        replace: {
+          apiClient: '@vue-storefront/horizon-api',
+          composables: '@vue-storefront/horizon'
+        }
+      }
+    }],
     ['@vue-storefront/horizon/nuxt', {}]
   ],
 
@@ -163,7 +169,7 @@ module.exports = {
       routes.push({
         name: 'Search',
         path: '/search/:slug?/',
-        component: resolve(__dirname, rootDir + 'pages/Search.vue')
+        component: resolve(__dirname, 'pages/Search.vue')
       });
     }
   },

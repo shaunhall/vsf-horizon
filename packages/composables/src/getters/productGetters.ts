@@ -151,6 +151,7 @@ const getVariants = (product: Product): ProductVariant[] => {
 };
 
 const getVariant = (product: Product, filters: Record<string, unknown>): ProductVariant => {
+  console.log('inside', filters);
   if (product && filters && Object.keys(filters).length) {
     const filteredVariants = product?.variants.filter((variant) => {
       return Object.entries(filters).every(([key, value]) => variant.choices.filter(choice => choice.optionKey === key && choice.key === value).length);

@@ -6,9 +6,9 @@
     "node": ">=14.17.x"
   },
   "scripts": {
-    "build": "concurrently -k -s first \"vsf-tu\" \"nuxt build -m\"",
+    "build": "nuxt build -m",
     "build:analyze": "nuxt build -a -m",
-    "dev": "concurrently \"vsf-tu\" \"nuxt\"",
+    "dev": "nuxt",
     "generate": "nuxt generate",
     "lint": "eslint . --ext .ts,.vue",
     "lint:fix": "eslint . --ext .ts,.vue --fix",
@@ -37,10 +37,8 @@
   },
   "devDependencies": {
     "@nuxt/types": "^2.15.8",
-    "@vue-storefront/theme-utilities": "^0.1.8",
     "@vue/test-utils": "^1.2.2",
     "babel-jest": "^27.3.1",
-    "concurrently": "^6.3.0",
     "cypress": "^8.7.0",
     "cypress-pipe": "^2.0.0",
     "cypress-tags": "^0.3.0",

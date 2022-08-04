@@ -1,13 +1,14 @@
 <template>
   <div id="product">
-    {{ productVariantGetters }}
     <SfBreadcrumbs
       class="breadcrumbs desktop-only"
       :breadcrumbs="breadcrumbs"
     />
     <div class="product">
       <LazyHydrate when-idle>
-        <SfGallery :images=" variantProductGallery && variantProductGallery.length ? variantProductGallery : productGallery" class="product__gallery" />
+        <SfGallery
+          :images=" variantProductGallery && variantProductGallery.length ? variantProductGallery : productGallery"
+          class="product__gallery" />
       </LazyHydrate>
 
       <div class="product__info">
@@ -153,7 +154,8 @@ import {
 
 import InstagramFeed from '~/components/InstagramFeed.vue';
 import RelatedProducts from '~/components/RelatedProducts.vue';
-import { ref, computed, useRoute, useRouter, useFetch } from '@nuxtjs/composition-api';
+import { onSSR } from '@vue-storefront/core';
+import { ref, computed, useRoute } from '@nuxtjs/composition-api';
 import { useProduct, useCart, productGetters, productVariantGetters, reviewGetters, useSettings, settingsGetters } from '@vue-storefront/horizon';
 import LazyHydrate from 'vue-lazy-hydration';
 import { addBasePath } from '@vue-storefront/core';
@@ -164,22 +166,20 @@ export default {
   setup() {
     const qty = ref(1);
     const route = useRoute();
-    const router = useRouter();
     const { products, search, loading: productLoading } = useProduct('products');
     const { addItem, loading } = useCart();
     const { settings } = useSettings();
     const currency = computed(() => settingsGetters.getSelected(settings.value)?.currency);
 
+    const filters = ref({});
     const product = computed(() => productGetters.getFiltered(products.value)[0]);
     const reviewBlob = computed(() => productGetters.getReviews(product.value));
     const reviews = computed(() => reviewGetters.getItems(reviewBlob?.value));
     const id = computed(() => route.value.params.id);
-    const filters = computed(() => route.value.query);
     const currentVariant = computed(() => productGetters.getVariant(product.value, filters.value));
     const options = computed(() => productGetters.getAttributes(product.value));
     const configuration = computed(() => productVariantGetters.getAttributes(currentVariant.value));
     const title = computed(() => productVariantGetters.getName(currentVariant.value));
-
     // TODO: Breadcrumbs are temporary disabled because productGetters return undefined. We have a mocks in data
     const breadcrumbs = computed(() => productGetters.getBreadcrumbs(product.value));
     const productGallery = computed(() => productGetters.getGallery(product.value)?.map((img, idx) => ({
@@ -196,7 +196,7 @@ export default {
       alt: `${title} image ${idx}`
     })));
 
-    const { fetch } = useFetch(async () => {
+    onSSR(async () => {
       await search({
         sku: id.value,
         customQuery: {
@@ -206,22 +206,16 @@ export default {
     });
 
     const updateSelectedVariant = (key, value) => {
-      const newConfig = {};
+      const newFilters = {};
       const keys = Object.keys(configuration.value);
       keys.forEach(k => {
-        newConfig[k] = configuration.value[k].label;
-      });
-      newConfig[key] = value;
-      router.replace({
-        path: route.value.path,
-        query: {
-          ...newConfig
+        if (configuration.value[k]) {
+          newFilters[k] = configuration.value[k].label;
         }
       });
+      newFilters[key] = value;
+      filters.value = newFilters;
     };
-    console.log(productVariantGetters);
-
-    fetch();
 
     return {
       updateSelectedVariant,
@@ -269,24 +263,6 @@ export default {
   },
   data() {
     return {
-      properties: [
-        {
-          name: 'Product Code',
-          value: '578902-00'
-        },
-        {
-          name: 'Category',
-          value: 'Pants'
-        },
-        {
-          name: 'Material',
-          value: 'Cotton'
-        },
-        {
-          name: 'Country',
-          value: 'Germany'
-        }
-      ],
       detailsIsActive: false,
       brand:
           'Brand name is the perfect pairing of quality and design. This label creates major everyday vibes with its collection of modern brooches, silver and gold jewellery, or clips it back with hair accessories in geo styles.',

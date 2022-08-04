@@ -20,7 +20,9 @@ function getItemName(item: CartItem): string {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getItemImage(item: CartItem): string {
-  return item?.product?.product?.images.length ? item?.product?.product?.images[0].largeProduct : '';
+  return item?.product?.images.length ? item.product.images[0].largeProduct : (
+    item?.product?.product?.images.length ? item.product.product.images[0].largeProduct : ''
+  );
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

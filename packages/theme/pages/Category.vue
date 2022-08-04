@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="loading" />
+    <SfLoader v-if="loading" />
     <template v-for="(widget, index) in widgets" v-else>
       <template v-if="widget.__typename == 'ProductListWidget'">
         <!-- ProductListWidget -->
@@ -27,10 +27,12 @@
 </template>
 
 <script>
-import { computed, useRoute, useFetch } from '@nuxtjs/composition-api';
+import { computed, useRoute } from '@nuxtjs/composition-api';
 import { usePage, pageGetters } from '@vue-storefront/horizon';
 import { useUiHelpers } from '~/composables';
+import { SfLoader } from '@storefront-ui/vue';
 import LazyHydrate from 'vue-lazy-hydration';
+import { onSSR } from '@vue-storefront/core';
 import CategoryPageHeader from '~/components/CategoryPageHeader';
 import WidgetProductList from '~/components/Widget/ProductList';
 import WidgetGlobalPrimaryBanner from '~/components/Widget/GlobalPrimaryBanner';
@@ -50,7 +52,7 @@ export default {
     const widgets = computed(() => pageGetters?.getWidgets(result?.value?.data));
     const input = computed(() => result?.value?.input);
 
-    const { fetch } = useFetch(async () => {
+    onSSR(async () => {
       await search({
         sort: sort.value || 'RELEVANCE',
         categorySlug: path.value.replace(/^\/[a-zA-Z]+/g, '').replace(/\/$/, ''),
@@ -59,8 +61,6 @@ export default {
         facets: initialFilters?.value });
       if (error?.value?.search) context.root.$nuxt.error({ statusCode: 404 });
     });
-
-    fetch();
 
     return {
       widgets,
@@ -73,7 +73,8 @@ export default {
     WidgetProductList,
     WidgetGlobalPrimaryBanner,
     WidgetNotSupported,
-    LazyHydrate
+    LazyHydrate,
+    SfLoader
   }
 };
 </script>
